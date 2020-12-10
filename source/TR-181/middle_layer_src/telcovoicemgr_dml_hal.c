@@ -24,7 +24,6 @@
 /*****************************************************************************
 * PROJECT-SPECIFIC INCLUDE FILES
 *****************************************************************************/
-#include "rpc-cli/rpc_client.h"
 #include "json_hal_client.h"
 #include "ansc_platform.h"
 #include "telcovoicemgr_dml_hal.h"
