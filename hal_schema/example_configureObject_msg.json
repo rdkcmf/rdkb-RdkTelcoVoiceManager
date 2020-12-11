@@ -1,0 +1,14 @@
+{
+  "module": "voicehal",
+  "version": "0.0.1",  
+  "action": "configureObject",
+  "reqId" : "100001",
+  "params":
+  [
+     {
+       "name":"Device.Services.VoiceService.1.VoiceProfile.1.Enable",
+       "type": "string",
+       "value":"True"
+     }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "module": "voicehal",
+  "version": "0.0.1",  
+  "action": "getParameters",
+  "reqId" : "100001",
+  "params":
+  [
+     {"name":"Device.Services.VoiceService.1."}
+  ]
+}

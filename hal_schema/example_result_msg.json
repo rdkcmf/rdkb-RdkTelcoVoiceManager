@@ -1,0 +1,9 @@
+{
+  "module": "voicehal",
+  "version": "0.0.1",  
+  "action": "result",
+  "reqId" : "100002",
+  "Result": {
+    "Status":"Success"
+  }
+}

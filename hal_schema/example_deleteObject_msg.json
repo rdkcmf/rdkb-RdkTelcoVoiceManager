@@ -1,0 +1,12 @@
+{
+  "module": "voicehal",
+  "version": "0.0.1",  
+  "action": "deleteObject",
+  "reqId" : "100003",
+  "params":
+  [
+    {
+      "name":"Device.Services.VoiceService.1."
+    }
+  ]
+}

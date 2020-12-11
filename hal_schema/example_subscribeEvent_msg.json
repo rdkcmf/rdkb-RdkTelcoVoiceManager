@@ -1,0 +1,18 @@
+{
+  "module": "voicehal",
+  "version": "0.0.1",  
+  "action": "subscribeEvent",
+  "reqId" : "100006",
+  "params":
+  [
+    { 
+      "name":"Device.Services.VoiceService.1.VoiceProfile.1.SIP.X_RDK_Firewall_Rule_Data",
+      "notificationType": "onChange"
+    },
+    { 
+      "name":"Device.Services.VoiceService.1.VoiceProfile.1.SIP.X_RDK_Firewall_Rule_Data",
+      "notificationType": "onChange"
+    } 
+    
+  ]
+}
