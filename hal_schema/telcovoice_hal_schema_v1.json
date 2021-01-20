@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://gerrit.teamccp.com/rdk/rdkb/components/opensource/ccsp/voice/generic/telcovoice_hal_schema_v1.json",
+  "$id": "telcovoice_hal_schema_v1.json",
   "title": "Voice HAL Schema",
   "description": "Voice HAL JSON Schema definitions. DO NOT modify the contents of this schema file. RDK community team make necessary changes and release",
   "definitions": {
@@ -4300,7 +4300,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.VoiceProfile\\.\\d+\\.SIP\\.X_RDK_Firewall_Rule_Data$"
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.VoiceProfile\\.\\d+\\.RTP\\.X_RDK_Firewall_Rule_Data$"
         },
         "type": {
           "type": "string",
