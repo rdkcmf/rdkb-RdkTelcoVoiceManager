@@ -142,7 +142,9 @@
       "type": "string",
       "enum": [
         "interval",
-        "onChange"
+        "onChange",
+        "onChangeSync",
+        "onChangeSyncTimeout"
       ],
       "default": "onChange"
     },

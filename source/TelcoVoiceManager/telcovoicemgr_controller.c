@@ -50,12 +50,12 @@ static ANSC_STATUS TelcoVoiceMgr_subscribe_hal_events(void)
                     {
                         //SIP
                         snprintf(strName, BUF_LEN_256, SIP_FIREWALL_RULE_DATA, pDmlVoiceService->InstanceNumber, pDmlVoiceProfile->InstanceNumber);
-                        ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName, JSON_SUBSCRIBE_ON_CHANGE);
+                        ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName, JSON_SUBSCRIBE_ON_CHANGE_SYNC_TIMEOUT);
                         if(ret != ANSC_STATUS_SUCCESS) break;
 
                         //RTP
                         snprintf(strName, BUF_LEN_256, RTP_FIREWALL_RULE_DATA, pDmlVoiceService->InstanceNumber, pDmlVoiceProfile->InstanceNumber);
-                        ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName, JSON_SUBSCRIBE_ON_CHANGE);
+                        ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName, JSON_SUBSCRIBE_ON_CHANGE_SYNC_TIMEOUT);
                         if(ret != ANSC_STATUS_SUCCESS) break;
 
                     }

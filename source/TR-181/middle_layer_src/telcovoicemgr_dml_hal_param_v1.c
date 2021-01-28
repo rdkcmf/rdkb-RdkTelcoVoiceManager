@@ -152,17 +152,6 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
            pVoiceService->X_RDK_DisableLoopCurrentUntilRegistered = false;
        }
     }
-    else if( strstr(ParamName, "X_RDK_FactoryReset"))
-    {
-       if(strstr(pValue, "true") || strstr(pValue, "1"))
-       {
-           pVoiceService->X_RDK_FactoryReset = true;
-       }
-       else
-       {
-           pVoiceService->X_RDK_FactoryReset = false;
-       }
-    }
     else if( strstr(ParamName, "X_RDK_BoundIfName"))
     {
        strncpy(pVoiceService->X_RDK_BoundIfName, pValue,strlen(pValue)+1);
@@ -174,17 +163,6 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     else if( strstr(ParamName, "X_RDK_BoundIpAddr"))
     {
        strncpy(pVoiceService->X_RDK_BoundIpAddr, pValue,strlen(pValue)+1);
-    }
-    else if( strstr(ParamName, "X_RDK_Enable"))
-    {
-       if(strstr(pValue, "Enable"))
-       {
-           pVoiceService->X_RDK_Enable = VOICE_SERVICE_ENABLE;
-       }
-       else
-       {
-           pVoiceService->X_RDK_Enable = VOICE_SERVICE_DISABLE;
-       }
     }
     else if( strstr(ParamName, "X_RDK_Status"))
     {

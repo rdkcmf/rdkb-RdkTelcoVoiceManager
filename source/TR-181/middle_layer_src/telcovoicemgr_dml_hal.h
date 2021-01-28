@@ -37,6 +37,7 @@
 #define JSON_RPC_FIELD_NAME                 "name"
 #define JSON_RPC_FIELD_VALUE                "value"
 #define JSON_SUBSCRIBE_ON_CHANGE            "onChange"
+#define JSON_SUBSCRIBE_ON_CHANGE_SYNC_TIMEOUT "onChangeSyncTimeout"
 
 #define JSON_STR_TRUE                       "true"
 #define JSON_STR_FALSE                      "false"

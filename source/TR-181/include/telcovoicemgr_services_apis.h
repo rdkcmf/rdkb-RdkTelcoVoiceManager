@@ -1167,6 +1167,7 @@ ANSC_STATUS TelcoVoiceMgrDmlDataDelete(void);
 ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrData);
 int TelcoVoiceMgrSyseventInit();
 void TelcoVoiceMgrSyseventDeInit();
+int firewall_restart_for_voice(unsigned long timeout_ms);
 
 ANSC_STATUS TelcoVoiceMgrDmlAddVoiceService(DML_VOICE_SERVICE_LIST_T* pVoiceProfileList, int vs_index);
 ANSC_STATUS TelcoVoiceMgrDmlAddVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, int vp_index);

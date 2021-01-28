@@ -59,6 +59,8 @@
 #define SYSEVENT_CURRENT_WAN_IFNAME "current_wan_ifname"
 #define SYSEVENT_LAN_STATUS "lan-status"
 #define SYSEVENT_LAN_ADDRESS "current_lan_ipaddr"
+#define SYSEVENT_FIREWALL_STATUS "firewall-status"
+#define SYSEVENT_FIREWALL_RESTART "firewall-restart"
 #define IP_ADDR_FAMILY_LENGTH 32
 #define BOUND_IF_NAME_LENGTH 32
 /* ---- Global Variables ------------------------------------ */
@@ -68,6 +70,13 @@ typedef enum {
     WAN_DOWN
 } WanState_e;
 
+typedef enum {
+    FIREWALLSTATUS_STARTING,
+    FIREWALLSTATUS_STARTED,
+    FIREWALLSTATUS_STOPPING,
+    FIREWALLSTATUS_STOPPED
+} FirewallStatus_e;
+
 extern bool bTelcoVoiceManagerRunning;
 static pthread_t sysevent_tid;
 static int sysevent_fd = -1;
@@ -75,6 +84,7 @@ static token_t sysevent_token = -1;
 static char ipAddrFamily[IP_ADDR_FAMILY_LENGTH] = {0};
 static char lanIpAddr[IP_ADDR_FAMILY_LENGTH] = {0};
 static char boundIfName[BOUND_IF_NAME_LENGTH] = {0};
+static int firewall_status = FIREWALLSTATUS_STARTING;
 
 /* ---- Private Function Prototypes -------------------------- */
 static void voice_event_handler(char *pEvtName, char *pEvtValue);
@@ -167,6 +177,7 @@ static void *voice_manager_nw_monitor(void *data)
     async_id_t ipv4_connection_asyncid;
     async_id_t ipv6_connection_asyncid;
     async_id_t lan_connection_asyncid;
+    async_id_t firewallstatus_asyncid;
 
     /*LAN Events*/
     sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_LAN_STATUS, TUPLE_FLAG_EVENT);
@@ -183,6 +194,10 @@ static void *voice_manager_nw_monitor(void *data)
     sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IFNAME,  &ifname_asyncid);
     sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IPFAMILY, TUPLE_FLAG_EVENT);
     sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IPFAMILY,  &ipfamily_asyncid);
+
+    /*Firewall Status*/
+    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_STATUS, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_STATUS,  &firewallstatus_asyncid);
 
     pthread_detach(pthread_self());
 
@@ -273,6 +288,13 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
     else if (!strcmp(pEvtName, SYSEVENT_IPV6_CONNECTION_STATE) && !strcmp(ipAddrFamily, IPV6))
     {
         event_set_wan_status();
+    }
+    else if ( !strcmp(pEvtName, SYSEVENT_FIREWALL_STATUS) )
+    {
+        if ( !strcmp(pEvtValue, "started") )
+        {
+            firewall_status = FIREWALLSTATUS_STARTED;
+        }
     }
 }
 
@@ -440,4 +462,43 @@ static void event_set_wan_status (void)
     {
         CcspTraceError(("Invalid IP Address Family name Passed!\n"));
     }
+}
+
+/*firewall_restart_for_voice */
+/*
+* @description : Restart firewall and wait until firewall restart is completed
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*/
+
+int firewall_restart_for_voice(unsigned long timeout_ms)
+{
+    struct timeval tstart;
+    struct timeval ttimeout;
+    struct timeval tend;
+    struct timeval tnow;
+
+    gettimeofday(&tstart, NULL);
+    ttimeout.tv_sec  = (timeout_ms/1000);
+    ttimeout.tv_usec = (timeout_ms % 1000) * 1000;
+    timeradd (&tstart, &ttimeout, &tend);
+
+    firewall_status = FIREWALLSTATUS_STARTING;
+    sysevent_set(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_RESTART, NULL, 0);
+
+    gettimeofday(&tnow, NULL);
+    while (timercmp (&tnow, &tend, <))
+    {
+        if ( firewall_status == FIREWALLSTATUS_STARTED )
+        {
+            CcspTraceInfo (( "%s %d - firewall restart process finished\n", __FUNCTION__, __LINE__ ));
+            return ANSC_STATUS_SUCCESS;
+        }
+        usleep(10000);
+        gettimeofday(&tnow, NULL);
+    }
+    CcspTraceError (( "%s %d - firewall restart timeout\n", __FUNCTION__, __LINE__ ));
+    return ANSC_STATUS_FAILURE;
 }

@@ -76,7 +76,7 @@
 #define SYSEVENT_VOICE_IPV6_RTPLIST "voice_ipv6_rtp_pinholes"
 #define SYSEVENT_VOICE_IPV6_ETHERNETPRIORITY "voice_ipv6_ethernetpriority"
 #define SYSEVENT_VOICE_IPV6_DSCP "voice_ipv6_dscp"
-#define SYSEVENT_FIREWALL_RESTART "firewall-restart"
+#define UTOPIA_FIREWALL_RESTART_TIMEOUT_MS  3000 /* ms */
 
 #define ADD_RULE     "Add_Rule"
 #define DELETE_RULE  "Delete_Rule"
@@ -1961,7 +1961,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_PROXYLIST, tmpBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
             //Restart firewall for sip events
-            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIREWALL_RESTART, NULL, 0);
+            firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
         }
         else if (protocol == RTP)
         {
@@ -2040,7 +2040,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_PROXYLIST, tmpBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
             //Restart firewall for sip events
-            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIREWALL_RESTART, NULL, 0);
+            firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
         }
         else if (protocol == RTP)
         {
