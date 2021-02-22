@@ -49,6 +49,11 @@
 #define _TELCOVOICEMGR_NW_MONITOR_H
 
 /* ---- Include Files ---------------------------------------- */
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif
 
 /* ---- Global Constants -------------------------- */
 

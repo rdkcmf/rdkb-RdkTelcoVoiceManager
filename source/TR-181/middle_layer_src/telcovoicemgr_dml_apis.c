@@ -19,7 +19,6 @@
 
 #include "telcovoicemgr_dml_apis.h"
 #include "ccsp_dm_api.h"
-#include "telcovoicemgr_dml_services.h"
 #include "telcovoicemgr_dml_backendmgr.h"
 
 
@@ -127,18 +126,28 @@ ANSC_STATUS TelcoVoiceMgrServicesInitialize(ANSC_HANDLE hThisObject)
         return returnStatus;
     }
 
-    //Get HAL data
-    returnStatus = TelcoVoiceMgrHal_GetInitData();
-    if(returnStatus != ANSC_STATUS_SUCCESS)
-    {
-        return returnStatus;
-    }
-
     // Initialize sysevent daemon
     if (TelcoVoiceMgrSyseventInit() < 0)
     {
         CcspTraceError(("Sysevent Init failed !!!!\n"));
         return ANSC_STATUS_FAILURE;
+    }
+
+    //Send default configuration to Hal
+    CcspTraceInfo(("%s %d - sending default configuration to Hal. \n", __FUNCTION__, __LINE__ ));
+    returnStatus = TelcoVoiceJsonCfgSetDmDefaults();
+    if(returnStatus != ANSC_STATUS_SUCCESS)
+    {
+        CcspTraceInfo(("%s %d - Error in sending default configuration to Hal. \n", __FUNCTION__, __LINE__ ));
+        return returnStatus;
+    }
+
+    //Get HAL data
+    returnStatus = TelcoVoiceMgrHal_GetInitData();
+    if(returnStatus != ANSC_STATUS_SUCCESS)
+    {
+        CcspTraceError(("TelcoVoiceMgrHal_GetInitData failed !!!!\n"));
+        return returnStatus;
     }
  
     //Register subscribe event callback and send data to hal

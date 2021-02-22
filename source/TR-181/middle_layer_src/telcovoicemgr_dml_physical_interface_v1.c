@@ -19,8 +19,8 @@
 
 #include "ansc_platform.h"
 #include "telcovoicemgr_dml_backendmgr.h"
-#include "telcovoicemgr_dml_services.h"
-#include "telcovoicemgr_services_apis.h"
+#include "telcovoicemgr_dml_services_v1.h"
+#include "telcovoicemgr_services_apis_v1.h"
 #include "telcovoicemgr_dml_hal.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
@@ -347,7 +347,10 @@ BOOL PhyInterfaceTests_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamNam
 **********************************************************************/
 BOOL PhyInterfaceTests_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pString)
 {
-    BOOL ret = FALSE;
+    BOOL  ret = FALSE;
+    ULONG uVsIndex = 0;
+    ULONG uPhyIndex = 0;
+    ULONG tmpBuf = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
     DML_PHYINTERFACE_CTRL_T* pPhyInterface = (DML_PHYINTERFACE_CTRL_T *) hInsContext;
     if(pPhyInterface == NULL || pString == NULL)
@@ -377,47 +380,55 @@ BOOL PhyInterfaceTests_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamN
         pDmlVoiceService = pDmlPhyInterface->pParentVoiceService;
         if(pDmlVoiceService != NULL)
         {
+            uVsIndex = pDmlVoiceService->InstanceNumber;
+            uPhyIndex =  pDmlPhyInterface->InstanceNumber;
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
             if( AnscEqualString(ParamName, "TestSelector", TRUE) )
             {
                 if(!strcmp(pString, "PhoneConnectivityTest"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_PHONE_CONNECTIVITY_TEST;
+                    tmpBuf= PHYINTERFACE_TESTSELECTOR_PHONE_CONNECTIVITY_TEST;
                     ret = TRUE;
                 }
                 else if(!strcmp(pString, "Hazard Potential"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_HAZARD_POTENTIAL;
+                    tmpBuf = PHYINTERFACE_TESTSELECTOR_HAZARD_POTENTIAL;
                     ret = TRUE;
                 }
                 else if(!strcmp(pString, "Foreign Voltage"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_FOREIGN_VOLTAGE;
+                    tmpBuf = PHYINTERFACE_TESTSELECTOR_FOREIGN_VOLTAGE;
                     ret = TRUE;
                 }
                 else if(!strcmp(pString, "Resistive Faults"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_RESISTIVE_FAULTS;
+                    tmpBuf = PHYINTERFACE_TESTSELECTOR_RESISTIVE_FAULTS;
                     ret = TRUE;
                 }
                 else if(!strcmp(pString, "Off-hook"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_OFF_HOOK;
+                    tmpBuf = PHYINTERFACE_TESTSELECTOR_OFF_HOOK;
                     ret = TRUE;
                 }
                 else if(!strcmp(pString, "REN"))
                 {
-                    pDmlPhyInterfaceTests->TestSelector = PHYINTERFACE_TESTSELECTOR_REN;
+                    tmpBuf = PHYINTERFACE_TESTSELECTOR_REN;
                     ret = TRUE;
                 }
                 else
                 {
                     CcspTraceWarning(("%s::Unknown ParamName :%s\n", __FUNCTION__, ParamName));
-                    TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                     return ret;
-                }         
-                if(TelcoVoiceMgrDmlSetTestSelector(pDmlVoiceService->InstanceNumber, pDmlPhyInterface->InstanceNumber, pDmlPhyInterfaceTests->TestSelector) == ANSC_STATUS_SUCCESS)
+                }        
+                if(TelcoVoiceMgrDmlSetTestSelector(uVsIndex, uPhyIndex, tmpBuf) == ANSC_STATUS_SUCCESS)
                 {
-                    ret = TRUE;
+                    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                    if(pTelcoVoiceMgrDmlData != NULL)
+                    {
+                        pDmlPhyInterfaceTests->TestSelector = tmpBuf;
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                        return TRUE;
+                    }
                 }
             }
             else
@@ -461,6 +472,9 @@ BOOL PhyInterfaceTests_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamN
 BOOL PhyInterfaceTests_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uValue)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex = 0;
+    ULONG uPhyIndex = 0;
+    ULONG tmpBuf = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
     DML_PHYINTERFACE_CTRL_T* pPhyInterface = (DML_PHYINTERFACE_CTRL_T *) hInsContext;
     if(pPhyInterface == NULL)
@@ -490,12 +504,21 @@ BOOL PhyInterfaceTests_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamNa
         pDmlVoiceService = pDmlPhyInterface->pParentVoiceService;
         if(pDmlVoiceService != NULL)
         {
+            uVsIndex = pDmlVoiceService->InstanceNumber;
+            uPhyIndex =  pDmlPhyInterface->InstanceNumber;
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+
             if( AnscEqualString(ParamName, "TestState", TRUE) )
             {
-                if(TelcoVoiceMgrDmlSetTestState(pDmlVoiceService->InstanceNumber, pDmlPhyInterface->InstanceNumber, uValue) == ANSC_STATUS_SUCCESS)
+                if(TelcoVoiceMgrDmlSetTestState(uVsIndex, uPhyIndex, uValue) == ANSC_STATUS_SUCCESS)
                 {
-                    pDmlPhyInterfaceTests->TestState = uValue;
-                    ret = TRUE;
+                    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                    if(pTelcoVoiceMgrDmlData != NULL)
+                    {
+                        pDmlPhyInterfaceTests->TestState = uValue;
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                        return TRUE;
+                    }
                 }
             }
             else
@@ -783,28 +806,7 @@ BOOL PhyInterfaceTests_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamNa
 
 BOOL PhyInterface_IsUpdated(ANSC_HANDLE hInsContext)
 {
-    ANSC_STATUS ret = ANSC_STATUS_SUCCESS;
-    BOOL        bIsUpdated = FALSE;
-    PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
-    DML_VOICE_SERVICE_CTRL_T* pVoiceService = (DML_VOICE_SERVICE_CTRL_T*) hInsContext;
-
-    if(pVoiceService != NULL)
-    {
-        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
-        if(pTelcoVoiceMgrDmlData != NULL)
-        {
-            pDmlVoiceService = &(pVoiceService->dml);
-            if(pDmlVoiceService != NULL)
-            {
-                ret = TelcoVoiceMgrHal_GetPhyInterface(&(pDmlVoiceService->PhyInterfaceList), pDmlVoiceService->InstanceNumber);
-                if(ret == ANSC_STATUS_SUCCESS)
-                {
-                    bIsUpdated = TRUE;
-                }
-            }
-            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
-        }
-    }
+    BOOL        bIsUpdated = TRUE;
     return bIsUpdated;
 }
 

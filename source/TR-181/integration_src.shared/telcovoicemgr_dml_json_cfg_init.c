@@ -38,7 +38,12 @@
 #include "ccsp_trace.h"
 
 #include "telcovoicemgr_dml_json_cfg_init.h"
-#include "telcovoicemgr_services_apis.h"
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif
+#include "telcovoicemgr_dml_hal.h"
 
 #define VOICE_HAL_NORMAL_DIGIT_MAP  "DigitMap"
 #define VOICE_HAL_EMERGENCY_DIGIT_MAP  "X_RDK-Central_COM_EmergencyDigitMap"
@@ -331,7 +336,7 @@ static int32_t jsonCfgSetSDigitTimer(uint32_t service, uint32_t profile, uint32_
 static int32_t jsonCfgSetZDigitTimer(uint32_t service, uint32_t profile,  uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetSDigitTimer(service, profile, value);
+    TelcoVoiceMgrDmlSetZDigitTimer(service, profile, value);
     return 0;
 }
 static int32_t jsonCfgSetTestState(uint32_t service, uint32_t phy_interface, char *value)
@@ -681,7 +686,6 @@ enum vpTag {
     VP_TAG_SDigitTimer,
     VP_TAG_ZDigitTimer
 };
-
 
 static struct 
 {
@@ -1499,15 +1503,27 @@ static int32_t jsonCfgSetLineEnable(uint32_t service, uint32_t profile, uint32_t
     }
     if (!strcmp(buffer, "Enabled"))
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, TRUE);
+#else
         TelcoVoiceMgrDmlSetLineEnable(service, profile, line, ENABLED);
+#endif
     }
     else if (!strcmp(buffer, "Disabled"))
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, FALSE);
+#else
         TelcoVoiceMgrDmlSetLineEnable(service, profile, line, DISABLED);
+#endif
     }
     else if (!strcmp(buffer, "Quiescent"))
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, FALSE);
+#else
         TelcoVoiceMgrDmlSetLineEnable(service, profile, line, QUIESCENT);
+#endif
     }
     else
     {
@@ -1525,6 +1541,11 @@ int32_t voice_process_factory_default()
     if(returnStatus != ANSC_STATUS_SUCCESS)
     {
         CcspTraceInfo(("%s %d - Error in sending default configuration to Hal. \n", __FUNCTION__, __LINE__ ));
+        return returnStatus;
+    }
+    returnStatus = TelcoVoiceMgrHal_GetInitData();
+    if(returnStatus != ANSC_STATUS_SUCCESS)
+    {
         return returnStatus;
     }
     return returnStatus;

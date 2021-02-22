@@ -28,10 +28,16 @@
 #include "json_hal_client.h"
 #include "ansc_platform.h"
 #include "telcovoicemgr_dml_hal.h"
-#include "telcovoicemgr_services_apis.h"
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif
 
 static ANSC_STATUS voice_process_get_info(hal_param_t *get_param);
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_STATS *stVoiceStats);
+#endif
 /*******************************************************************************
  *                        LOCAL FUNCTION TYPES
  *******************************************************************************/
@@ -213,7 +219,7 @@ static ANSC_STATUS voice_process_get_info(hal_param_t *get_param)
     FREE_JSON_OBJECT(jreply_msg);
     return ANSC_STATUS_SUCCESS;
 }
-
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pLineStats)
 {
     CHECK(param_name != NULL);
@@ -376,6 +382,7 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
 
     return ANSC_STATUS_SUCCESS;
 }
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList)
 {
     if (pVoiceServiceList == NULL)
@@ -421,6 +428,7 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceSe
     return ANSC_STATUS_SUCCESS;
 }
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities)
 {
 
@@ -575,6 +583,7 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
 
     return rc;
 }
+#endif
 
 ANSC_STATUS TelcoVoiceMgrHal_SetParam(char *pName, eParamType pType, char *pValue)
 {
@@ -714,11 +723,99 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
     char event_val[256] = {'\0'};
     int  uVsIndex            = 0;
     int  uVpIndex            = 0;
+    int  uIndex              = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
 
     ret = get_event_param(msg, len, event_name, event_val);
     if(ret == ANSC_STATUS_SUCCESS)
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        if (strstr(event_name, FIREWALL_RULE_DATA_EVENT))
+        {
+            if(ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(event_name, DML_VOICESERVICE, &uVsIndex))
+            {
+                return ANSC_STATUS_FAILURE;
+            }
+            if( uVsIndex <= 0 )
+            {
+                AnscTraceError(("\n%s:%d:: \nInvalid index ParamName[%s]", __FUNCTION__, __LINE__, event_name));
+                return ANSC_STATUS_FAILURE;
+            }
+            TELCOVOICEMGR_DML_DATA*  pTelcoVoiceMgrData = TelcoVoiceMgrDmlGetDataLocked();
+            if(pTelcoVoiceMgrData != NULL)
+            {
+                DML_VOICE_SERVICE_CTRL_T* pVoiceService = pTelcoVoiceMgrData->Service.VoiceService.pdata[uVsIndex - 1];
+                pDmlVoiceService = &(pVoiceService->dml);
+                if(pDmlVoiceService == NULL)
+                {
+                    //create new VoiceService
+                    TelcoVoiceMgrDmlAddVoiceService(&(pTelcoVoiceMgrData->Service.VoiceService), uVsIndex - 1);
+
+                    pDmlVoiceService = pTelcoVoiceMgrData->Service.VoiceService.pdata[uVsIndex - 1];
+                    if(pDmlVoiceService == NULL)
+                    {
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+                        return ANSC_STATUS_FAILURE;
+                    }
+                }
+
+                if( strstr(event_name, "SIP"))
+                {
+                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(event_name, DML_VOICESERVICE_SIP_NETWORK, &uIndex)) ||
+                        ( uIndex <= 0 ))
+                    {
+                        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, event_name));
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+                        return ANSC_STATUS_FAILURE;
+                    }
+
+                    ret = Map_hal_dml_SIP(&(pTelcoVoiceMgrData->Service.VoiceService), event_name, event_val);
+                    if(ret == ANSC_STATUS_SUCCESS)
+                    {
+                        PDML_SIP_NETWORK_CTRL_T    pSipNetworkData = pDmlVoiceService->SIP_obj.Network.pdata[uIndex - 1];
+                        PDML_SIP_NETWORK pDmlSipNetwork = &(pSipNetworkData->dml);
+
+                        DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pDmlVoiceService->VoIPProfile->pdata[uVpIndex];
+                        PDML_VOIPPROFILE   pDmlVoipProfile = &(pVoipProfileData->dml);
+                        PDML_VOIPPROFILE_RTP pDmlRtpObj = &(pDmlVoipProfile->RTP);
+                        //Function to set sysevent for firewall rule
+                        TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(pDmlSipNetwork, pDmlRtpObj, SIP);
+                    }
+                    else
+                    {
+                        CcspTraceWarning(("[%s: %d] Sysevent set for firewall rules failed\n", __FUNCTION__, __LINE__));
+                    }
+                }
+                else if(strstr(event_name, "RTP"))
+                {
+                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_VoIPProfile_index(event_name, DML_VOICESERVICE_VOIPPROF, &uVpIndex))
+                        || (uVpIndex <= 0) )
+                    {
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+                        return ANSC_STATUS_FAILURE;
+                    }
+
+                    ret = Map_hal_dml_VoipProfile(&(pTelcoVoiceMgrData->Service.VoiceService), event_name, event_val);
+                    if(ret == ANSC_STATUS_SUCCESS)
+                    {
+                        PDML_SIP_NETWORK_CTRL_T    pSipNetworkData = pDmlVoiceService->SIP_obj.Network.pdata[uIndex - 1];
+                        PDML_SIP_NETWORK pDmlSipNetwork = &(pSipNetworkData->dml);
+
+                        DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pDmlVoiceService->VoIPProfile->pdata[uVpIndex];
+                        PDML_VOIPPROFILE   pDmlVoipProfile  = &(pVoipProfileData->dml);
+                        PDML_VOIPPROFILE_RTP pDmlRtpObj = &(pDmlVoipProfile->RTP);
+                        //Function to set sysevent for firewall rule
+                        TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(pDmlSipNetwork, pDmlRtpObj, RTP);
+                    }
+                    else
+                    {
+                        CcspTraceWarning(("[%s: %d] Sysevent set for firewall rules failed\n", __FUNCTION__, __LINE__));
+                    }
+                }
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+            }
+        }
+#else /*TR104V1 Subscribe event callback*/
         if (strstr(event_name, FIREWALL_RULE_DATA_EVENT))
         {
             if(ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_voiceService_index(event_name, DML_VOICESERVICE, &uVsIndex))
@@ -761,7 +858,7 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                     TELCOVOICEMGR_DML_VOICEPROFILE* pVoiceProf = &(pVoiceProfile->dml);
                     TELCOVOICEMGR_DML_RTP* pVoiceProfile_RTP = &(pVoiceProf->RTPObj);
                     TELCOVOICEMGR_DML_SIP* pVoiceProfile_SIP = &(pVoiceProf->SIPObj);
-  
+
                     //Function to set sysevent for firewall rule
                     if( strstr(event_name, "SIP"))
                     {
@@ -774,13 +871,13 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                 }
                 else
                 {
-                    CcspTraceWarning(("[%s: %d] Syevent set for firewall rules failed\n", __FUNCTION__, __LINE__)); 
+                    CcspTraceWarning(("[%s: %d] Sysevent set for firewall rules failed\n", __FUNCTION__, __LINE__));
                 }
                 TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
             }
         }
+#endif
     }
-
 }
 
 ANSC_STATUS TelcoVoiceMgrHal_EventSubscribe(event_callback callback, const char* event_name, const char* event_notification_type)

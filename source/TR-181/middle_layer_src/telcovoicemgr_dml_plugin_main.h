@@ -69,10 +69,19 @@
 #define ANSC_EXPORT_API
 #endif
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 extern "C"{
 #endif
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_dml_v2.h"
+#else
+#include "telcovoicemgr_dml_services_v1.h"
+#include "telcovoicemgr_dml_profile_v1.h"
+#include "telcovoicemgr_dml_line_v1.h"
+#include "telcovoicemgr_dml_numberingplan_v1.h"
+#include "telcovoicemgr_dml_tone_v1.h"
+#endif
 /***************************************************************************
  *
  *  COSA stands for "Cisco Open Service Architecture"
@@ -84,7 +93,7 @@ BOOL ANSC_EXPORT_API TELCOVOICEMGR_IsObjSupported(char* pObjName);
 
 void ANSC_EXPORT_API TELCOVOICEMGR_Unload(void);
 
-#ifdef __cplusplus 
+#ifdef __cplusplus
 }
 #endif
 

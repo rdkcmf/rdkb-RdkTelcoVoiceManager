@@ -16,8 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef VOICE_HAL_PRIV_H
-#define VOICE_HAL_PRIV_H
+#ifndef TELCOVOICEMGR_DML_JSON_CFG_INIT_H
+#define TELCOVOICEMGR_DML_JSON_CFG_INIT_H
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#endif
 
 /* Some file+path defines */
 #define VOICE_CONFIG_DEFAULT_PATH "/usr/rdk/voicemanager/"     // Read only

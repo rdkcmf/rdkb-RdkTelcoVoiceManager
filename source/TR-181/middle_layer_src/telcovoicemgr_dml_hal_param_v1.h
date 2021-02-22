@@ -24,7 +24,7 @@
 #include <string.h>
 #include "json_hal_common.h"
 #include "json_hal_client.h"
-#include "telcovoicemgr_services_apis.h"
+#include "telcovoicemgr_services_apis_v1.h"
 
 #define MAX_STR_LEN 256
 

@@ -19,8 +19,8 @@
 
 #include "ansc_platform.h"
 #include "telcovoicemgr_dml_backendmgr.h"
-#include "telcovoicemgr_dml_tone.h"
-#include "telcovoicemgr_services_apis.h"
+#include "telcovoicemgr_dml_tone_v1.h"
+#include "telcovoicemgr_services_apis_v1.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
 

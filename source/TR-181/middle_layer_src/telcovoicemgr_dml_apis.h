@@ -20,7 +20,11 @@
 #ifndef  _TELCOVOICEMGR_DML_APIS_H
 #define  _TELCOVOICEMGR_DML_APIS_H
 
-#include "telcovoicemgr_services_apis.h"
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif
 
 typedef ANSC_HANDLE(*PFN_COSADM_CREATE)(VOID);
 

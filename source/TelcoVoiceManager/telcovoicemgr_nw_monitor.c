@@ -44,7 +44,6 @@
 #include "telcovoicemgr_nw_monitor.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
-#include "telcovoicemgr_services_apis.h"
 
 /* ---- Global Constants -------------------------- */
 #define LAN_IF         "LAN"
@@ -63,6 +62,16 @@
 #define SYSEVENT_FIREWALL_RESTART "firewall-restart"
 #define IP_ADDR_FAMILY_LENGTH 32
 #define BOUND_IF_NAME_LENGTH 32
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+// V2 Functionality to update SKB Mark
+#define SIP_INDEX TELCOVOICEMGR_DML_NUMBER_OF_SIP_NETWORK
+#define RTP_INDEX TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE
+#else
+// V1 Functionality to update SKB Mark
+#define SIP_INDEX TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX
+#define RTP_INDEX TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX
+#endif
 /* ---- Global Variables ------------------------------------ */
 typedef enum {
     WAN_ERROR,
@@ -138,12 +147,12 @@ void voicemgr_create_nw_monitor()
     else
     {
         CcspTraceWarning(("Get IpAddressFamily Failed, Proceed with IPv4 !\n"));
-        AnscCopyString(ipAddrFamily, IPV4);
+        AnscCopyString(ipAddrFamily, STR_IPV4);
     }
     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
     /*LAN IPv6 address is not ready until WAN IPv6 address is ready.
         In both LAN and WAN modes, the voice process bounds to the same interface and IP.*/
-    if (!strcmp(boundIfName, LAN_IF) && !strcmp(ipAddrFamily, IPV4) )
+    if (!strcmp(boundIfName, LAN_IF) && !strcmp(ipAddrFamily, STR_IPV4) )
     {
         event_set_lan_status();
     }
@@ -234,11 +243,11 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
         strcpy(boundIfName, pEvtValue);
         if (!strcmp(boundIfName, LAN_IF))
         {
-            if(!strcmp(ipAddrFamily, IPV4))
+            if(!strcmp(ipAddrFamily, STR_IPV4))
             {
                 event_set_lan_status();
             }
-            else if (!strcmp(ipAddrFamily, IPV6))
+            else if (!strcmp(ipAddrFamily, STR_IPV6))
             {
                /*LAN IPv6 address is not ready until WAN IPv6 address is ready.
                 In both LAN and WAN modes, the voice process bounds to the same interface and IP.*/
@@ -259,11 +268,11 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
         }
         else if (!strcmp(boundIfName, LAN_IF))
         {
-            if(!strcmp(ipAddrFamily, IPV4))
+            if(!strcmp(ipAddrFamily, STR_IPV4))
             {
                 event_set_lan_status();
             }
-            else if (!strcmp(ipAddrFamily, IPV6))
+            else if (!strcmp(ipAddrFamily, STR_IPV6))
             {
               /*LAN IPv6 address is not ready until WAN IPv6 address is ready.
                 In both LAN and WAN modes, the voice process bounds to the same interface and IP.*/
@@ -275,7 +284,7 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
     {
         event_set_lan_status();
     }
-    else if (!strcmp(pEvtName, SYSEVENT_IPV4_CONNECTION_STATE) && !strcmp(ipAddrFamily, IPV4))
+    else if (!strcmp(pEvtName, SYSEVENT_IPV4_CONNECTION_STATE) && !strcmp(ipAddrFamily, STR_IPV4))
     {
         /* Check the current configured Interface name before setting the
            voice source IPv4 address to avoid overwriting LAN IPv4 address
@@ -285,7 +294,7 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
             event_set_wan_status();
         }
     }
-    else if (!strcmp(pEvtName, SYSEVENT_IPV6_CONNECTION_STATE) && !strcmp(ipAddrFamily, IPV6))
+    else if (!strcmp(pEvtName, SYSEVENT_IPV6_CONNECTION_STATE) && !strcmp(ipAddrFamily, STR_IPV6))
     {
         event_set_wan_status();
     }
@@ -311,7 +320,7 @@ static void event_set_lan_status (void)
     {
         if (!strcmp(lanStatus, "started"))
         {
-            if (!strcmp(ipAddrFamily, IPV4))
+            if (!strcmp(ipAddrFamily, STR_IPV4))
             {
                 if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_LAN_ADDRESS, ipAddr, sizeof(ipAddr)) == 0)
                 {
@@ -349,7 +358,7 @@ static void event_set_wan_status (void)
     uint32_t uRtpSkbMark = 0;
     int32_t iEthPriority;
 
-    if (!strcmp(ipAddrFamily, IPV4))
+    if (!strcmp(ipAddrFamily, STR_IPV4))
     {
         if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_IPV4_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
         {
@@ -367,12 +376,13 @@ static void event_set_wan_status (void)
                     {
                         CcspTraceInfo(("%s:: WAN IPv4 Address updated! { %s }\n", __FUNCTION__, ipAddr));
                         CcspTraceNotice(("CCSPTELCOVOIP_IPV4_WANUP :: Voice Manager: IPV4 WAN up\n"));
+
                         //update the SKBmark reading from Wan Manager
-                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, SIP, &iEthPriority))
+                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, SIP, &iEthPriority))
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iEthPriority);
                         }
-                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, RTP, &iEthPriority))
+                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, RTP, &iEthPriority))
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iEthPriority);
                         }
@@ -380,8 +390,8 @@ static void event_set_wan_status (void)
                         if (TelcoVoiceMgrDmlGetWanSKBMarks(PARAM_NAME_IPV4_STATE, &uSipSkbMark,  &uRtpSkbMark)
                                                                             == ANSC_STATUS_SUCCESS)
                         {
-                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, uSipSkbMark, SIP, PARAM_NAME_SKB_MARK);
-                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, uRtpSkbMark, RTP, PARAM_NAME_SKB_MARK);
+                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, uSipSkbMark, SIP, PARAM_NAME_SKB_MARK);
+                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, uRtpSkbMark, RTP, PARAM_NAME_SKB_MARK);
                         }
 
                         TelcoVoiceMgrDmlSetBoundIpAddress(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, ipAddr);
@@ -403,7 +413,7 @@ static void event_set_wan_status (void)
             }
         }
     }
-    else if (!strcmp(ipAddrFamily, IPV6))
+    else if (!strcmp(ipAddrFamily, STR_IPV6))
     {
         if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_IPV6_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
         {
@@ -423,20 +433,21 @@ static void event_set_wan_status (void)
                         strcpy(ipv6_addr, "1");
                         CcspTraceInfo(("%s:: WAN IPv6 Address updated! { %s }\n", __FUNCTION__, ipAddr));
                         CcspTraceNotice(("CCSPTELCOVOIP_IPV6_WANUP :: Voice Manager: IPV6 WAN up\n"));
+
                         //update the SKBmark reading from Wan Manager
-                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, SIP, &iEthPriority))
+                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, SIP, &iEthPriority))
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iEthPriority);
                         }
-                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, SIP, &iEthPriority))
+                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, SIP, &iEthPriority))
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iEthPriority);
                         }
 
                         if (TelcoVoiceMgrDmlGetWanSKBMarks(PARAM_NAME_IPV6_STATE, &uSipSkbMark,  &uRtpSkbMark)
                                                                                  == ANSC_STATUS_SUCCESS){
-                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, uSipSkbMark, SIP, PARAM_NAME_SKB_MARK);
-                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, TELCOVOICEMGR_DML_VOICE_PROFILE_INDEX, uRtpSkbMark, RTP, PARAM_NAME_SKB_MARK);
+                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, uSipSkbMark, SIP, PARAM_NAME_SKB_MARK);
+                            TelcoVoiceMgrInitMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, uRtpSkbMark, RTP, PARAM_NAME_SKB_MARK);
                         }
 
                         TelcoVoiceMgrDmlSetBoundIpAddress(1, ipAddr);

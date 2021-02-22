@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
+
 <!--
  If not stated otherwise in this file or this component's LICENSE file the
  following copyright and licenses apply:
@@ -28,16 +29,6 @@
     <object>
       <name>Services</name>
       <objectType>object</objectType>
-      <functions>
-        <func_GetParamUlongValue>Services_GetParamUlongValue</func_GetParamUlongValue>
-      </functions>
-      <parameters>
-        <parameter>
-          <name>VoiceServiceNumberOfEntries</name>
-          <type>unsignedInt</type>
-          <syntax>uint32</syntax>
-        </parameter>
-      </parameters>
       <objects>
         <object>
           <name>VoiceService</name>
@@ -60,9 +51,10 @@
           </functions>
           <parameters>
             <parameter>
-              <name>PhyInterfaceNumberOfEntries</name>
-              <type>unsignedInt</type>
-              <syntax>uint32</syntax>
+                <name>Alias</name>
+                <type>string(64)</type>
+                <syntax>string</syntax>
+                <writable>true</writable>
             </parameter>
             <parameter>
               <name>X_RDK_DisableLoopCurrentUntilRegistered</name>
@@ -217,9 +209,11 @@
                     <syntax>uint32/mapped</syntax>
                 </parameter>
             </parameters>
+            <objects>
             <object>
                <name>SIP</name>
                <objectType>object</objectType>
+               <objects>
                <object>
                    <name>Client</name>
                    <objectType>object</objectType>
@@ -320,6 +314,7 @@
                         </parameter>
                    </parameters>
                </object>
+             </objects>
            </object>
            <object>
                <name>MGCP</name>
@@ -492,6 +487,7 @@
                     </parameter>
                 </parameters>
             </object>
+          </objects>
         </object>
        <object>
            <name>ReservedPorts</name>
@@ -518,6 +514,7 @@
        <object>
            <name>ISDN</name>
            <objectType>object</objectType>
+           <objects>
            <object>
                <name>BRI</name>
                 <objectType>dynamicTable</objectType>
@@ -774,6 +771,7 @@
                     </parameter>
                </parameters>
            </object>
+         </objects>
        </object>
        <object>
            <name>POTS</name>
@@ -789,6 +787,7 @@
                     <writable>true</writable>
                 </parameter>
            </parameters>
+           <objects>
            <object>
                <name>FXO</name>
                 <objectType>dynamicTable</objectType>
@@ -891,6 +890,7 @@
                         <syntax>bool</syntax>
                     </parameter>
                </parameters>
+               <objects>
                 <object>
                     <name>DiagTests</name>
                     <objectType>object</objectType>
@@ -918,6 +918,7 @@
                         </parameter>
                    </parameters>
                </object>
+             </objects>
             </object>
             <object>
                <name>FXS</name>
@@ -1009,6 +1010,7 @@
                         <writable>true</writable>
                     </parameter>
                </parameters>
+               <objects>
                <object>
                    <name>VoiceProcessing</name>
                    <objectType>object</objectType>
@@ -1077,25 +1079,27 @@
                         </parameter>
                    </parameters>
                </object>
+             </objects>
             </object>
             <object>
                <name>Ringer</name>
                <objectType>object</objectType>
+               <objects>
                 <object>
                     <name>Event</name>
                     <objectType>dynamicTable</objectType>
                     <maxInstance>128</maxInstance>
                     <functions>
-                       <func_IsUpdated>TelcoVoiceMgrDml_POTS_Ringer_EventListIsUpdated</func_IsUpdated>
-                       <func_Synchronize>TelcoVoiceMgrDml_POTS_Ringer_EventListSynchronize</func_Synchronize>
-                       <func_GetEntryCount>TelcoVoiceMgrDml_POTS_Ringer_EventListGetEntryCount</func_GetEntryCount>
-                       <func_GetEntry>TelcoVoiceMgrDml_POTS_Ringer_EventListGetEntry</func_GetEntry>
-                       <func_GetParamUlongValue>TelcoVoiceMgrDml_POTS_Ringer_EventListGetParamUlongValue</func_GetParamUlongValue>
-                       <func_GetParamStringValue>TelcoVoiceMgrDml_POTS_Ringer_EventListGetParamStringValue</func_GetParamStringValue>
-                       <func_SetParamStringValue>TelcoVoiceMgrDml_POTS_Ringer_EventListSetParamStringValue</func_SetParamStringValue>
-                       <func_Validate>TelcoVoiceMgrDml_POTS_Ringer_EventListValidate</func_Validate>
-                       <func_Commit>TelcoVoiceMgrDml_POTS_Ringer_EventListCommit</func_Commit>
-                       <func_Rollback>TelcoVoiceMgrDml_POTS_Ringer_EventListRollback</func_Rollback>
+                       <func_IsUpdated>TelcoVoiceMgrDml_POTS_Ringer_EventList_IsUpdated</func_IsUpdated>
+                       <func_Synchronize>TelcoVoiceMgrDml_POTS_Ringer_EventList_Synchronize</func_Synchronize>
+                       <func_GetEntryCount>TelcoVoiceMgrDml_POTS_Ringer_EventList_GetEntryCount</func_GetEntryCount>
+                       <func_GetEntry>TelcoVoiceMgrDml_POTS_Ringer_EventList_GetEntry</func_GetEntry>
+                       <func_GetParamUlongValue>TelcoVoiceMgrDml_POTS_Ringer_EventList_GetParamUlongValue</func_GetParamUlongValue>
+                       <func_GetParamStringValue>TelcoVoiceMgrDml_POTS_Ringer_EventList_GetParamStringValue</func_GetParamStringValue>
+                       <func_SetParamStringValue>TelcoVoiceMgrDml_POTS_Ringer_EventList_SetParamStringValue</func_SetParamStringValue>
+                       <func_Validate>TelcoVoiceMgrDml_POTS_Ringer_EventList_Validate</func_Validate>
+                       <func_Commit>TelcoVoiceMgrDml_POTS_Ringer_EventList_Commit</func_Commit>
+                       <func_Rollback>TelcoVoiceMgrDml_POTS_Ringer_EventList_Rollback</func_Rollback>
                     </functions>
                     <parameters>
                         <parameter>
@@ -1117,11 +1121,14 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
             </object>
+          </objects>
         </object>
         <object>
             <name>DECT</name>
             <objectType>object</objectType>
+            <objects>
            <object>
                <name>Base</name>
                 <objectType>dynamicTable</objectType>
@@ -1242,6 +1249,7 @@
                         <syntax>string</syntax>
                     </parameter>
                 </parameters>
+                <objects>
                 <object>
                    <name>Stats</name>
                    <objectType>object</objectType>
@@ -1276,6 +1284,7 @@
                         </parameter>
                    </parameters>
                </object>
+             </objects>
             </object>
             <object>
                <name>Portable</name>
@@ -1361,8 +1370,8 @@
                     </parameter>
                     <parameter>
                         <name>Control</name>
-                        <type>String(255)</type>
-                        <syntax>string</syntax>
+                        <type>string: Unregister(0),Disable(1)</type>
+                        <syntax>uint32/mapped</syntax>
                         <writable>true</writable>
                     </parameter>
                     <parameter>
@@ -1393,28 +1402,33 @@
                     </parameter>
                </parameters>
            </object>
+         </objects>
         </object>
        <object>
            <name>SIP</name>
            <objectType>object</objectType>
+           <functions>
+           <func_GetParamStringValue>TelcoVoiceMgrDml_SIP_GetParamStringValue</func_GetParamStringValue>
+           </functions>
+           <objects>
            <object>
                <name>Client</name>
                 <objectType>dynamicTable</objectType>
                 <maxInstance>128</maxInstance>
                <functions>
-                   <func_IsUpdated>TelcoVoiceMgrDml_SIP_Client_IsUpdated</func_IsUpdated>
-                   <func_Synchronize>TelcoVoiceMgrDml_SIP_Client_Synchronize</func_Synchronize>
-                   <func_GetEntryCount>TelcoVoiceMgrDml_SIP_Client_GetEntryCount</func_GetEntryCount>
-                   <func_GetEntry>TelcoVoiceMgrDml_SIP_Client_GetEntry</func_GetEntry>
-                   <func_GetParamUlongValue>TelcoVoiceMgrDml_SIP_Client_GetParamUlongValue</func_GetParamUlongValue>
-                   <func_SetParamUlongValue>TelcoVoiceMgrDml_SIP_Client_SetParamUlongValue</func_SetParamUlongValue>
-                   <func_GetParamStringValue>TelcoVoiceMgrDml_SIP_Client_GetParamStringValue</func_GetParamStringValue>
-                   <func_SetParamStringValue>TelcoVoiceMgrDml_SIP_Client_SetParamStringValue</func_SetParamStringValue>
-                   <func_GetParamBoolValue>TelcoVoiceMgrDml_SIP_Client_GetParamBoolValue</func_GetParamBoolValue>
-                   <func_SetParamBoolValue>TelcoVoiceMgrDml_SIP_Client_SetParamBoolValue</func_SetParamBoolValue>
-                   <func_Validate>TelcoVoiceMgrDml_SIP_Client_Validate</func_Validate>
-                   <func_Commit>TelcoVoiceMgrDml_SIP_Client_Commit</func_Commit>
-                   <func_Rollback>TelcoVoiceMgrDml_SIP_Client_Rollback</func_Rollback>
+                   <func_IsUpdated>TelcoVoiceMgrDml_SIP_ClientList_IsUpdated</func_IsUpdated>
+                   <func_Synchronize>TelcoVoiceMgrDml_SIP_ClientList_Synchronize</func_Synchronize>
+                   <func_GetEntryCount>TelcoVoiceMgrDml_SIP_ClientList_GetEntryCount</func_GetEntryCount>
+                   <func_GetEntry>TelcoVoiceMgrDml_SIP_ClientList_GetEntry</func_GetEntry>
+                   <func_GetParamUlongValue>TelcoVoiceMgrDml_SIP_ClientList_GetParamUlongValue</func_GetParamUlongValue>
+                   <func_SetParamUlongValue>TelcoVoiceMgrDml_SIP_ClientList_SetParamUlongValue</func_SetParamUlongValue>
+                   <func_GetParamStringValue>TelcoVoiceMgrDml_SIP_ClientList_GetParamStringValue</func_GetParamStringValue>
+                   <func_SetParamStringValue>TelcoVoiceMgrDml_SIP_ClientList_SetParamStringValue</func_SetParamStringValue>
+                   <func_GetParamBoolValue>TelcoVoiceMgrDml_SIP_ClientList_GetParamBoolValue</func_GetParamBoolValue>
+                   <func_SetParamBoolValue>TelcoVoiceMgrDml_SIP_ClientList_SetParamBoolValue</func_SetParamBoolValue>
+                   <func_Validate>TelcoVoiceMgrDml_SIP_ClientList_Validate</func_Validate>
+                   <func_Commit>TelcoVoiceMgrDml_SIP_ClientList_Commit</func_Commit>
+                   <func_Rollback>TelcoVoiceMgrDml_SIP_ClientList_Rollback</func_Rollback>
                </functions>
                <parameters>
                     <parameter>
@@ -1494,6 +1508,7 @@
                         <writable>true</writable>
                     </parameter>
                </parameters>
+               <objects>
                <object>
                    <name>Contact</name>
                     <objectType>dynamicTable</objectType>
@@ -1621,6 +1636,7 @@
                         </parameter>
                    </parameters>
                </object>
+             </objects>
             </object>
             <object>
                <name>Network</name>
@@ -1649,6 +1665,11 @@
                         <type>boolean</type>
                         <syntax>bool</syntax>
                         <writable>true</writable>
+                    </parameter>
+                    <parameter>
+                        <name>X_RDK_Firewall_Rule_Data</name>
+                        <type>string</type>
+                        <syntax>string</syntax>
                     </parameter>
                     <parameter>
                         <name>QuiescentMode</name>
@@ -2009,7 +2030,31 @@
                         <syntax>uint32</syntax>
                         <writable>true</writable>
                     </parameter>
+                    <parameter>
+                        <name>X_RDK_SKBMark</name>
+                        <type>unsignedInt</type>
+                        <syntax>uint32</syntax>
+                    </parameter>
+                    <parameter>
+                        <name>X_RDK-Central_COM_ConferencingURI</name>
+                        <type>string</type>
+                        <syntax>string</syntax>
+                        <writable>true</writable>
+                    </parameter>
+                    <parameter>
+                        <name>X_RDK-Central_COM_NetworkDisconnect</name>
+                        <type>boolean</type>
+                        <syntax>bool</syntax>
+                        <writable>true</writable>
+                    </parameter>
+                    <parameter>
+                        <name>X_RDK_PRACKRequired</name>
+                        <type>boolean</type>
+                        <syntax>bool</syntax>
+                        <writable>true</writable>
+                    </parameter>
                </parameters>
+               <objects>
                <object>
                    <name>FQDNServer</name>
                     <objectType>dynamicTable</objectType>
@@ -2195,6 +2240,7 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
            </object>
            <object>
                <name>Proxy</name>
@@ -2359,6 +2405,7 @@
                         <syntax>string</syntax>
                     </parameter>
                </parameters>
+               <objects>
                 <object>
                     <name>Account</name>
                     <objectType>dynamicTable</objectType>
@@ -2454,6 +2501,7 @@
                             <writable>true</writable>
                         </parameter>
                     </parameters>
+                    <objects>
                     <object>
                         <name>Contact</name>
                         <objectType>dynamicTable</objectType>
@@ -2526,12 +2574,16 @@
                             </parameter>
                         </parameters>
                     </object>
+                  </objects>
                 </object>
+              </objects>
             </object>
+          </objects>
         </object>
        <object>
-           <name>MGCP.</name>
+           <name>MGCP</name>
            <objectType>object</objectType>
+           <objects>
            <object>
                <name>Client</name>
                 <objectType>dynamicTable</objectType>
@@ -2768,10 +2820,12 @@
                     </parameter>
                </parameters>
            </object>
+         </objects>
         </object>
         <object>
            <name>H323</name>
            <objectType>object</objectType>
+           <objects>
            <object>
                <name>Client</name>
                 <objectType>dynamicTable</objectType>
@@ -2984,6 +3038,7 @@
                     </parameter>
                </parameters>
            </object>
+         </objects>
         </object>
         <object>
             <name>Trunk</name>
@@ -3033,7 +3088,7 @@
                 <parameter>
                     <name>Origin</name>
                     <type>string: AutoConfigured(0),Static(1)</type>
-                    <syntax>string</syntax>
+                    <syntax>uint32/mapped</syntax>
                 </parameter>
                 <parameter>
                     <name>Name</name>
@@ -3106,81 +3161,83 @@
                     <writable>true</writable>
                 </parameter>
            </parameters>
+           <objects>
            <object>
                <name>Line</name>
                 <objectType>dynamicTable</objectType>
                 <maxInstance>128</maxInstance>
                <functions>
-                   <func_IsUpdated>TelcoVoiceMgrDml_CallControl_LineListIsUpdated</func_IsUpdated>
-                   <func_Synchronize>TelcoVoiceMgrDml_CallControl_LineListSynchronize</func_Synchronize>
-                   <func_GetEntryCount>TelcoVoiceMgrDml_CallControl_LineListGetEntryCount</func_GetEntryCount>
-                   <func_GetEntry>TelcoVoiceMgrDml_CallControl_LineListGetEntry</func_GetEntry>
-                   <func_GetParamUlongValue>TelcoVoiceMgrDml_CallControl_LineListGetParamUlongValue</func_GetParamUlongValue>
-                   <func_GetParamStringValue>TelcoVoiceMgrDml_CallControl_LineListGetParamStringValue</func_GetParamStringValue>
-                   <func_SetParamStringValue>TelcoVoiceMgrDml_CallControl_LineListSetParamStringValue</func_SetParamStringValue>
-                   <func_GetParamBoolValue>TelcoVoiceMgrDml_CallControl_LineListGetParamBoolValue</func_GetParamBoolValue>
-                   <func_SetParamBoolValue>TelcoVoiceMgrDml_CallControl_LineListSetParamBoolValue</func_SetParamBoolValue>
-                   <func_Validate>TelcoVoiceMgrDml_CallControl_LineListValidate</func_Validate>
-                   <func_Commit>TelcoVoiceMgrDml_CallControl_LineListCommit</func_Commit>
-                   <func_Rollback>TelcoVoiceMgrDml_CallControl_LineListRollback</func_Rollback>
+                   <func_IsUpdated>TelcoVoiceMgrDml_CallControl_LineList_IsUpdated</func_IsUpdated>
+                   <func_Synchronize>TelcoVoiceMgrDml_CallControl_LineList_Synchronize</func_Synchronize>
+                   <func_GetEntryCount>TelcoVoiceMgrDml_CallControl_LineList_GetEntryCount</func_GetEntryCount>
+                   <func_GetEntry>TelcoVoiceMgrDml_CallControl_LineList_GetEntry</func_GetEntry>
+                   <func_GetParamUlongValue>TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue</func_GetParamUlongValue>
+                   <func_GetParamStringValue>TelcoVoiceMgrDml_CallControl_LineList_GetParamStringValue</func_GetParamStringValue>
+                   <func_SetParamStringValue>TelcoVoiceMgrDml_CallControl_LineList_SetParamStringValue</func_SetParamStringValue>
+                   <func_GetParamBoolValue>TelcoVoiceMgrDml_CallControl_LineList_GetParamBoolValue</func_GetParamBoolValue>
+                   <func_SetParamBoolValue>TelcoVoiceMgrDml_CallControl_LineList_SetParamBoolValue</func_SetParamBoolValue>
+                   <func_Validate>TelcoVoiceMgrDml_CallControl_LineList_Validate</func_Validate>
+                   <func_Commit>TelcoVoiceMgrDml_CallControl_LineList_Commit</func_Commit>
+                   <func_Rollback>TelcoVoiceMgrDml_CallControl_LineList_Rollback</func_Rollback>
                </functions>
                <parameters>
-               </parameters>
-           </object>
-            <parameter>
-                <name>Enable</name>
-                <type>boolean</type>
-                <syntax>bool</syntax>
-                <writable>true</writable>
-            </parameter>
-            <parameter>
-                <name>QuiescentMode</name>
-                <type>boolean</type>
-                <syntax>bool</syntax>
-                <writable>true</writable>
-            </parameter>
-            <parameter>
-                <name>Status</name>
-                <type>string: Up(0),Error(1),Testing(2),Quiescent(3),Disabled(4)</type>
-                <syntax>uint32/mapped</syntax>
-            </parameter>
-            <parameter>
-                <name>Alias</name>
-                <type>string(64)</type>
-                <syntax>string</syntax>
-                <writable>true</writable>
-            </parameter>
-            <parameter>
-                <name>CallStatus</name>
-                <type>string: Idle(0),Dialing(1),Delivered(2),Connected(3),Alerting(4),Disconnected(5)</type>
-                <syntax>uint32/mapped</syntax>
-            </parameter>
-            <parameter>
-                <name>Origin</name>
-                <type>string: Static(0),DDIRange(1)</type>
-                <syntax>uint32/mapped</syntax>
-            </parameter>
-            <parameter>
-                <name>DirectoryNumber</name>
-                <type>String(32)</type>
-                <syntax>string</syntax>
-                <writable>true</writable>
-            </parameter>
-            <parameter>
-                <name>Provider</name>
-                <type>String(256)</type>
-                <syntax>string</syntax>
-                <writable>true</writable>
-            </parameter>
-            <parameter>
-                <name>CallingFeatures</name>
-                <type>String(256)</type>
-                <syntax>string</syntax>
-                <writable>true</writable>
-            </parameter>
-           <object>
+                   <parameter>
+                       <name>Enable</name>
+                       <type>boolean</type>
+                       <syntax>bool</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                   <parameter>
+                       <name>QuiescentMode</name>
+                       <type>boolean</type>
+                       <syntax>bool</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                   <parameter>
+                       <name>Status</name>
+                       <type>string: Up(0),Error(1),Testing(2),Quiescent(3),Disabled(4)</type>
+                       <syntax>uint32/mapped</syntax>
+                   </parameter>
+                   <parameter>
+                       <name>Alias</name>
+                       <type>string(64)</type>
+                       <syntax>string</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                   <parameter>
+                       <name>CallStatus</name>
+                       <type>string: Idle(0),Dialing(1),Delivered(2),Connected(3),Alerting(4),Disconnected(5)</type>
+                       <syntax>uint32/mapped</syntax>
+                   </parameter>
+                   <parameter>
+                       <name>Origin</name>
+                       <type>string: Static(0),DDIRange(1)</type>
+                       <syntax>uint32/mapped</syntax>
+                   </parameter>
+                   <parameter>
+                       <name>DirectoryNumber</name>
+                       <type>String(32)</type>
+                       <syntax>string</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                   <parameter>
+                       <name>Provider</name>
+                       <type>String(256)</type>
+                       <syntax>string</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                   <parameter>
+                       <name>CallingFeatures</name>
+                       <type>String(256)</type>
+                       <syntax>string</syntax>
+                       <writable>true</writable>
+                   </parameter>
+                </parameters>
+             <objects>
+             <object>
                <name>Stats</name>
                <objectType>object</objectType>
+               <objects>
                 <object>
                     <name>IncomingCalls</name>
                     <objectType>object</objectType>
@@ -3219,7 +3276,7 @@
                    <name>OutgoingCalls</name>
                    <objectType>object</objectType>
                    <functions>
-                       <func_IsUpdated>TelcoVoiceMgrDml_CallControl_LineList_stats_OutCalls_IsUpdated</func_IsUpdated>
+                       <func_GetParamUlongValue>TelcoVoiceMgrDml_CallControl_LineList_stats_OutCalls_GetParamUlongValue</func_GetParamUlongValue>
                    </functions>
                    <parameters>
                         <parameter>
@@ -3302,6 +3359,9 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
+            </object>
+            </objects>
             </object>
             <object>
                 <name>Extension</name>
@@ -3407,9 +3467,11 @@
                         <writable>true</writable>
                     </parameter>
                 </parameters>
+                <objects>
                 <object>
                     <name>Stats</name>
                     <objectType>object</objectType>
+                    <objects>
                     <object>
                        <name>IncomingCalls</name>
                        <objectType>object</objectType>
@@ -3531,7 +3593,9 @@
                             </parameter>
                         </parameters>
                     </object>
+                  </objects>
                 </object>
+              </objects>
             </object>
             <object>
                 <name>Group</name>
@@ -3847,6 +3911,7 @@
                         <syntax>uint32</syntax>
                     </parameter>
                 </parameters>
+                <objects>
                 <object>
                     <name>PrefixInfo</name>
                     <objectType>dynamicTable</objectType>
@@ -3929,10 +3994,12 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
             </object>
             <object>
                 <name>CallingFeatures</name>
                 <objectType>object</objectType>
+                <objects>
                 <object>
                     <name>Set</name>
                     <objectType>dynamicTable</objectType>
@@ -4114,7 +4181,26 @@
                             <syntax>bool</syntax>
                             <writable>true</writable>
                         </parameter>
+                        <parameter>
+                            <name>X_RDK-Central_COM_ConferenceCallingEnable</name>
+                            <type>boolean</type>
+                            <syntax>bool</syntax>
+                            <writable>true</writable>
+                        </parameter>
+                        <parameter>
+                            <name>X_RDK-Central_COM_HoldEnable</name>
+                            <type>boolean</type>
+                            <syntax>bool</syntax>
+                            <writable>true</writable>
+                        </parameter>
+                        <parameter>
+                            <name>X_RDK-Central_COM_PhoneCallerIDEnable</name>
+                            <type>boolean</type>
+                            <syntax>bool</syntax>
+                            <writable>true</writable>
+                        </parameter>
                    </parameters>
+                   <objects>
                     <object>
                         <name>CFT</name>
                         <objectType>dynamicTable</objectType>
@@ -4349,8 +4435,11 @@
                             </parameter>
                         </parameters>
                     </object>
+                  </objects>
                </object>
+             </objects>
            </object>
+         </objects>
         </object>
         <object>
             <name>Interwork</name>
@@ -4495,6 +4584,7 @@
                     <writable>true</writable>
                 </parameter>
             </parameters>
+            <objects>
             <object>
                 <name>UserInterface</name>
                 <objectType>dynamicTable</objectType>
@@ -4623,6 +4713,7 @@
                     </parameter>
                 </parameters>
             </object>
+          </objects>
        </object>
        <object>
             <name>CallLog</name>
@@ -4703,6 +4794,7 @@
                     <syntax>uint32/mapped</syntax>
                 </parameter>
            </parameters>
+           <objects>
             <object>
                 <name>SignalingPerformance</name>
                 <objectType>dynamicTable</objectType>
@@ -4779,15 +4871,12 @@
                         <type>String(16)</type>
                         <syntax>string</syntax>
                     </parameter>
-                    <parameter>
-                        <name>SIPSessionID</name>
-                        <type>String(32)</type>
-                        <syntax>string</syntax>
-                    </parameter>
                 </parameters>
+                <objects>
                <object>
                    <name>Source</name>
                    <objectType>object</objectType>
+                   <objects>
                    <object>
                        <name>RTP</name>
                        <objectType>object</objectType>
@@ -4922,6 +5011,7 @@
                    <object>
                         <name>DSP</name>
                         <objectType>object</objectType>
+                        <objects>
                         <object>
                             <name>ReceiveCodec</name>
                             <objectType>object</objectType>
@@ -4989,12 +5079,13 @@
                                 </parameter>
                             </parameters>
                         </object>
+                      </objects>
                     </object>
                     <object>
                         <name>VoiceQuality</name>
                         <objectType>object</objectType>
                         <functions>
-                           <func_GetParamStringValue>TelcoVoiceMgrDml_CallLogList_SessionList_source_DSP_VoiceQuality_GetParamStringValue</func_GetParamStringValue>
+                           <func_GetParamStringValue>TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamStringValue</func_GetParamStringValue>
                         </functions>
                         <parameters>
                             <parameter>
@@ -5014,10 +5105,12 @@
                             </parameter>
                         </parameters>
                     </object>
+                  </objects>
                 </object>
                 <object>
                    <name>Destination</name>
                    <objectType>object</objectType>
+                   <objects>
                    <object>
                        <name>RTP</name>
                        <objectType>object</objectType>
@@ -5152,6 +5245,7 @@
                    <object>
                        <name>DSP</name>
                        <objectType>object</objectType>
+                       <objects>
                        <object>
                             <name>ReceiveCodec</name>
                             <objectType>object</objectType>
@@ -5219,6 +5313,7 @@
                                 </parameter>
                             </parameters>
                         </object>
+                       </objects>
                     </object>
                     <object>
                        <name>VoiceQuality</name>
@@ -5245,8 +5340,11 @@
                             </parameter>
                         </parameters>
                     </object>
+                  </objects>
                 </object>
+              </objects>
             </object>
+          </objects>
         </object>
         <object>
             <name>VoIPProfile</name>
@@ -5322,13 +5420,39 @@
                     <syntax>uint32</syntax>
                     <writable>true</writable>
                 </parameter>
+                <parameter>
+                    <name>X_RDK-Central_COM_DigitMap</name>
+                    <type>string</type>
+                    <syntax>string</syntax>
+                    <writable>true</writable>
+                </parameter>
+                <parameter>
+                    <name>X_RDK-Central_COM_EmergencyDigitMap</name>
+                    <type>string</type>
+                    <syntax>string</syntax>
+                    <writable>true</writable>
+                </parameter>
+                <parameter>
+                    <name>X_RDK-Central_COM_SDigitTimer</name>
+                    <type>unsignedInt</type>
+                    <syntax>uint32</syntax>
+                    <writable>true</writable>
+                </parameter>
+                <parameter>
+                    <name>X_RDK-Central_COM_ZDigitTimer</name>
+                    <type>unsignedInt</type>
+                    <syntax>uint32</syntax>
+                    <writable>true</writable>
+                </parameter>
             </parameters>
+            <objects>
             <object>
                <name>RTP</name>
                <objectType>object</objectType>
                <functions>
                    <func_GetParamUlongValue>TelcoVoiceMgrDml_VoipProfileList_RTP_GetParamUlongValue</func_GetParamUlongValue>
                    <func_SetParamUlongValue>TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamUlongValue</func_SetParamUlongValue>
+                   <func_GetParamStringValue>TelcoVoiceMgrDml_VoipProfileList_RTP_GetParamStringValue</func_GetParamStringValue>
                    <func_GetParamIntValue>TelcoVoiceMgrDml_VoipProfileList_RTP_GetParamIntValue</func_GetParamIntValue>
                    <func_SetParamIntValue>TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue</func_SetParamIntValue>
                </functions>
@@ -5399,7 +5523,18 @@
                         <syntax>uint32</syntax>
                         <writable>true</writable>
                     </parameter>
+                    <parameter>
+                        <name>X_RDK_SKBMark</name>
+                        <type>unsignedInt</type>
+                        <syntax>uint32</syntax>
+                    </parameter>
+                    <parameter>
+                        <name>X_RDK_Firewall_Rule_Data</name>
+                        <type>string</type>
+                        <syntax>string</syntax>
+                    </parameter>
                 </parameters>
+                <objects>
                 <object>
                     <name>RTCP</name>
                     <objectType>object</objectType>
@@ -5525,6 +5660,7 @@
                         </parameter>
                     </parameters>
                 </object>
+                </objects>
             </object>
             <object>
                 <name>FaxT38</name>
@@ -5560,6 +5696,7 @@
                     </parameter>
                 </parameters>
             </object>
+            </objects>
         </object>
         <object>
             <name>CodecProfile</name>
@@ -5614,26 +5751,10 @@
             <name>Tone</name>
             <objectType>object</objectType>
             <functions>
-               <func_GetParamUlongValue>TelcoVoiceMgrDml_Tone_GetParamUlongValue</func_GetParamUlongValue>
                <func_GetParamStringValue>TelcoVoiceMgrDml_Tone_GetParamStringValue</func_GetParamStringValue>
                <func_SetParamStringValue>TelcoVoiceMgrDml_Tone_SetParamStringValue</func_SetParamStringValue>
             </functions>
             <parameters>
-                <parameter>
-                    <name>DescriptionNumberOfEntries</name>
-                    <type>unsignedInt</type>
-                    <syntax>uint32</syntax>
-                </parameter>
-                <parameter>
-                    <name>PatternNumberOfEntries</name>
-                    <type>unsignedInt</type>
-                    <syntax>uint32</syntax>
-                </parameter>
-                <parameter>
-                    <name>EventProfileNumberOfEntries</name>
-                    <type>unsignedInt</type>
-                    <syntax>uint32</syntax>
-                </parameter>
                 <parameter>
                     <name>DefautEventProfile</name>
                     <type>String(256)</type>
@@ -5641,6 +5762,7 @@
                     <writable>true</writable>
                 </parameter>
             </parameters>
+            <objects>
             <object>
                 <name>Description</name>
                 <objectType>dynamicTable</objectType>
@@ -5680,7 +5802,7 @@
                         <writable>true</writable>
                     </parameter>
                     <parameter>
-                        <name>Tonettern</name>
+                        <name>TonePattern</name>
                         <type>String(256)</type>
                         <syntax>string</syntax>
                         <writable>true</writable>
@@ -5828,7 +5950,6 @@
                    <func_Synchronize>TelcoVoiceMgrDml_Tone_EventProfileList_Synchronize</func_Synchronize>
                    <func_GetEntryCount>TelcoVoiceMgrDml_Tone_EventProfileList_GetEntryCount</func_GetEntryCount>
                    <func_GetEntry>TelcoVoiceMgrDml_Tone_EventProfileList_GetEntry</func_GetEntry>
-                   <func_GetParamUlongValue>TelcoVoiceMgrDml_Tone_EventProfileList_GetParamUlongValue</func_GetParamUlongValue>
                    <func_GetParamStringValue>TelcoVoiceMgrDml_Tone_EventProfileList_GetParamStringValue</func_GetParamStringValue>
                    <func_SetParamStringValue>TelcoVoiceMgrDml_Tone_EventProfileList_SetParamStringValue</func_SetParamStringValue>
                    <func_Validate>TelcoVoiceMgrDml_Tone_EventProfileList_Validate</func_Validate>
@@ -5842,12 +5963,8 @@
                         <syntax>string</syntax>
                         <writable>true</writable>
                     </parameter>
-                    <parameter>
-                        <name>EventNumberOfEntries</name>
-                        <type>unsignedInt</type>
-                        <syntax>uint32</syntax>
-                    </parameter>
                 </parameters>
+                <objects>
                 <object>
                     <name>Event</name>
                     <objectType>dynamicTable</objectType>
@@ -5884,7 +6001,9 @@
                          </parameter>
                     </parameters>
                 </object>
+              </objects>
             </object>
+          </objects>
         </object>
         <object>
             <name>Terminal</name>
@@ -5934,12 +6053,8 @@
                     <syntax>string</syntax>
                     <writable>true</writable>
                 </parameter>
-                <parameter>
-                    <name>AudioNumberOfEntries</name>
-                    <type>unsignedInt</type>
-                    <syntax>uint32</syntax>
-                </parameter>
             </parameters>
+            <objects>
             <object>
                 <name>Audio</name>
                 <objectType>dynamicTable</objectType>
@@ -5969,6 +6084,7 @@
                         <writable>true</writable>
                     </parameter>
                 </parameters>
+                <objects>
                 <object>
                     <name>VoiceProcessing</name>
                     <objectType>object</objectType>
@@ -6010,20 +6126,12 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
             </object>
             <object>
                 <name>ButtonMap</name>
                 <objectType>object</objectType>
-                <functions>
-                    <func_GetParamUlongValue>TelcoVoiceMgrDml_TerminalList_ButtonMap_GetParamUlongValue</func_GetParamUlongValue>
-                </functions>
-                <parameters>
-                    <parameter>
-                        <name>ButtonNumberOfEntries</name>
-                        <type>unsignedInt</type>
-                        <syntax>uint32</syntax>
-                    </parameter>
-                </parameters>
+                <objects>
                 <object>
                     <name>Button</name>
                     <objectType>dynamicTable</objectType>
@@ -6085,25 +6193,12 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
             </object>
             <object>
                 <name>Ringer</name>
                 <objectType>object</objectType>
-				<functions>
-                    <func_GetParamUlongValue>TelcoVoiceMgrDml_TerminalList_Ringer_GetParamUlongValue</func_GetParamUlongValue>
-				</functions>
-                <parameters>
-                    <parameter>
-                        <name>ClockSourceNumberOfEntries</name>
-                        <type>unsignedInt</type>
-                        <syntax>uint32</syntax>
-                    </parameter>
-                    <parameter>
-                        <name>ClockSourceNumberOfEntries</name>
-                        <type>unsignedInt</type>
-                        <syntax>uint32</syntax>
-                    </parameter>
-                </parameters>
+                <objects>
                 <object>
                     <name>Description</name>
                     <objectType>dynamicTable</objectType>
@@ -6206,6 +6301,7 @@
                         </parameter>
                     </parameters>
                 </object>
+              </objects>
            </object>
            <object>
                 <name>DiagTests</name>
@@ -6235,26 +6331,25 @@
                         <type>boolean</type>
                         <syntax>bool</syntax>
                     </parameter>
+                    <parameter>
+                        <name>X_RDK_TestResult</name>
+                        <type>string(64)</type>
+                        <syntax>string</syntax>
+                    </parameter>
                 </parameters>
             </object>
+          </objects>
         </object>
         <object>
             <name>ClockSynchronization</name>
             <objectType>object</objectType>
             <functions>
-                <func_GetParamUlongValue>TelcoVoiceMgrDml_ClkSync_GetParamUlongValue</func_GetParamUlongValue>
-                <func_SetParamUlongValue>TelcoVoiceMgrDml_ClkSync_SetParamUlongValue</func_SetParamUlongValue>
                 <func_GetParamStringValue>TelcoVoiceMgrDml_ClkSync_GetParamStringValue</func_GetParamStringValue>
                 <func_SetParamStringValue>TelcoVoiceMgrDml_ClkSync_SetParamStringValue</func_SetParamStringValue>
                 <func_GetParamBoolValue>TelcoVoiceMgrDml_ClkSync_GetParamBoolValue</func_GetParamBoolValue>
                 <func_SetParamBoolValue>TelcoVoiceMgrDml_ClkSync_SetParamBoolValue</func_SetParamBoolValue>
             </functions>
             <parameters>
-                <parameter>
-                    <name>ClockSourceNumberOfEntries</name>
-                    <type>unsignedInt</type>
-                    <syntax>uint32</syntax>
-                </parameter>
                 <parameter>
                     <name>CurrentSource</name>
                     <type>String(256)</type>
@@ -6279,19 +6374,19 @@
                         <objectType>dynamicTable</objectType>
                         <maxInstance>128</maxInstance>
                         <functions>
-                            <func_IsUpdated>TelcoVoiceMgrDml_ClkSync_ClkSource_IsUpdated</func_IsUpdated>
-                            <func_Synchronize>TelcoVoiceMgrDml_ClkSync_ClkSource_Synchronize</func_Synchronize>
-                            <func_GetEntryCount>TelcoVoiceMgrDml_ClkSync_ClkSource_GetEntryCount</func_GetEntryCount>
-                            <func_GetEntry>TelcoVoiceMgrDml_ClkSync_ClkSource_GetEntry</func_GetEntry>
-                            <func_GetParamUlongValue>TelcoVoiceMgrDml_ClkSync_ClkSource_GetParamUlongValue</func_GetParamUlongValue>
-                            <func_SetParamUlongValue>TelcoVoiceMgrDml_ClkSync_ClkSource_SetParamUlongValue</func_SetParamUlongValue>
-                            <func_GetParamStringValue>TelcoVoiceMgrDml_ClkSync_ClkSource_GetParamStringValue</func_GetParamStringValue>
-                            <func_SetParamStringValue>TelcoVoiceMgrDml_ClkSync_ClkSource_SetParamStringValue</func_SetParamStringValue>
-                            <func_GetParamBoolValue>TelcoVoiceMgrDml_ClkSync_ClkSource_GetParamBoolValue</func_GetParamBoolValue>
-                            <func_SetParamBoolValue>TelcoVoiceMgrDml_ClkSync_ClkSource_SetParamBoolValue</func_SetParamBoolValue>
-                            <func_Validate>TelcoVoiceMgrDml_ClkSync_ClkSource_Validate</func_Validate>
-                            <func_Commit>TelcoVoiceMgrDml_ClkSync_ClkSource_Commit</func_Commit>
-                            <func_Rollback>TelcoVoiceMgrDml_ClkSync_ClkSource_Rollback</func_Rollback>
+                            <func_IsUpdated>TelcoVoiceMgrDml_ClkSync_ClkSourceList_IsUpdated</func_IsUpdated>
+                            <func_Synchronize>TelcoVoiceMgrDml_ClkSync_ClkSourceList_Synchronize</func_Synchronize>
+                            <func_GetEntryCount>TelcoVoiceMgrDml_ClkSync_ClkSourceList_GetEntryCount</func_GetEntryCount>
+                            <func_GetEntry>TelcoVoiceMgrDml_ClkSync_ClkSourceList_GetEntry</func_GetEntry>
+                            <func_GetParamUlongValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_GetParamUlongValue</func_GetParamUlongValue>
+                            <func_SetParamUlongValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_SetParamUlongValue</func_SetParamUlongValue>
+                            <func_GetParamStringValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_GetParamStringValue</func_GetParamStringValue>
+                            <func_SetParamStringValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_SetParamStringValue</func_SetParamStringValue>
+                            <func_GetParamBoolValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_GetParamBoolValue</func_GetParamBoolValue>
+                            <func_SetParamBoolValue>TelcoVoiceMgrDml_ClkSync_ClkSourceList_SetParamBoolValue</func_SetParamBoolValue>
+                            <func_Validate>TelcoVoiceMgrDml_ClkSync_ClkSourceList_Validate</func_Validate>
+                            <func_Commit>TelcoVoiceMgrDml_ClkSync_ClkSourceList_Commit</func_Commit>
+                            <func_Rollback>TelcoVoiceMgrDml_ClkSync_ClkSourceList_Rollback</func_Rollback>
                         </functions>
                         <parameters>
                             <parameter>

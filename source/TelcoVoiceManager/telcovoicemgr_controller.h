@@ -23,7 +23,12 @@
 
 #include "ansc_platform.h"
 #include "ansc_string_util.h"
-
+#include "telcovoicemgr_dml_json_cfg_init.h"
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif
 
 ANSC_STATUS TelcoVoiceMgr_Controller_Init();
 

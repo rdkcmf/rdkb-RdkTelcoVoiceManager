@@ -24,7 +24,12 @@
 #include <string.h>
 #include "json_hal_common.h"
 #include "json_hal_client.h"
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_dml_hal_param_v2.h"
+#else
 #include "telcovoicemgr_dml_hal_param_v1.h"
+#endif
 
 /**
  * Standard supported functions.
@@ -61,8 +66,15 @@
 #define TELCOVOICE_QUERY_CAPABILITIES   "Device.Services.VoiceService.%d.Capabilities."
 #define TELCOVOICE_QUERY_VOICEPROFILE   "Device.Services.VoiceService.%d.VoiceProfile."
 #define TELCOVOICE_QUERY_PHYINTERFACE   "Device.Services.VoiceService.%d.PhyInterface."
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#define SIP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.SIP.Network.%d.X_RDK_Firewall_Rule_Data"
+#define RTP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP.X_RDK_Firewall_Rule_Data"
+#else
 #define SIP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP.X_RDK_Firewall_Rule_Data"
 #define RTP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoiceProfile.%d.RTP.X_RDK_Firewall_Rule_Data"
+#endif
+
 #define FIREWALL_RULE_DATA_EVENT        "X_RDK_Firewall_Rule_Data"
 
 #define CHECK(expr)                                                \
@@ -88,9 +100,12 @@
 ANSC_STATUS TelcoVoiceMgrHal_Init(void);
 ANSC_STATUS TelcoVoiceMgrHal_SetParam(char *pName, eParamType pType, char *pValue);
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList);
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities);
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, int vsIndex);
 ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterfaceList, int vsIndex);
+ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pLineStats);
+#endif
 ANSC_STATUS TelcoVoiceMgrHal_GetInitData(void);
 ANSC_STATUS TelcoVoiceMgrHal_EventSubscribe(event_callback callback, const char* event_name, const char* event_notification_type);
 void eventcb_FirewallRuleData(const char *msg, const int len);

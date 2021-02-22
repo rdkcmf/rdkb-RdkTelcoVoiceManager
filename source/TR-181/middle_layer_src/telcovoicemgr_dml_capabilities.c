@@ -35,8 +35,8 @@
 
 #include "ansc_platform.h"
 #include "telcovoicemgr_dml_backendmgr.h"
-#include "telcovoicemgr_dml_services.h"
-#include "telcovoicemgr_services_apis.h"
+#include "telcovoicemgr_dml_services_v1.h"
+#include "telcovoicemgr_services_apis_v1.h"
 #include "telcovoicemgr_dml_hal.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"

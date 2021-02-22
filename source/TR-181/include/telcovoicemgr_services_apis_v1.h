@@ -52,8 +52,8 @@
 #define PARAM_VALUE_SIP_ALIAS              "voicesip1"
 #define PARAM_VALUE_RTP_ALIAS              "voicertp1"
 #define PARAM_VALUE_IP_STATE_UP            "Up"
-#define IPV4                               "IPv4"
-#define IPV6                               "IPv6"
+#define STR_IPV4                               "IPv4"
+#define STR_IPV6                               "IPv6"
 
 #define IP_ADDR_FAMILY_LENGTH               32
 #define BOUND_IF_NAME_LENGTH                32
@@ -122,13 +122,13 @@ typedef struct
     UINT                   AverageRoundTripDelay; /**< Average round trip delay in microseconds since the beginning of the current call. Average of the RoundTripDelay statistic accumulated each time the delay is calculated. */
 } TELCOVOICEMGR_DML_VOICESERVICE_STATS;
 
-typedef enum {
+typedef enum _PROTOCOL_TYPE {
   SIP,
   RTP,
-}protocol_type;
+}PROTOCOL_TYPE;
 
 typedef struct {
-  protocol_type protocol;
+  PROTOCOL_TYPE protocol;
   int32_t iEthPriorityMark;
   BOOL iUpdateStatus;
 }ethPriorityValStruct_t;
@@ -1211,10 +1211,8 @@ ANSC_STATUS TelcoVoiceMgrDmlSetConferencingURI(UINT uiService, UINT uiProfile, c
 ANSC_STATUS TelcoVoiceMgrDmlSetSDigitTimer(UINT uiService, UINT uiProfile, ULONG uDgtTimer);
 ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(UINT uiService, UINT uiProfile, ULONG uDgtTimer);
 
-#ifndef TELCOVOICEMGR_AGENT_DM_COPY_IN_CCSP
 ANSC_STATUS TelcoVoiceMgrDmlSetLogServer(UINT uiService, char* pLogServer);
 ANSC_STATUS TelcoVoiceMgrDmlSetDigitMap(uint32_t uiService, uint32_t uiProfile, char* pDigitMap, char* typeOfDigitMap);
-#endif /*TELCOVOICEMGR_AGENT_GET_OBJ_FROM_VOICE_HAL*/
 ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(UINT uiService, UINT uiProfile, UINT uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats);
 ANSC_STATUS TelcoVoiceMgrDmlResetLineStats(UINT uiService, UINT uiProfile, UINT uiLine);
 ANSC_STATUS TelcoVoiceMgrDmlSetReceiveGain(UINT uiService, UINT uiProfile,UINT uiLine, int32_t iGain);
@@ -1223,9 +1221,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
 ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, TELCOVOICEMGR_VOICE_CREDENTIAL_TYPE_ENUM eAuthCredential, char* pBuffer);
 ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(UINT uiService, UINT uiProfile, UINT uiLine, char*pSipURI);
 ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(UINT uiService, UINT uiProfile, BOOL bValue);
-ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iValue, protocol_type protocol, char* paramName);
+ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iValue, PROTOCOL_TYPE protocol, char* paramName);
 ANSC_STATUS TelcoVoiceMgrDmlSetBoundIpAddress(uint32_t uiService, char *BoundIpAddress);
-ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, protocol_type protocol, int* pValue);
-ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvoiceProfileSip, PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp, protocol_type protocol );
+ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, PROTOCOL_TYPE protocol, int* pValue);
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvoiceProfileSip, PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp, PROTOCOL_TYPE protocol );
 
 #endif /* _TELCOVOICEMGR_SERVICES_APIS_H */

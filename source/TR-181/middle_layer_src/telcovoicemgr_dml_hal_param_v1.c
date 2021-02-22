@@ -164,6 +164,14 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     {
        strncpy(pVoiceService->X_RDK_BoundIpAddr, pValue,strlen(pValue)+1);
     }
+    else if( strstr(ParamName, "X_RDK_FactoryReset"))
+    {
+        // Do nothing   
+    }
+    else if( strstr(ParamName, "X_RDK_Enable"))
+    {
+        // Do nothing
+    }
     else if( strstr(ParamName, "X_RDK_Status"))
     {
        if(strstr(pValue, "Stopped"))

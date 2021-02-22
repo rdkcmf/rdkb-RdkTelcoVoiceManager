@@ -167,7 +167,7 @@
     "subscribeEventSupportedList": {
       "description": "Supported data model parameter list for subscribeEvent and publishEvent actions",
       "anyOf": [
-        { "$ref": "#/definitions/voiceServiceSIPX_RDK_Firewall_Rule_Data" },
+        { "$ref": "#/definitions/voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceVoIPProfileRTPX_RDK_Firewall_Rule_Data" }
       ]
     },
@@ -787,7 +787,7 @@
         { "$ref": "#/definitions/voiceServiceSIPProxyProxyIPAddress" },
         { "$ref": "#/definitions/voiceServiceSIPProxyProxyPort" },
         { "$ref": "#/definitions/voiceServiceSIPProxyVoIPProfile" },
-        { "$ref": "#/definitions/voiceServiceSIPX_RDK_Firewall_Rule_Data" },
+        { "$ref": "#/definitions/voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceH323ClientEnable" },
         { "$ref": "#/definitions/voiceServiceH323ClientH235Authentication" },
         { "$ref": "#/definitions/voiceServiceH323ClientAuthPassword" },
@@ -8002,14 +8002,14 @@
         }
       }
     },
-    "voiceServiceSIPX_RDK_Firewall_Rule_Data": {
+    "voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data": {
       "description": "Contains the comma seperated list of ip and port required to set SIP firewall rules. (eg:ip1,port1;ip2,port2;ip3,port3;) (Access = Read-Only)",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "name": {
           "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.SIP\\.X_RDK_Firewall_Rule_Data$"
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.SIP\\.Network\\.\\d+\\.X_RDK_Firewall_Rule_Data$"
         },
         "type": {
           "type": "string",

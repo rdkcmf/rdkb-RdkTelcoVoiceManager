@@ -18,7 +18,6 @@
  * limitations under the License.
  */
 
-#include "telcovoicemgr_services_apis.h"
 #include <assert.h>
 #include "ansc_status.h"
 #include "telcovoicemgr_dml_hal.h"
@@ -28,11 +27,30 @@
 #include "ccsp_message_bus.h"
 #include "ccsp_base_api.h"
 #include "telcovoicemgr_dml_json_cfg_init.h"
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#include "telcovoicemgr_services_apis_v2.h"
+#else
+#include "telcovoicemgr_services_apis_v1.h"
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
 
 #define   VOICE_SERVICE_TABLE_NAME            "Device.Services.VoiceService.%d."
 #define   VOICE_SERVICE_STATUS                "Device.Services.VoiceService.%d.X_RDK_Status"
 #define   X_RDK_DEBUG_TABLE_NAME              "Device.Services.VoiceService.%d.X_RDK_Debug."
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/*  TR104 V2 DML Tables */
+#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.Diagtests."
+#define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoIPProfile.%d."
+#define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.SIP.Network.%d."
+#define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP."
+#define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.CallControl.Line.%d."
+#define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.SIP.Client.%d."
+#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.Terminal.%d.Audio.%d.VoiceProcessing."
+#define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.CallControl.CallingFeatures.Set.%d."
+#define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
+#define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
+#else
+/* TR104 V1 DML Tables*/
 #define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d."
 #define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoiceProfile.%d."
 #define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP."
@@ -44,6 +62,7 @@
 #define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallingFeatures."
 #define   LINE_STATUS                         "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Status"
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallState"
+#endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
 
 #define  VOICE_STATUS_STOPPED         "Stopped"
 #define  VOICE_STATUS_STARTING        "Starting"
@@ -51,14 +70,24 @@
 #define  VOICE_STATUS_STOPPING        "Stopping"
 
 #define  LINE_STATUS_UP              "Up"
+#ifndef  FEATURE_RDKB_VOICE_DM_TR104_V2
 #define  LINE_STATUS_INITIALIZING    "Initializing"
 #define  LINE_STATUS_REGISTERING     "Registering"
 #define  LINE_STATUS_UNREGISTERING   "Unregistering"
+#endif   /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
 #define  LINE_STATUS_ERROR           "Error"
 #define  LINE_STATUS_TESTING         "Testing"
 #define  LINE_STATUS_QUIESCENT       "Quiescent"
 #define  LINE_STATUS_DISABLED        "Disabled"
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#define  CALL_STATUS_IDLE            "Idle"
+#define  CALL_STATUS_DIALING         "Dialing"
+#define  CALL_STATUS_DELIVERED       "Delivered"
+#define  CALL_STATUS_CONNECTED       "Connected"
+#define  CALL_STATUS_ALERTING        "Alerting"
+#define  CALL_STATUS_DISCONNECTED    "Disconnected"
+#else
 #define  CALL_STATUS_IDLE            "Idle"
 #define  CALL_STATUS_CALLING         "Calling"
 #define  CALL_STATUS_RINGING         "Ringing"
@@ -66,6 +95,7 @@
 #define  CALL_STATUS_INCALL          "InCall"
 #define  CALL_STATUS_HOLD            "Hold"
 #define  CALL_STATUS_DISCONNECTING   "Disconnecting"
+#endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
 
 #define SYSEVENT_VOICE_IPV4_PROXYLIST "voice_ipv4_outbound_proxy_addresses"
 #define SYSEVENT_VOICE_IPV4_RTPLIST "voice_ipv4_rtp_pinholes"
@@ -588,7 +618,7 @@ static ANSC_STATUS TelcoVoiceMgrDmlAddMarkingEntry(char *pAliasValue, char *pMar
 *
 * @param char*      pIfRecordName -  (*pAction)(char *aIfRecordName, void *) - Action function pointer.
 * @param void*      pArgs - Action specific parameters.
-*                   protocol_type protocol , Protocol specifier(SIP/RTP);
+*                   PROTOCOL_TYPE protocol , Protocol specifier(SIP/RTP);
 *                   int32_t       iEthPriorityMark, Ethernet priority mark to be set.
 *
 * @return The status of the operation.
@@ -794,7 +824,7 @@ ANSC_STATUS TelcoVoiceMgrDmlIterateEnabledInterfaces(ANSC_STATUS (*pAction)(char
 * @description Set ethernet priority mark for interfaces in WAN data model
 *              interface table.
 *
-* @param protocol_type protocol - protocol specifier, SIP/RTP
+* @param PROTOCOL_TYPE protocol - protocol specifier, SIP/RTP
 * @param int32_t       iValue   - priority value to set.
 *
 * @return The status of the operation.
@@ -805,7 +835,7 @@ ANSC_STATUS TelcoVoiceMgrDmlIterateEnabledInterfaces(ANSC_STATUS (*pAction)(char
 * @sideeffect None.
 *
 */
-ANSC_STATUS TelcoVoiceMgrDmlSetWanEthernetPriorityMark(protocol_type protocol, int32_t iValue)
+ANSC_STATUS TelcoVoiceMgrDmlSetWanEthernetPriorityMark(PROTOCOL_TYPE protocol, int32_t iValue)
 {
     ethPriorityValStruct_t valStruct;
     valStruct.protocol = protocol;
@@ -1005,7 +1035,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLoopCurrentDisabled(uint32_t uiService, BOOL bSta
 * @description set the bound If name
 *
 * @param uint32_t uiService - input the voice service index
-* @param char* BoundIfname 
+* @param char* BoundIfname
 *
 * @return The status of the operation.
 * @retval ANSC_STATUS_SUCCESS if successful.
@@ -1032,7 +1062,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetBoundIfname(uint32_t uiService, char *BoundIfname
        return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-BoundIfName", BoundIfname);
-
     if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IFNAME, BoundIfname, 0))
     {
         CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
@@ -1072,7 +1101,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetIpAddressFamily(uint32_t uiService, char *IpAddre
        return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-IpAddressFamily", IpAddressFamily);
-
     if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily, 0))
     {
         CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
@@ -1141,7 +1169,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetCCTKTraceGroup(uint32_t uiService, char *CCTKTrac
     }
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"CCTKTraceGroup");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",CCTKTraceGroup);
- 
+
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -1220,6 +1248,71 @@ ANSC_STATUS TelcoVoiceMgrDmlSetModuleLogLevel(uint32_t uiService, char *logLevel
     return ANSC_STATUS_SUCCESS;
 }
 
+/* TelcoVoiceMgrDmlSetLogServer: */
+/**
+* @description set the name/address of the voice logging server
+*
+* @param uint32_t uiService - input the voice service index
+* @param char* pLogServer - input the log server name
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+ANSC_STATUS TelcoVoiceMgrDmlSetLogServer(uint32_t uiService, char* pLogServer)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
+    if(!pLogServer)
+    {
+        CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
+    }
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"LogServer");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",pLogServer);
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+    (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServer", pLogServer);
+    return ANSC_STATUS_SUCCESS;
+}
+
+/* TelcoVoiceMgrDmlSetLogServerPort: */
+/**
+* @description set the name/address and port of the voice logging server
+*
+* @param uint32_t uiService - input the voice service index
+* @param ULONG uLSPort - input the log server port value
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"LogServerPort");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uLSPort);
+
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+    (void)storeObjectInteger(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServerPort", uLSPort);
+    return ANSC_STATUS_SUCCESS;
+}
 
 /* TelcoVoiceMgrDmlSetLinkState: */
 /**
@@ -1286,6 +1379,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkS
 
 ANSC_STATUS TelcoVoiceMgrDmlFactoryReset(uint32_t uiService, TELCOVOICEMGR_VOICE_ENABLE_ENUM VoiceState)
 {
+
     if(TelcoVoiceMgrDmlSetVoiceProcessState(uiService, VOICE_SERVICE_DISABLE) != ANSC_STATUS_SUCCESS)
     {
         CcspTraceWarning(("[%s]::[%d] Voice process stop failed!!!! \n", __FUNCTION__,__LINE__));
@@ -1437,7 +1531,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDirectoryNumber(uint32_t uiService, uint32_t uiPr
         CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_TABLE_NAME"%s",uiService,uiLine,"DirectoryNumber");
+#else
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"DirectoryNumber");
+#endif
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",pDirName);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
     {
@@ -1465,13 +1563,34 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDirectoryNumber(uint32_t uiService, uint32_t uiPr
 * @sideeffect None.
 *
 */
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, BOOL uLineEnable)
+#else
 ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, ULONG uLineEnable)
+#endif
 {
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_TABLE_NAME"%s",uiService,uiLine,"Enable");
 
+    if(uLineEnable == TRUE)
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
+    }
+    else
+    {
+        snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","false");
+    }
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+    (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Enable", uLineEnable == TRUE ?
+        "Enabled" : "Disabled");
+#else
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"Enable");
+
     if(uLineEnable == QUIESCENT)
     {
        snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","Quiescent");
@@ -1482,7 +1601,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(uint32_t uiService, uint32_t uiProfile
     }
     else
     {
-       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","Disabled");
+        snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","Disabled");
     }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
     {
@@ -1491,6 +1610,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(uint32_t uiService, uint32_t uiProfile
     (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Enable", uLineEnable == QUIESCENT ?
         "Quiescent" : uLineEnable == DISABLED ?
         "Disabled" : "Enabled");
+#endif
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1529,7 +1649,11 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStatus(uint32_t uiService, uint32_t uiProfile
      * Construct Full DML path.
      * Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Status
      */
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(req_param.name, sizeof(req_param.name), LINE_STATUS, uiService, uiLine);
+#else
     snprintf(req_param.name, sizeof(req_param.name), LINE_STATUS, uiService, uiProfile, uiLine);
+#endif
     if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
     {
         *pLineStatus = VOICE_LINE_STATE_ERROR;
@@ -1545,6 +1669,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStatus(uint32_t uiService, uint32_t uiProfile
         {
             *pLineStatus = VOICE_LINE_STATE_UP;
         }
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
         else if (strcmp(req_param.value, LINE_STATUS_INITIALIZING) == 0)
         {
             *pLineStatus = VOICE_LINE_STATE_INITIALIZING;
@@ -1557,6 +1682,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStatus(uint32_t uiService, uint32_t uiProfile
         {
             *pLineStatus = VOICE_LINE_STATE_UNREGISTERING;
         }
+#endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
         else if (strcmp(req_param.value, LINE_STATUS_TESTING) == 0)
         {
             *pLineStatus = VOICE_LINE_STATE_TESTING;
@@ -1615,7 +1741,11 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineCallState(uint32_t uiService, uint32_t uiProf
      * Construct Full DML path.
      * Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallState
      */
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(req_param.name, sizeof(req_param.name), CALL_STATE, uiService, uiLine);
+#else
     snprintf(req_param.name, sizeof(req_param.name), CALL_STATE, uiService, uiProfile, uiLine);
+#endif
     if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
     {
         *pCallState = VOICE_CALL_STATE_IDLE;
@@ -1627,6 +1757,37 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineCallState(uint32_t uiService, uint32_t uiProf
         /**
          * Convert status message and returned.
          */
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+
+        if (strcmp(req_param.value, CALL_STATUS_IDLE) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_IDLE;
+        }
+        else if (strcmp(req_param.value, CALL_STATUS_DIALING) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_DIALING;
+        }
+        else if (strcmp(req_param.value, CALL_STATUS_DELIVERED) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_DELIVERED;
+        }
+        else if (strcmp(req_param.value, CALL_STATUS_CONNECTED) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_CONNECTED;
+        }
+        else if (strcmp(req_param.value, CALL_STATUS_ALERTING) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_ALERTING;
+        }
+        else if (strcmp(req_param.value, CALL_STATUS_DISCONNECTED) == 0)
+        {
+            *pCallState = CALLCTRL_STATUS_DISCONNECTED;
+        }
+        else
+        {
+            *pCallState = CALLCTRL_STATUS_IDLE;
+        }
+#else
         if (strcmp(req_param.value, CALL_STATUS_IDLE) == 0)
         {
             *pCallState = VOICE_CALL_STATE_IDLE;
@@ -1659,7 +1820,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineCallState(uint32_t uiService, uint32_t uiProf
         {
             *pCallState = VOICE_CALL_STATE_IDLE;
         }
-
+#endif
         CcspTraceInfo(("%s:%d:: Call State: %d\n", __FUNCTION__, __LINE__, *pCallState));
         returnStatus = ANSC_STATUS_SUCCESS;
     }
@@ -1770,7 +1931,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
 *
 * @param uint32_t uiService - input the voice service index
 * @param uint32_t uiProfile - input the Voice Profile Index
-* @param protocol_type protocol - input Sip/Rtp
+* @param PROTOCOL_TYPE protocol - input Sip/Rtp
 * @param paramName  - input which parameter to be set
 *
 * @return The status of the operation.
@@ -1781,7 +1942,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
 * @sideeffect None.
 *
 */
-ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iValue, protocol_type protocol, char* paramName)
+ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iValue, PROTOCOL_TYPE protocol, char* paramName)
 {
     if(!paramName)
     {
@@ -1790,9 +1951,14 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
     }
 
     ANSC_STATUS returnStatus = ANSC_STATUS_FAILURE;
-    PTELCOVOICEMGR_DML_PROFILE            pDmlVoiceProfile    = NULL;
     PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    PDML_VOIPPROFILE                  pDmlVoiceProfile   = NULL;
+    PDML_SIP                          pDmlSipObj         = NULL;
+    PDML_SIP_NETWORK                  pDmlSipNetwork     = NULL;
+#else
+    PTELCOVOICEMGR_DML_PROFILE        pDmlVoiceProfile   = NULL;
+#endif
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
     if(pTelcoVoiceMgrDmlData == NULL)
     {
@@ -1808,7 +1974,11 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
         returnStatus = ANSC_STATUS_RESOURCES;
         goto EXIT;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoIPProfile->pdata[uiProfile - 1];
+#else
     DML_PROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoiceProfileList.pdata[uiProfile - 1];
+#endif
     pDmlVoiceProfile = &(pVoiceProfile->dml);
     if ( !pDmlVoiceProfile )
     {
@@ -1819,9 +1989,32 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
     switch(protocol)
     {
         case SIP:
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+            pDmlSipObj = &(pDmlVoiceService->SIP_obj);
+            if( !pDmlSipObj )
+            {
+                CcspTraceError(("%s:%d:: pDmlSipObj: NULL\n", __FUNCTION__, __LINE__));
+                returnStatus = ANSC_STATUS_RESOURCES;
+                goto EXIT;
+            }
+
+            DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uiProfile - 1];
+            pDmlSipNetwork = &(pSipNetwork->dml);
+
+            if ( !pDmlSipNetwork )
+            {
+                CcspTraceError(("%s:%d:: pDmlSipNetwork: NULL\n", __FUNCTION__, __LINE__));
+                returnStatus = ANSC_STATUS_RESOURCES;
+                goto EXIT;
+            }
+#endif
             if(!strcmp(paramName, PARAM_NAME_SKB_MARK))
             {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlSipNetwork->X_RDK_SKBMark = iValue;
+#else
                pDmlVoiceProfile->SIPObj.X_RDK_SKBMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             else if(!strcmp(paramName, PARAM_NAME_ETHERNET_PRIORITY_MARK))
@@ -1831,19 +2024,31 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
                   returnStatus = ANSC_STATUS_DISCARD;
                   goto EXIT;
                }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlSipNetwork->EthernetPriorityMark = iValue;
+#else
                pDmlVoiceProfile->SIPObj.EthernetPriorityMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             else if(!strcmp(paramName, PARAM_NAME_DSCP_MARK))
             {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlSipNetwork->DSCPMark = iValue;
+#else
                pDmlVoiceProfile->SIPObj.DSCPMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             break;
         case RTP:
             if(!strcmp(paramName, PARAM_NAME_SKB_MARK))
             {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlVoiceProfile->RTP.X_RDK_SKBMark = iValue;
+#else
                pDmlVoiceProfile->RTPObj.X_RDK_SKBMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             else if(!strcmp(paramName, PARAM_NAME_ETHERNET_PRIORITY_MARK))
@@ -1853,12 +2058,20 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
                   returnStatus = ANSC_STATUS_DISCARD;
                   goto EXIT;
                }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlVoiceProfile->RTP.EthernetPriorityMark = iValue;
+#else
                pDmlVoiceProfile->RTPObj.EthernetPriorityMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             else if(!strcmp(paramName, PARAM_NAME_DSCP_MARK))
             {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+               pDmlVoiceProfile->RTP.DSCPMark = iValue;
+#else
                pDmlVoiceProfile->RTPObj.DSCPMark = iValue;
+#endif
                returnStatus = ANSC_STATUS_SUCCESS;
             }
             break;
@@ -1870,6 +2083,7 @@ EXIT:
     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
     return returnStatus;
 }
+
 
 /* TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData : */
 /**
@@ -1884,7 +2098,11 @@ EXIT:
 *
 */
 
-ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvoiceProfileSip, PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp, protocol_type protocol )
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvoiceProfileSip, PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp, PROTOCOL_TYPE protocol )
+#else
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PDML_SIP_NETWORK pvoiceProfileSip, PDML_VOIPPROFILE_RTP pvoiceProfileRtp, PROTOCOL_TYPE protocol )
+#endif  //FEATURE_RDKB_VOICE_DM_TR104_V2
 {
     char tmpBuffer[BUF_LEN_512] = {0};
     char ipAddrFamily[IP_ADDR_FAMILY_LENGTH] = {0};
@@ -1907,45 +2125,45 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
         return ANSC_STATUS_FAILURE;
     }
 
-    if( !strcmp(ipAddrFamily, IPV4) )
+    if( !strcmp(ipAddrFamily, STR_IPV4) )
     {
         /*
         * Prepare sysevent for SKBMark, firewall rules set from utopia based on this sysevent value
-        * eg:Format: sipIp1,sipPort1,sipSKBMark;sipIp2,sipPort2,sipSKBMark;rtpIp1,rtpPort1,rtpSKBMark;rtpIp2,rtpPort2,rtpSKBMark; 
+        * eg:Format: sipIp1,sipPort1,sipSKBMark;sipIp2,sipPort2,sipSKBMark;rtpIp1,rtpPort1,rtpSKBMark;rtpIp2,rtpPort2,rtpSKBMark;
         */
         memset(tmpBuffer, 0, sizeof(tmpBuffer));
         memset(tmpBufferSip, 0, sizeof(tmpBufferSip));
         memset(tmpBufferRtp, 0, sizeof(tmpBufferRtp));
         if(generate_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, pvoiceProfileSip->X_RDK_SKBMark, &tmpBufferSip, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         if(generate_sysevent_string(pvoiceProfileRtp->X_RDK_Firewall_Rule_Data, pvoiceProfileRtp->X_RDK_SKBMark, &tmpBufferRtp, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         snprintf(tmpBuffer, sizeof(tmpBuffer), "%s%s", tmpBufferSip, tmpBufferRtp);
         sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_ETHERNETPRIORITY, tmpBuffer, 0);
-        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_ETHERNETPRIORITY %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_ETHERNETPRIORITY %s\n", __FUNCTION__, __LINE__, tmpBuffer));
 
         /*
         * Prepare sysevent for DSCPMark, firewall rules set from utopia based on this sysevent value
-        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark; 
+        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark;
         */
         memset(tmpBuffer, 0, sizeof(tmpBuffer));
         memset(tmpBufferSip, 0, sizeof(tmpBufferSip));
         memset(tmpBufferRtp, 0, sizeof(tmpBufferRtp));
         if(generate_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, pvoiceProfileSip->DSCPMark, &tmpBufferSip, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         if(generate_sysevent_string(pvoiceProfileRtp->X_RDK_Firewall_Rule_Data, pvoiceProfileRtp->DSCPMark, &tmpBufferRtp, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
-        } 
+            return ANSC_STATUS_FAILURE;
+        }
         snprintf(tmpBuffer, sizeof(tmpBuffer), "%s%s", tmpBufferSip, tmpBufferRtp);
         sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_DSCP, tmpBuffer, 0);
-        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_DSCP %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_DSCP %s\n", __FUNCTION__, __LINE__, tmpBuffer));
 
         if(protocol == SIP)
         {
@@ -1956,10 +2174,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             memset(tmpBuffer, 0, sizeof(tmpBuffer));
             if(generate_outboundproxy_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, &tmpBuffer, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
             {
-                return ANSC_STATUS_FAILURE;                   
+                return ANSC_STATUS_FAILURE;
             }
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_PROXYLIST, tmpBuffer, 0);
-            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer));
             //Restart firewall for sip events
             firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
         }
@@ -1977,7 +2195,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             memset(tmpBuffer, 0, sizeof(tmpBuffer));
             snprintf(tmpBuffer,sizeof(tmpBuffer), "%s", pvoiceProfileRtp->X_RDK_Firewall_Rule_Data);
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_RTPLIST, tmpBuffer, 0);
-            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_RTPLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_RTPLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer));
 
             /* Save previous data and delete old rules in next iteration.*/
             snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", pvoiceProfileRtp->X_RDK_Firewall_Rule_Data);
@@ -1986,45 +2204,45 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             previpAddressFamily = VOICE_HAL_AF_INET_V4;
         }
     }
-    else if( !strcmp(ipAddrFamily, IPV6) )
+    else if( !strcmp(ipAddrFamily, STR_IPV6) )
     {
         /*
         * Prepare sysevent for SKBMark, firewall rules set from utopia based on this sysevent value
-        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark; 
+        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark;
         */
         memset(tmpBuffer, 0, sizeof(tmpBuffer));
         memset(tmpBufferSip, 0, sizeof(tmpBufferSip));
         memset(tmpBufferRtp, 0, sizeof(tmpBufferRtp));
         if(generate_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, pvoiceProfileSip->X_RDK_SKBMark, &tmpBufferSip, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         if(generate_sysevent_string(pvoiceProfileRtp->X_RDK_Firewall_Rule_Data, pvoiceProfileRtp->X_RDK_SKBMark, &tmpBufferRtp, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         snprintf(tmpBuffer, sizeof(tmpBuffer), "%s%s", tmpBufferSip, tmpBufferRtp);
         sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_ETHERNETPRIORITY, tmpBuffer, 0);
-        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_ETHERNETPRIORITY %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_ETHERNETPRIORITY %s\n", __FUNCTION__, __LINE__, tmpBuffer));
 
         /*
         * Prepare sysevent for DSCPMark, firewall rules set from utopia based on this sysevent value
-        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark; 
+        * eg:Format: sipIp1,sipPort1,sipDSCPMark;sipIp2,sipPort2,sipDSCPMark;rtpIp1,rtpPort1,rtpDSCPMark;rtpIp2,rtpPort2,rtpDSCPMark;
         */
         memset(tmpBuffer, 0, sizeof(tmpBuffer));
         memset(tmpBufferSip, 0, sizeof(tmpBufferSip));
         memset(tmpBufferRtp, 0, sizeof(tmpBufferRtp));
         if(generate_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, pvoiceProfileSip->DSCPMark, &tmpBufferSip, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
+            return ANSC_STATUS_FAILURE;
         }
         if(generate_sysevent_string(pvoiceProfileRtp->X_RDK_Firewall_Rule_Data, pvoiceProfileRtp->DSCPMark, &tmpBufferRtp, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
         {
-            return ANSC_STATUS_FAILURE;                   
-        } 
+            return ANSC_STATUS_FAILURE;
+        }
         snprintf(tmpBuffer, sizeof(tmpBuffer), "%s%s", tmpBufferSip, tmpBufferRtp);
         sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_DSCP, tmpBuffer, 0);
-        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_DSCP %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+        CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_DSCP %s\n", __FUNCTION__, __LINE__, tmpBuffer));
 
         if(protocol == SIP)
         {
@@ -2035,10 +2253,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             memset(tmpBuffer, 0, sizeof(tmpBuffer));
             if(generate_outboundproxy_sysevent_string(pvoiceProfileSip->X_RDK_Firewall_Rule_Data, &tmpBuffer, sizeof(tmpBufferSip)) != ANSC_STATUS_SUCCESS)
             {
-                return ANSC_STATUS_FAILURE;                   
+                return ANSC_STATUS_FAILURE;
             }
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_PROXYLIST, tmpBuffer, 0);
-            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer)); 
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_PROXYLIST %s\n", __FUNCTION__, __LINE__, tmpBuffer));
             //Restart firewall for sip events
             firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
         }
@@ -2068,8 +2286,8 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
             prevRtpSkbMark = pvoiceProfileRtp->X_RDK_SKBMark;
             previpAddressFamily = VOICE_HAL_AF_INET_V6;
         }
-        
-        CcspTraceInfo(("[%s:%d] \n", __FUNCTION__, __LINE__)); 
+
+        CcspTraceInfo(("[%s:%d] \n", __FUNCTION__, __LINE__));
     }
     else
     {
@@ -2078,6 +2296,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvo
     }
     return ANSC_STATUS_SUCCESS;
 }
+
 
 /* TelcoVoiceMgrDmlSetProxyServer : */
 /**
@@ -2388,7 +2607,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
     return ANSC_STATUS_SUCCESS;
 }
 
-#ifndef TELCOVOICEMGR_AGENT_DM_COPY_IN_CCSP
 
 /* TelcoVoiceMgrDmlGetEthernetPriorityMark : */
 /**
@@ -2407,16 +2625,22 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
 *
 */
 
-ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, protocol_type protocol, int* pValue)
+ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, PROTOCOL_TYPE protocol, int* pValue)
 {
-    ANSC_STATUS returnStatus = ANSC_STATUS_FAILURE;
-    PTELCOVOICEMGR_DML_PROFILE            pDmlVoiceProfile    = NULL;
-    PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
+    ANSC_STATUS                       returnStatus       = ANSC_STATUS_FAILURE;
+    PTELCOVOICEMGR_DML_VOICESERVICE   pDmlVoiceService   = NULL;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    PDML_VOIPPROFILE                  pDmlVoiceProfile   = NULL;
+    PDML_SIP                          pDmlSipObj         = NULL;
+    PDML_SIP_NETWORK                  pDmlSipNetwork     = NULL;
+#else
+    PTELCOVOICEMGR_DML_PROFILE        pDmlVoiceProfile   = NULL;
+#endif
 
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
     if(pTelcoVoiceMgrDmlData == NULL || pValue == NULL)
     {
-        CcspTraceError(("%s:%d:: TelcoVoiceMgrDmlGetDataLocked: Failed\n", __FUNCTION__, __LINE__));
+        CcspTraceError(("%s:%d:: TelcoVoiceMgrDmlGetDataLocked Failed / pValue: [NULL]\n", __FUNCTION__, __LINE__));
         return ANSC_STATUS_RESOURCES;
     }
 
@@ -2428,7 +2652,11 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
         returnStatus = ANSC_STATUS_RESOURCES;
         goto EXIT;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoIPProfile->pdata[uiProfile - 1];
+#else
     DML_PROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoiceProfileList.pdata[uiProfile - 1];
+#endif
     pDmlVoiceProfile = &(pVoiceProfile->dml);
     if ( !pDmlVoiceProfile )
     {
@@ -2439,6 +2667,22 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
     switch(protocol)
     {
         case SIP:
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+            pDmlSipObj = &(pDmlVoiceService->SIP_obj);
+            if( pDmlSipObj )
+            {
+                DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uiProfile - 1];
+                pDmlSipNetwork = &(pSipNetwork->dml);
+
+                if ( pDmlSipNetwork )
+                {
+                    CcspTraceWarning(("%s:%d:: Sip Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlSipNetwork->EthernetPriorityMark));
+                    *pValue = pDmlSipNetwork->EthernetPriorityMark;
+                    returnStatus = ANSC_STATUS_SUCCESS;
+                    goto EXIT;
+                }
+            }
+#else
             if(pDmlVoiceProfile->SIPObj.EthernetPriorityMark != NULL)
             {
                 CcspTraceWarning(("%s:%d:: Sip Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->SIPObj.EthernetPriorityMark));
@@ -2446,6 +2690,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
                 returnStatus = ANSC_STATUS_SUCCESS;
                 goto EXIT;
             }
+#endif
             else
             {
                 returnStatus = ANSC_STATUS_FAILURE;
@@ -2453,6 +2698,15 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
             }
             break;
         case RTP:
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+            if(pDmlVoiceProfile->RTP.EthernetPriorityMark != NULL)
+            {
+                CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->RTP.EthernetPriorityMark));
+                *pValue = pDmlVoiceProfile->RTP.EthernetPriorityMark;
+                returnStatus = ANSC_STATUS_SUCCESS;
+                goto EXIT;
+            }
+#else
             if(pDmlVoiceProfile->RTPObj.EthernetPriorityMark != NULL)
             {
                 CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->RTPObj.EthernetPriorityMark));
@@ -2460,6 +2714,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
                 returnStatus = ANSC_STATUS_SUCCESS;
                 goto EXIT;
             }
+#endif
             else
             {
                 returnStatus = ANSC_STATUS_FAILURE;
@@ -2474,86 +2729,6 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
 EXIT:
     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
     return returnStatus;
-}
-
-/* TelcoVoiceMgrDmlSetRtpX_RDK_FirewallRuleData : */
-/**
-* @description Set Rtp Firewall Rule Data to sysevent
-*
-* @param PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp
-* @return The status of the operation.
-* @retval ANSC_STATUS_SUCCESS if successful.
-* @retval ANSC_STATUS_FAILURE if any error is detected
-*
-* @execution Synchronous.
-* @sideeffect None.
-*
-*/
-
-/* TelcoVoiceMgrDmlSetLogServer: */
-/**
-* @description set the name/address of the voice logging server
-*
-* @param uint32_t uiService - input the voice service index
-* @param char* pLogServer - input the log server name
-*
-* @return The status of the operation.
-* @retval ANSC_STATUS_SUCCESS if successful.
-* @retval ANSC_STATUS_FAILURE if any error is detected
-*
-* @execution Synchronous.
-* @sideeffect None.
-*
-*/
-ANSC_STATUS TelcoVoiceMgrDmlSetLogServer(uint32_t uiService, char* pLogServer)
-{
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
-    char strName[JSON_MAX_STR_ARR_SIZE]={0};
-
-    if(!pLogServer)
-    {
-        CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
-        return ANSC_STATUS_FAILURE;
-    }
-    snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"LogServer");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",pLogServer);
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
-    }
-    (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServer", pLogServer);
-    return ANSC_STATUS_SUCCESS;
-}
-
-/* TelcoVoiceMgrDmlSetLogServerPort: */
-/**
-* @description set the name/address and port of the voice logging server
-*
-* @param uint32_t uiService - input the voice service index
-* @param ULONG uLSPort - input the log server port value
-*
-* @return The status of the operation.
-* @retval ANSC_STATUS_SUCCESS if successful.
-* @retval ANSC_STATUS_FAILURE if any error is detected
-*
-* @execution Synchronous.
-* @sideeffect None.
-*
-*/
-ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
-{
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
-    char strName[JSON_MAX_STR_ARR_SIZE]={0};
-
-    snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"LogServerPort");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uLSPort);
-
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
-    }
-    (void)storeObjectInteger(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServerPort", uLSPort);
-    return ANSC_STATUS_SUCCESS;
 }
 
 /* TelcoVoiceMgrDmlSetDigitMap: */
@@ -2668,10 +2843,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(uint32_t uiService, uint32_t uiProfil
        return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ZDigitTimer", uDgtTimer);
- 
+
     return ANSC_STATUS_SUCCESS;
 }
-#endif /*TELCOVOIP_AGENT_GET_OBJ_FROM_VOICE_HAL*/
 
 /* TelcoVoiceMgrDmlGetLineStats : */
 /**
@@ -2691,6 +2865,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(uint32_t uiService, uint32_t uiProfil
 *
 */
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats)
 {
     //Fetch line stats from voice stack
@@ -2740,7 +2915,7 @@ ANSC_STATUS TelcoVoiceMgrDmlResetLineStats(uint32_t uiService, uint32_t uiProfil
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     bool reset = TRUE;
-    
+
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_STATS_TABLE_NAME"%s",uiService,uiProfile,uiLine,"ResetStatistics");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",reset);
@@ -2750,6 +2925,7 @@ ANSC_STATUS TelcoVoiceMgrDmlResetLineStats(uint32_t uiService, uint32_t uiProfil
     }
     return ANSC_STATUS_SUCCESS;
 }
+#endif
 
 /* TelcoVoiceMgrDmlSetReceiveGain : */
 /**
@@ -2845,31 +3021,51 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
 
     if(eFeature == VOICE_CALLING_FEATURE_CALL_WAITING)
     {
-       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"CallWaitingEnable"); 
+       #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME,uiService,uiProfile,"CallWaitingEnable");
+       #else
+       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"CallWaitingEnable");
+       #endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCWI",
         bStatus ? bTrueStr : bFalseStr);
     }
     else if(eFeature == VOICE_CALLING_FEATURE_MSG_WAIT_INDICATOR)
     {
+        #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"MWIEnable");
+        #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"MWIEnable");
+       #endif
               (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesMWI",
         bStatus ? bTrueStr : bFalseStr);
     }
     else if(eFeature == VOICE_CALLING_FEATURE_CONF_CALL)
     {
+        #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_ConferenceCallingEnable");
+        #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_ConferenceCallingEnable");
+       #endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCCE",
         bStatus ? bTrueStr : bFalseStr);
     }
     else if(eFeature == VOICE_CALLING_FEATURE_HOLD)
     {
+        #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_HoldEnable");
+        #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_HoldEnable");
+       #endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesHE",
         bStatus ? bTrueStr : bFalseStr);
     }
     else if(eFeature == VOICE_CALLING_FEATURE_CALLER_ID)
     {
+        #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_PhoneCallerIDEnable");
+        #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_PhoneCallerIDEnable");
+       #endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCID",
         bStatus ? bTrueStr : bFalseStr);
     }
@@ -2916,12 +3112,20 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
     }
     if(eAuthCredential == VOICE_HAL_AUTH_UNAME)
     {
-       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthUserName");  
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiLine,"AuthUserName");
+#else
+       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthUserName");
+#endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "AuthUserName",pBuffer);
     }
     else if(eAuthCredential == VOICE_HAL_AUTH_PWD)
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiLine,"AuthPassword");
+#else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthPassword");
+#endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "AuthPassword",pBuffer);
     }
     else
@@ -2966,7 +3170,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(uint32_t uiService, uint32_t uiProfile
         CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiLine,"RegisterURI");
+#else
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"URI");
+#endif
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",pSipURI);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
     {
@@ -2982,8 +3190,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     char testState[JSON_MAX_VAL_ARR_SIZE]={0};
-
-    snprintf(strName,JSON_MAX_STR_ARR_SIZE,PHYINTERFACE_TABLE_NAME"%s",uiService,uiPhyInterface,"TestState");
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#define FIELD_NAME "DiagnosticsState"
+#else
+#define FIELD_NAME "TestState"
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,PHYINTERFACE_TABLE_NAME"%s",uiService,uiPhyInterface,FIELD_NAME);
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uState);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_LONG,strValue) != ANSC_STATUS_SUCCESS)
     {
@@ -3007,6 +3219,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
             CcspTraceWarning(("[%s][%d] Invalid \n", __FUNCTION__,__LINE__));
             return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "DiagnosticsState", testState);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3047,5 +3260,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestSelector(uint32_t uiService, uint32_t uiPhyIn
             CcspTraceWarning(("[%s][%d] Invalid \n", __FUNCTION__,__LINE__));
             return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "TestSelector", testSelector);
     return ANSC_STATUS_SUCCESS;
 }

@@ -8,7 +8,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,6 +69,8 @@ AC_ARG_ENABLE([notify],
 
 AC_SUBST(SYSTEMD_CFLAGS)
 AC_SUBST(SYSTEMD_LDFLAGS)
+
+AM_CONDITIONAL([VOICE_V2], [test "x$ISRDKB_VOICE_DM_TR104_V2" = xtrue])
 
 dnl Checks for header files.
 AC_CHECK_HEADERS([limits.h memory.h stdlib.h string.h sys/socket.h unistd.h])
