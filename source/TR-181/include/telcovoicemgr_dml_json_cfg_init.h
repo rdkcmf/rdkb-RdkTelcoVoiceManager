@@ -28,10 +28,18 @@
 #define VOICE_CONFIG_CURRENT_NAME "telcovoice_config_current.json"
 #define VOICE_CONFIG_TEMP_NAME "telcovoice_config_temp.json"
 #define VOICE_CONFIG_DEFAULT_NAME "telcovoice_config_default.json"
+#define VOICE_CONFIG_DEFAULT_ITA_NAME "telcovoice_config_default_ITA.json"
+#define VOICE_CONFIG_DEFAULT_UK_NAME "telcovoice_config_default_UK.json"
+#define VOICE_CONFIG_DEFAULT_ROI_NAME "telcovoice_config_default_ROI.json"
 #define VOICE_CONFIG_CHECKSUM_NAME "telcovoice_config_checksum"
+
+#define MAX_REGION_LENGTH   16
+#define MAX_FILENAME_LENGTH 128
 
 #include <stdbool.h>
 #include "cJSON.h"
+
+char gVOICE_CONFIG_DEFAULT_NAME[MAX_FILENAME_LENGTH];
 
 /* checksum:  */
 /**
@@ -209,5 +217,13 @@ int storeVoiceProfile();
 int saveCurrentFile(cJSON *obj);
 int jsonPwdDecode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t outLen);
 int jsonPwdEncode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t outLen);
+
+/* Log levels used by voice process (X_BROADCOM_COM_LoggingLevel) */
+enum VOICE_PROCESS_LOG_LEVEL
+{
+    VOICE_PROCESS_LOG_LEVEL_ERROR = 0,
+    VOICE_PROCESS_LOG_LEVEL_NOTICE,
+    VOICE_PROCESS_LOG_LEVEL_DEBUG
+};
 
 #endif

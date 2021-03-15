@@ -1070,12 +1070,13 @@ int32_t createChecksumFile()
 {
     void *pJsonConfig = NULL;
     uint32_t confSize, readBytes;
-    FILE *fpChksum = fopen(VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME, "r");
+    char filename[MAX_FILENAME_LENGTH] = {0};
+    snprintf(filename, MAX_FILENAME_LENGTH, "%s%s", VOICE_CONFIG_DEFAULT_PATH,gVOICE_CONFIG_DEFAULT_NAME);
+    FILE *fpChksum = fopen(filename, "r");
     if (NULL == fpChksum)
     {
         /* RDK log error and give up */
-        CcspTraceError(("Failed to open JSON defaults file %s\n",
-                VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME));
+        CcspTraceError(("Failed to open JSON defaults file %s\n",filename));
         return -1;
     }
 
@@ -1091,7 +1092,7 @@ int32_t createChecksumFile()
     if (confSize != (readBytes = fread(pJsonConfig, 1, confSize, fpChksum)))  // Any error here will be picked up later
     {
         CcspTraceInfo(("Failed to read JSON file %s of size %d. Read %d. errno %d \n",
-                      VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME, confSize, readBytes, errno));
+                      filename , confSize, readBytes, errno));
         free(pJsonConfig);
         fclose(fpChksum);
         return -1;

@@ -19,6 +19,24 @@
 #ifndef  _TELCOVOICEMGR_DML_V2_H
 #define  _TELCOVOICEMGR_DML_V2_H
 
+#define STR_LEN_16  16
+#define STR_LEN_32  32
+#define MAX_STR_LEN 256
+
+#define TELCOVOICEMGR_LOCK_OR_EXIT()   if(hInsContext == NULL )                                                       \
+    {                                                                                                                 \
+        CcspTraceError(("%s:%d:: hInsContext: NULL\n", __FUNCTION__, __LINE__));                                      \
+        return ret;                                                                                                   \
+    }                                                                                                                 \
+    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlDataLock = TelcoVoiceMgrDmlGetDataLocked();                              \
+    if(pTelcoVoiceMgrDmlDataLock == NULL)                                                                             \
+    {                                                                                                                 \
+        CcspTraceError(("%s:%d:: TelcoVoiceMgrDmlGetDataLocked: Failed\n", __FUNCTION__, __LINE__));                  \
+        return ret;                                                                                                   \
+    }
+
+#define TELCOVOICEMGR_UNLOCK()     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlDataLock);
+
 BOOL VoiceService_IsUpdated(ANSC_HANDLE hInsContext);
 
 ULONG VoiceService_Synchronize(ANSC_HANDLE hInsContext);
@@ -75,8 +93,6 @@ ULONG TelcoVoiceMgrDml_capabilities_SIP_Registrar_GetParamStringValue(ANSC_HANDL
 
 ULONG TelcoVoiceMgrDml_capabilities_MGCP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
 
-ULONG TelcoVoiceMgrDml_capabilities_H323_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
-
 BOOL TelcoVoiceMgrDml_capabilities_H323_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong);
 
 BOOL TelcoVoiceMgrDml_capabilities_H323_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamName, BOOL* pBool);
@@ -101,7 +117,7 @@ BOOL TelcoVoiceMgrDml_capabilities_CodecList_GetParamUlongValue(ANSC_HANDLE hIns
 
 ULONG TelcoVoiceMgrDml_capabilities_CodecList_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
 
-BOOL TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue   (ANSC_HANDLE hInsContext, char* ParamName, char* pString);
+BOOL TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pString);
 
 BOOL TelcoVoiceMgrDml_capabilities_CodecList_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamName, BOOL* pBool);
 
@@ -172,6 +188,8 @@ BOOL TelcoVoiceMgrDml_ISDN_PRIList_Commit(ANSC_HANDLE hInsContext);
 BOOL TelcoVoiceMgrDml_ISDN_PRIList_Rollback(ANSC_HANDLE hInsContext);
 
 ULONG TelcoVoiceMgrDml_POTS_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
+
+BOOL TelcoVoiceMgrDml_POTS_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pString);
 
 BOOL TelcoVoiceMgrDml_POTS_FXOList_IsUpdated(ANSC_HANDLE hInsContext);
 
@@ -300,6 +318,8 @@ ULONG TelcoVoiceMgrDml_DECT_PortableList_GetEntryCount(ANSC_HANDLE hInsContext);
 ANSC_HANDLE TelcoVoiceMgrDml_DECT_PortableList_GetEntry(ANSC_HANDLE hInsContext, ULONG nIndex, ULONG* pInsNumber);
 
 BOOL TelcoVoiceMgrDml_DECT_PortableList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong);
+
+BOOL TelcoVoiceMgrDml_DECT_PortableList_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uValue);
 
 ULONG TelcoVoiceMgrDml_DECT_PortableList_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
 
@@ -1260,8 +1280,6 @@ ULONG TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamStringVa
 BOOL TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamName, BOOL* pBool);
 
 ULONG TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
-
-BOOL TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pString);
 
 BOOL TelcoVoiceMgrDml_VoipProfileList_IsUpdated(ANSC_HANDLE hInsContext);
 

@@ -681,7 +681,7 @@ ANSC_STATUS get_event_param(const char* msg, const int len, char* event_name, ch
 }
 
 
-ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(BOOL* SValue, char* HalName, BOOL bValue)
+ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(char* HalName, BOOL bValue)
 {
     char strValue[8] = {0};
     if (bValue == TRUE)
@@ -694,14 +694,13 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(BOOL* SValue, char* HalName, BOOL bVal
     }
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_BOOLEAN, strValue) == ANSC_STATUS_SUCCESS)
     {
-        *SValue = bValue;
         return ANSC_STATUS_SUCCESS;
     }
 
     return ANSC_STATUS_FAILURE;
 }
 
-ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(INT* SValue, char* HalName, INT iValue)
+ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(char* HalName, INT iValue)
 {
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
 
@@ -709,7 +708,31 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(INT* SValue, char* HalName, INT iValue)
 
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_INTEGER, strValue) == ANSC_STATUS_SUCCESS)
     {
-        *SValue = iValue;
+        return ANSC_STATUS_SUCCESS;
+    }
+
+    return ANSC_STATUS_FAILURE;
+}
+
+ANSC_STATUS TelcoVoiceMgrHal_SetParamULong(char* HalName, ULONG uValue)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+
+    snprintf(strValue, JSON_MAX_VAL_ARR_SIZE, "%ld", uValue);
+
+    if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_UNSIGNED_LONG, strValue) == ANSC_STATUS_SUCCESS)
+    {
+        return ANSC_STATUS_SUCCESS;
+    }
+
+    return ANSC_STATUS_FAILURE;
+}
+
+ANSC_STATUS TelcoVoiceMgrHal_SetParamString(char* HalName, char* sValue)
+{
+
+    if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_STRING, sValue) == ANSC_STATUS_SUCCESS)
+    {
         return ANSC_STATUS_SUCCESS;
     }
 

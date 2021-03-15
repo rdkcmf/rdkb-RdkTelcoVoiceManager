@@ -96,17 +96,50 @@ int32_t TelcoVoiceJsonCfgSetDmDefaults(void)
     if (-1 == ret)
     {
         /* Copy telcovoip_config_default.json to telcovoice_config_current.json */
-        CcspTraceInfo(("copying %s to %s",
-            VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME,
-            VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME));
-        fcopy(VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME,
-            VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
+
+        char region[MAX_REGION_LENGTH] = {0};
+
+        char filename[MAX_FILENAME_LENGTH] = {0};
+
+        if(platform_hal_GetRouterRegion(region) == RETURN_OK)
+        {
+            if(0 == strncmp(region,"IT",2))
+            {
+                snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_ITA_NAME);
+            }
+            else if(0 == strncmp(region,"GB",2))
+            {
+                snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_UK_NAME);
+            }
+            else if(0 == strncmp(region,"ROI",3))
+            {
+                snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_ROI_NAME);
+            }
+            else
+            {
+                CcspTraceError(("Unknown Region %s\n",region));
+                snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_NAME);
+            }
+
+            snprintf(filename, MAX_FILENAME_LENGTH, "%s%s", VOICE_CONFIG_DEFAULT_PATH,gVOICE_CONFIG_DEFAULT_NAME);
+
+            CcspTraceInfo(("copying %s to %s\n",
+                filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME));
+
+            fcopy(filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
+
+        }
+        else
+        {
+            CcspTraceError(("platform_hal_GetRouterRegion - Failed\n"));
+            return ANSC_STATUS_FAILURE;
+        }
         if (0 != createChecksumFile())
             return ANSC_STATUS_FAILURE;
         else
             return voiceHalInitDmDefaults();
     }
- 
+
     return ret;
 }
 
@@ -222,7 +255,7 @@ static int32_t voiceHalInitDmDefaults()
     {
         /* RDK log error and give up */
         CcspTraceInfo(("Failed to open JSON defaults file %s\n",
-            VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME));
+            VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME));
         return -1;
     }
 
@@ -240,10 +273,10 @@ static int32_t voiceHalInitDmDefaults()
     if (0 == (readBytes = fread(pJsonConfig, 1, defaultDMSize, fp)))
     {
         CcspTraceInfo(("Failed to read JSON file %s of size %d. Read %d. errno %d \n",
-            VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_DEFAULT_NAME, defaultDMSize, readBytes, errno));
+            VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME, defaultDMSize, readBytes, errno));
     }
     fclose(fp);
-    ret = verifyChecksumFile(pJsonConfig, defaultDMSize); //calculate checksum value and compare it with a known value 
+    ret = verifyChecksumFile(pJsonConfig, defaultDMSize); //calculate checksum value and compare it with a known value
     if (ret)
     {
         free(pJsonConfig);
@@ -309,7 +342,7 @@ static int32_t voiceHalInitDmDefaults()
         cJSON_Delete(config);
         return -1;
     }
-    
+
     CcspTraceInfo(("Parse done successfully\n"));
     /* All done, tidy up */
     stopJsonRead();
@@ -318,7 +351,7 @@ static int32_t voiceHalInitDmDefaults()
     return 0;
 }
 
-/* This structure makes the connection between VoiceService 
+/* This structure makes the connection between VoiceService
  * JSON objects and the voice_hal functions that set them */
 
 static int32_t jsonCfgSetDigitMap(uint32_t service, uint32_t profile, char * map_type, const char *value)
@@ -399,7 +432,7 @@ static struct
     int32_t (*func) (uint32_t, const char *);
     void (*handler) (uint32_t index, cJSON *obj);
 } serviceFuncs[] =
-{ 
+{
 /* When using multiple VoiceServices, uncomment this line, write handler func that
  * sets the current VoiceService index. For efficiency, keep this as first in the list.
  * Replace references to 'index & index+1 with references to value of VoiceServiceIndex */
@@ -463,8 +496,8 @@ static void jsonParseVoiceService(uint32_t index, cJSON *voiceService)
                 }
                 else
                 {
-                    CcspTraceInfo(("Unhandled type tag %s in VoiceService: %s\n", 
-                        cJSON_IsBool(vsItem) ? "boolean" : cJSON_IsNumber(vsItem) ? "number" : 
+                    CcspTraceInfo(("Unhandled type tag %s in VoiceService: %s\n",
+                        cJSON_IsBool(vsItem) ? "boolean" : cJSON_IsNumber(vsItem) ? "number" :
                         cJSON_IsArray(vsItem) ? "array" : "null/object/raw", serviceFuncs[j].obj));
                 }
             }
@@ -472,7 +505,7 @@ static void jsonParseVoiceService(uint32_t index, cJSON *voiceService)
         else
         {
             /* missing config item? */
-        } 
+        }
     }
 }
 static int32_t jsonCfgSetCCTKTraceGroup(uint32_t service, const char *value)
@@ -508,7 +541,7 @@ static int32_t jsonCfgSetLogServerPort(uint32_t service, uint32_t value)
 
 /* This structure makes the connection between X_RDK_Debug
  * JSON objects and the voice hal functions that set them */
-static struct 
+static struct
 {
     char *obj;
     int32_t (*func) ();
@@ -618,17 +651,17 @@ static void jsonParseAllVoiceProfiles(uint32_t voiceService, cJSON *voiceProfile
         }
     }
 }
-/* This structure makes the connection between PhyInterface 
+/* This structure makes the connection between PhyInterface
  * JSON objects and the voice_hal functions that set them */
-static struct 
+static struct
 {
     char *obj;
     int32_t (*func) (uint32_t, uint32_t, char *);
     void (*handler) (void);        // For consistency - not used here
 } phyDiagFuncs[] =
-{ 
-/* When using multiple PhyInterfaces, uncomment this line, write handler func which 
- * updates the current PhyInterface index. For efficiency, keep this as first in the list. 
+{
+/* When using multiple PhyInterfaces, uncomment this line, write handler func which
+ * updates the current PhyInterface index. For efficiency, keep this as first in the list.
  * Replace references to 'index & index+1 with references to value of PhyInterfaceIndex */
 /*  { "PhyInterfaceIndex", NULL, jsonCheckPhyInterfaceIndex } */
     { "TestState", jsonCfgSetTestState, NULL },
@@ -674,7 +707,7 @@ static void jsonParseOnePhyInterface(uint32_t service, uint32_t index, cJSON *ph
     }
 }
 
-/* This structure makes the connection between VoiceProfile 
+/* This structure makes the connection between VoiceProfile
  * JSON objects and the voice_hal functions that set them */
 enum vpTag {
     VP_TAG_Line,
@@ -687,16 +720,16 @@ enum vpTag {
     VP_TAG_ZDigitTimer
 };
 
-static struct 
+static struct
 {
     char *obj;
     enum vpTag tag;
     int32_t (*func) ();
 } voiceProfileFuncs[] =
-{ 
+{
 
-/* When using multiple VoiceProfiles, uncomment this line, write handler func which aborts if 
- * this is not the Voice profile index for which we are looking. 
+/* When using multiple VoiceProfiles, uncomment this line, write handler func which aborts if
+ * this is not the Voice profile index for which we are looking.
  * For efficiency, keep this as first in the list. Use setjmp()/longjmp() to exit.
  * Replace references to 'index & index+1 with references to value of VoiceProfileIndex */
 /*  { "VoiceProfileIndex", NULL, jsonCheckVoiceProfileIndex } */
@@ -797,7 +830,7 @@ static void jsonParseOneVoiceProfile(uint32_t service, uint32_t index, cJSON *vo
                 else
                 {
                     CcspTraceInfo(("Unhandled type tag (%d) in voiceProfile next object\n", voiceProfileFuncs[j].tag));
-                }    
+                }
             }
         }
     }
@@ -830,7 +863,7 @@ static int32_t jsonParseAllLines(uint32_t service, uint32_t profile, cJSON *line
     }
     return 0;
 }
-/* This structure makes the connection between Line 
+/* This structure makes the connection between Line
  * JSON objects and the voice_hal functions that set them */
 
 static int32_t jsonCfgSetDirectoryNumber(uint32_t service, uint32_t profile, uint32_t line, char *value)
@@ -840,13 +873,13 @@ static int32_t jsonCfgSetDirectoryNumber(uint32_t service, uint32_t profile, uin
     return 0;
 }
 
-static struct 
+static struct
 {
     char *obj;
     int32_t (*func) (uint32_t/* service */, uint32_t /* profile */, uint32_t /* line */, char * /* value */);
     void (*handler) (uint32_t/* service */, uint32_t /* profile */, uint32_t /* line */, cJSON *lineObj);
 } lineFuncs[] =
-{ 
+{
 
 /* When using multiple Lines, uncomment this line, write handler func which updates the current Line index.
  * For efficiency, keep this as first in the list.
@@ -963,7 +996,7 @@ int32_t jsonDecryptAndSavePassword(uint32_t service, uint32_t profile, uint32_t 
 */
 int32_t jsonParseUserName(uint32_t service, uint32_t profile, uint32_t line, char *userName)
 {
-    return jsonCfgSetAuthCredentials(service, profile, line, 
+    return jsonCfgSetAuthCredentials(service, profile, line,
         VOICE_HAL_AUTH_UNAME, userName );
 }
 /* This structure makes the connection between Line/SIP JSON settings
@@ -976,13 +1009,13 @@ int32_t jsonParseUserName(uint32_t service, uint32_t profile, uint32_t line, cha
     return 0;
 }
 
-static struct 
+static struct
 {
     char *obj;
     int32_t (*func) ();
     void (*handler)(void);   // Not used - for consistency
 } lineSipFuncs[] =
-{ 
+{
     { "AuthPassword", jsonDecryptAndSavePassword, NULL },
     { "AuthUserName", jsonParseUserName, NULL },
     { "URI", jsonCfgSetSipUri, NULL }
@@ -1066,7 +1099,7 @@ static int32_t jsonCfgSetProxyServerPort(uint32_t service, uint32_t profile, con
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
     TelcoVoiceMgrDmlSetProxyServerPort(service, profile, value);
-	return 0;
+    return 0;
 }
 static int32_t jsonCfgSetRegistrarServer(uint32_t service, uint32_t profile, const char * value)
 {
@@ -1107,7 +1140,7 @@ static int32_t jsonCfgSetEnableNetworkDisconnect(uint32_t service, uint32_t prof
 
 /* This structure makes the connection between Profile/SIP JSON
  * settings and the voice_hal functions that handle them */
-static struct 
+static struct
 {
     char *obj;
     int32_t (*strHandler) (uint32_t/* service */, uint32_t /* profile */, const char * /* value */);
@@ -1115,7 +1148,7 @@ static struct
     int32_t (*uintHandler) (uint32_t/* service */, uint32_t /* profile */, uint32_t value);
     int32_t (*intHandler) (uint32_t/* service */, uint32_t /* profile */, int32_t value);
 } profSipFuncs[] =
-{ 
+{
   { "DSCPMark", NULL, NULL, jsonCfgSetSipDscpMark, NULL },
   { "EthernetPriorityMark", NULL, NULL, NULL, jsonCfgSetSipEthernetPriorityMark },
   { "OutboundProxy", jsonCfgSetOutboundProxy, NULL, NULL },
@@ -1299,7 +1332,7 @@ int jsonPwdEncode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t ou
     int i; unsigned char tmp;
     char hex[] = "0123456789ABCDEF";
 
-    if (outLen < (2*inLen+1)) 
+    if (outLen < (2*inLen+1))
     {
         CcspTraceError(("%s: Output buffer is too small!\n", __FUNCTION__));
         return (-1);   // Output needs to be at least 2 * input
@@ -1309,7 +1342,7 @@ int jsonPwdEncode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t ou
         CcspTraceError(("%s: Null buffers!\n", __FUNCTION__));
         return (-1);
     }
-    for (i = 0; i < inLen; i++) 
+    for (i = 0; i < inLen; i++)
     {
         if ( 0 == (tmp = pInBuf[i]))
             break;      // Stop on null or end of buffer
@@ -1342,7 +1375,7 @@ int jsonPwdDecode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t ou
     unsigned char result;
 
     pIn = pInBuf; pOut = pOutBuf;
-    if ((NULL == pIn) || (NULL == pOut)) 
+    if ((NULL == pIn) || (NULL == pOut))
     {
         CcspTraceError(("%s: Null buffers!\n", __FUNCTION__));
         return -1;
@@ -1351,10 +1384,10 @@ int jsonPwdDecode(const char *pInBuf, uint32_t inLen, char *pOutBuf, uint32_t ou
     while ((*pIn) && (pOut < (pOutBuf+outLen)))
     {
         tmp = *pIn;
-        result = (tmp > '@') ? (tmp - 'A' + 10) : (tmp - '0');    
-        pIn++; 
+        result = (tmp > '@') ? (tmp - 'A' + 10) : (tmp - '0');
+        pIn++;
         tmp = *pIn;
-        if (0 == tmp) 
+        if (0 == tmp)
         {
             CcspTraceError(("%s: input requires even number of chars!\n", __FUNCTION__));
             return (-1);    // An odd number of hex chars??

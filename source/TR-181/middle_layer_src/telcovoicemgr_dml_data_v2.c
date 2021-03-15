@@ -132,7 +132,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
             DML_VOICE_SERVICE_CTRL_T* pVoiceService = pTelcoVoiceMgrData->Service.VoiceService.pdata[uVsIndex];
             pDmlVoiceService = &(pVoiceService->dml);
 
-            if ( !pDmlVoiceService )
+            if ( pDmlVoiceService == NULL )
             {
                 returnStatus = ANSC_STATUS_RESOURCES;
                 CcspTraceError(("%s - Failed pDmlVoiceService : NULL\n", __FUNCTION__));
@@ -153,7 +153,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                         DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uIndex];
                         pDmlSipNetwork = &(pSipNetwork->dml);
 
-                        if ( !pDmlSipNetwork )
+                        if ( pDmlSipNetwork == NULL )
                         {
                             returnStatus = ANSC_STATUS_RESOURCES;
                             CcspTraceError(("%s - Failed pDmlSipNetwork : NULL\n", __FUNCTION__));
@@ -174,7 +174,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                         DML_SIP_CLIENT_CTRL_T* pSipClient = pDmlSipObj->Client.pdata[uIndex];
                         pDmlSipClient = &(pSipClient->dml);
 
-                        if ( !pDmlSipClient )
+                        if ( pDmlSipClient == NULL )
                         {
                             returnStatus = ANSC_STATUS_RESOURCES;
                             CcspTraceError(("%s - Failed pDmlSipClient : NULL\n", __FUNCTION__));
@@ -267,7 +267,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddVoiceService(PDML_VOICE_SERVICE_LIST_T pVoiceServ
                 PDML_VOICE_SERVICE_CTRL_T pVoiceServiceData = pVoiceServiceList->pdata[index];
                 pVoiceServiceData->updated = false;
                 pDmlVoiceService = &(pVoiceServiceData->dml);
-                if ( !pDmlVoiceService )
+                if ( pDmlVoiceService == NULL )
                 {
                     memset( pDmlVoiceService, 0, sizeof( TELCOVOICEMGR_DML_VOICESERVICE ) );
                     pDmlVoiceService->InstanceNumber = index + 1;
@@ -791,7 +791,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipNetwork(PDML_SIP_NETWORK_LIST_T pSipNetworkLis
                 PDML_SIP_NETWORK_CTRL_T pSipNetworkData = pSipNetworkList->pdata[index];
                 pSipNetworkData->updated = false;
                 pDmlSipNetwork = &(pSipNetworkData->dml);
-                if ( !pDmlSipNetwork )
+                if ( pDmlSipNetwork == NULL )
                 {
                     memset( pDmlSipNetwork, 0, sizeof( DML_SIP_NETWORK ) );
                     pDmlSipNetwork->uInstanceNumber = index + 1;
@@ -830,7 +830,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipNetworkFQDNServer(PDML_SIP_NETWORK_FQDNSERVER_
                 DML_SIP_NETWORK_FQDNSERVER_CTRL_T* pDmlSipNetworkFqdnData = pSipNetworkFqdnList->pdata[index];
                 pDmlSipNetworkFqdnData->updated = false;
                 pDmlSipNetworkFqdn = &(pDmlSipNetworkFqdnData->dml);
-                if ( !pDmlSipNetworkFqdn )
+                if ( pDmlSipNetworkFqdn == NULL )
                 {
                     memset( pDmlSipNetworkFqdn, 0, sizeof( DML_SIP_NETWORK_FQDNSERVER ) );
                     pDmlSipNetworkFqdn->uInstanceNumber = index + 1;
@@ -874,7 +874,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipNetworkEvtSub(PDML_SIP_NETWORK_EVENTSUBSCRIBE_
                 DML_SIP_NETWORK_EVENTSUBSCRIBE_CTRL_T* pDmlSipNetworkEvtSubscribeData = pSipNetworkEvtSubscribeList->pdata[index];
                 pDmlSipNetworkEvtSubscribeData->updated = false;
                 pDmlSipNetworkEvtSubscribe = &(pDmlSipNetworkEvtSubscribeData->dml);
-                if ( !pDmlSipNetworkEvtSubscribe )
+                if ( pDmlSipNetworkEvtSubscribe == NULL )
                 {
                     memset( pDmlSipNetworkEvtSubscribe, 0, sizeof( DML_SIP_NETWORK_EVENTSUBSCRIBE ) );
                     pDmlSipNetworkEvtSubscribe->uInstanceNumber = index + 1;
@@ -918,7 +918,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipNetworkRespMap(PDML_SIP_NETWORK_RESPMAP_LIST_T
                 DML_SIP_NETWORK_RESPMAP_CTRL_T* pDmlSipNetworkRespMapData = pSipNetworkRespMapList->pdata[index];
                 pDmlSipNetworkRespMapData->updated = false;
                 pDmlSipNetworkRespMap = &(pDmlSipNetworkRespMapData->dml);
-                if ( !pDmlSipNetworkRespMap )
+                if ( pDmlSipNetworkRespMap == NULL )
                 {
                     memset( pDmlSipNetworkRespMap, 0, sizeof( DML_SIP_NETWORK_RESPMAP ) );
                     pDmlSipNetworkRespMap->uInstanceNumber = index + 1;
@@ -1004,7 +1004,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipRegistrar(PDML_SIP_REGISTRAR_LIST_T pSipRegist
                 DML_SIP_REGISTRAR_CTRL_T* pDmlSipRegistrarData = pSipRegistrarList->pdata[index];
                 pDmlSipRegistrarData->updated = false;
                 pDmlSipRegistrar = &(pDmlSipRegistrarData->dml);
-                if ( !pDmlSipRegistrar )
+                if ( pDmlSipRegistrar == NULL )
                 {
                     memset( pDmlSipRegistrar, 0, sizeof( DML_SIP_REGISTRAR ) );
                     pDmlSipRegistrar->uInstanceNumber = index + 1;
@@ -1048,7 +1048,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipRegistrarAcc(PDML_SIP_REGISTRAR_ACCOUNT_LIST_T
                 DML_SIP_REGISTRAR_ACCOUNT_CTRL_T* pDmlSipRegistrarAccData = pSipRegistrarAccList->pdata[index];
                 pDmlSipRegistrarAccData->updated = false;
                 pDmlSipRegistrarAcc = &(pDmlSipRegistrarAccData->dml);
-                if ( !pDmlSipRegistrarAcc )
+                if ( pDmlSipRegistrarAcc == NULL )
                 {
                     memset( pDmlSipRegistrarAcc, 0, sizeof( DML_SIP_REGISTRAR ) );
                     pDmlSipRegistrarAcc->uInstanceNumber = index + 1;
@@ -1091,7 +1091,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipRegistrarAccContact(PDML_SIP_REGISTRAR_ACCOUNT
                 DML_SIP_REGISTRAR_ACCOUNT_CONTACT_CTRL_T* pDmlSipRegistrarAccContactData = pSipRegistrarAccContactList->pdata[index];
                 pDmlSipRegistrarAccContactData->updated = false;
                 pDmlSipRegistrarAccContact = &(pDmlSipRegistrarAccContactData->dml);
-                if ( !pDmlSipRegistrarAccContact )
+                if ( pDmlSipRegistrarAccContact == NULL )
                 {
                     memset( pDmlSipRegistrarAccContact, 0, sizeof( DML_SIP_REGISTRAR_ACCOUNT_CONTACT ) );
                     pDmlSipRegistrarAccContact->uInstanceNumber = index + 1;
@@ -1918,7 +1918,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddInterwork(PDML_INTERWORK_LIST_T pInterworkList, i
                 DML_INTERWORK_CTRL_T* pDmlInterworkData = pInterworkList->pdata[index];
                 pDmlInterworkData->updated = false;
                 pDmlInterwork = &(pDmlInterworkData->dml);
-                if ( !pDmlInterwork )
+                if ( pDmlInterwork == NULL )
                 {
                     memset( pDmlInterwork, 0, sizeof( DML_INTERWORK ) );
                     pDmlInterwork->uInstanceNumber = index + 1;
@@ -1961,7 +1961,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddInterworkUI(PDML_INTERWORK_USERINTERFACE_LIST_T p
                 DML_INTERWORK_USERINTERFACE_CTRL_T* pDmlInterworkUIData = pInterworkUIList->pdata[index];
                 pDmlInterworkUIData->updated = false;
                 pDmlInterworkUI = &(pDmlInterworkUIData->dml);
-                if ( !pDmlInterworkUI )
+                if ( pDmlInterworkUI == NULL )
                 {
                     memset( pDmlInterworkUI, 0, sizeof( DML_INTERWORK_USERINTERFACE ) );
                     pDmlInterworkUI->uInstanceNumber = index + 1;
@@ -2004,7 +2004,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddInterworkMap(PDML_INTERWORK_MAP_LIST_T pInterwork
                 DML_INTERWORK_MAP_CTRL_T* pDmlInterworkMapData = pInterworkMapList->pdata[index];
                 pDmlInterworkMapData->updated = false;
                 pDmlInterworkMap = &(pDmlInterworkMapData->dml);
-                if ( !pDmlInterworkMap )
+                if ( pDmlInterworkMap == NULL )
                 {
                     memset( pDmlInterworkMap, 0, sizeof( DML_INTERWORK_MAP ) );
                     pDmlInterworkMap->uInstanceNumber = index + 1;
@@ -2436,7 +2436,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddTerminal(PDML_VOICESERVICE_TERMINAL_LIST_T pTermi
                 PDML_VOICESERVICE_TERMINAL_CTRL_T pTerminalData = pTerminalList->pdata[index];
                 pTerminalData->updated = false;
                 pDmlTerminal = &(pTerminalData->dml);
-                if ( !pDmlTerminal )
+                if ( pDmlTerminal == NULL )
                 {
                     memset( pDmlTerminal, 0, sizeof( DML_VOICESERVICE_TERMINAL ) );
                     pDmlTerminal->uInstanceNumber = index + 1;
@@ -2479,7 +2479,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddTerminalAudio(PDML_TERMINAL_AUDIO_LIST_T pTermina
                 DML_TERMINAL_AUDIO_CTRL_T* pDmlTerminalAudioData = pTerminalAudioList->pdata[index];
                 pDmlTerminalAudioData->updated = false;
                 pDmlTerminalAudio = &(pDmlTerminalAudioData->dml);
-                if ( !pDmlTerminalAudio )
+                if ( pDmlTerminalAudio == NULL )
                 {
                     memset( pDmlTerminalAudio, 0, sizeof( DML_TERMINAL_AUDIO ) );
                     pDmlTerminalAudio->uInstanceNumber = index + 1;

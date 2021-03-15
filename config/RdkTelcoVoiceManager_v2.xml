@@ -334,7 +334,6 @@
                <name>H323</name>
                <objectType>object</objectType>
                <functions>
-                   <func_GetParamStringValue>TelcoVoiceMgrDml_capabilities_H323_GetParamStringValue</func_GetParamStringValue>
                    <func_GetParamUlongValue>TelcoVoiceMgrDml_capabilities_H323_GetParamUlongValue</func_GetParamUlongValue>
                    <func_GetParamBoolValue>TelcoVoiceMgrDml_capabilities_H323_GetParamBoolValue</func_GetParamBoolValue>
                </functions>
@@ -778,6 +777,7 @@
            <objectType>object</objectType>
            <functions>
                <func_GetParamStringValue>TelcoVoiceMgrDml_POTS_GetParamStringValue</func_GetParamStringValue>
+               <func_SetParamStringValue>TelcoVoiceMgrDml_POTS_SetParamStringValue</func_SetParamStringValue>
            </functions>
            <parameters>
                 <parameter>
@@ -1296,6 +1296,7 @@
                    <func_GetEntryCount>TelcoVoiceMgrDml_DECT_PortableList_GetEntryCount</func_GetEntryCount>
                    <func_GetEntry>TelcoVoiceMgrDml_DECT_PortableList_GetEntry</func_GetEntry>
                    <func_GetParamUlongValue>TelcoVoiceMgrDml_DECT_PortableList_GetParamUlongValue</func_GetParamUlongValue>
+                   <func_SetParamUlongValue>TelcoVoiceMgrDml_DECT_PortableList_SetParamUlongValue</func_SetParamUlongValue>
                    <func_GetParamStringValue>TelcoVoiceMgrDml_DECT_PortableList_GetParamStringValue</func_GetParamStringValue>
                    <func_SetParamStringValue>TelcoVoiceMgrDml_DECT_PortableList_SetParamStringValue</func_SetParamStringValue>
                    <func_GetParamBoolValue>TelcoVoiceMgrDml_DECT_PortableList_GetParamBoolValue</func_GetParamBoolValue>
@@ -5320,7 +5321,6 @@
                        <objectType>object</objectType>
                        <functions>
                            <func_GetParamStringValue>TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_GetParamStringValue</func_GetParamStringValue>
-                           <func_SetParamStringValue>TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_SetParamStringValue</func_SetParamStringValue>
                         </functions>
                         <parameters>
                             <parameter>

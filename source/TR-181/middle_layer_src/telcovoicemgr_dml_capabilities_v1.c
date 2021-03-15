@@ -955,27 +955,24 @@ BOOL CapabilitiesCodecs_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamNa
 {
     BOOL ret = FALSE;
     DML_CAPABILITIES_CODECS_CTRL_T* pDmlCapCodecList = (DML_CAPABILITIES_CODECS_CTRL_T*) hInsContext;
-    CcspTraceWarning(("%s::BSK2 \nParamName :%s\n", __FUNCTION__, ParamName));
+    CcspTraceWarning(("%s:: ParamName :%s\n", __FUNCTION__, ParamName));
     if(pDmlCapCodecList != NULL)
     {
         TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
         if(pTelcoVoiceMgrDmlData != NULL)
         {
             PTELCOVOICEMGR_DML_CAPABILITIES_CODECS pDmlCapCodecs = &(pDmlCapCodecList->dml);
-            CcspTraceWarning(("%s::BSK4 \nParamName :%s\n", __FUNCTION__, ParamName));
+
             if( AnscEqualString(ParamName, "SilenceSuppression", TRUE))
             {
-                CcspTraceWarning(("%s::BSK5 \nParamName :%s\n", __FUNCTION__, ParamName));
                 *pBool = pDmlCapCodecs->SilenceSuppression;
                 ret = TRUE;
             }
             else
             {
-                CcspTraceWarning(("%s::BSK6 \nParamName :%s\n", __FUNCTION__, ParamName));
                 ret =  TRUE;
             }
             TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
-            CcspTraceWarning(("%s::BSK7 \nParamName :%s\n", __FUNCTION__, ParamName));
         }
         else
         {
@@ -986,7 +983,6 @@ BOOL CapabilitiesCodecs_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamNa
     {
         CcspTraceError(("%s:%d:: Invalid object \n", __FUNCTION__, __LINE__));
     }
-    CcspTraceWarning(("%s::BSK8 \nParamName :%s\n", __FUNCTION__, ParamName));
     return ret;
 }
 

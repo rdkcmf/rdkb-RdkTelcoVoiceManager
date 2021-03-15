@@ -130,7 +130,6 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_SIP_Registrar_GetParamUlongValue",TelcoVoiceMgrDml_capabilities_SIP_Registrar_GetParamUlongValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_SIP_Registrar_GetParamStringValue",TelcoVoiceMgrDml_capabilities_SIP_Registrar_GetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_MGCP_GetParamStringValue",TelcoVoiceMgrDml_capabilities_MGCP_GetParamStringValue);
- pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_H323_GetParamStringValue",TelcoVoiceMgrDml_capabilities_H323_GetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_H323_GetParamUlongValue",TelcoVoiceMgrDml_capabilities_H323_GetParamUlongValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_H323_GetParamBoolValue",TelcoVoiceMgrDml_capabilities_H323_GetParamBoolValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_ISDN_GetParamBoolValue",TelcoVoiceMgrDml_capabilities_ISDN_GetParamBoolValue);
@@ -143,7 +142,7 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_GetEntry",TelcoVoiceMgrDml_capabilities_CodecList_GetEntry);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_GetParamUlongValue",TelcoVoiceMgrDml_capabilities_CodecList_GetParamUlongValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_GetParamStringValue",TelcoVoiceMgrDml_capabilities_CodecList_GetParamStringValue);
- pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue   ",TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue   );
+ pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue",TelcoVoiceMgrDml_capabilities_CodecList_SetParamStringValue   );
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_GetParamBoolValue",TelcoVoiceMgrDml_capabilities_CodecList_GetParamBoolValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_Validate",TelcoVoiceMgrDml_capabilities_CodecList_Validate);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_capabilities_CodecList_Commit",TelcoVoiceMgrDml_capabilities_CodecList_Commit);
@@ -179,6 +178,7 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_ISDN_PRIList_Commit",TelcoVoiceMgrDml_ISDN_PRIList_Commit);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_ISDN_PRIList_Rollback",TelcoVoiceMgrDml_ISDN_PRIList_Rollback);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_POTS_GetParamStringValue",TelcoVoiceMgrDml_POTS_GetParamStringValue);
+ pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_POTS_SetParamStringValue",TelcoVoiceMgrDml_POTS_SetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_POTS_FXOList_IsUpdated",TelcoVoiceMgrDml_POTS_FXOList_IsUpdated);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_POTS_FXOList_Synchronize",TelcoVoiceMgrDml_POTS_FXOList_Synchronize);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_POTS_FXOList_GetEntryCount",TelcoVoiceMgrDml_POTS_FXOList_GetEntryCount);
@@ -244,6 +244,7 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_GetEntryCount",TelcoVoiceMgrDml_DECT_PortableList_GetEntryCount);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_GetEntry",TelcoVoiceMgrDml_DECT_PortableList_GetEntry);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_GetParamUlongValue",TelcoVoiceMgrDml_DECT_PortableList_GetParamUlongValue);
+ pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_SetParamUlongValue",TelcoVoiceMgrDml_DECT_PortableList_SetParamUlongValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_GetParamStringValue",TelcoVoiceMgrDml_DECT_PortableList_GetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_SetParamStringValue",TelcoVoiceMgrDml_DECT_PortableList_SetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_DECT_PortableList_GetParamBoolValue",TelcoVoiceMgrDml_DECT_PortableList_GetParamBoolValue);
@@ -724,7 +725,6 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamStringValue",TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamBoolValue",TelcoVoiceMgrDml_CallLogList_SessionList_Dest_DSP_TxCodec_GetParamBoolValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_GetParamStringValue",TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_GetParamStringValue);
- pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_SetParamStringValue",TelcoVoiceMgrDml_CallLogList_SessionList_Dest_VoiceQuality_SetParamStringValue);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_VoipProfileList_IsUpdated",TelcoVoiceMgrDml_VoipProfileList_IsUpdated);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_VoipProfileList_Synchronize",TelcoVoiceMgrDml_VoipProfileList_Synchronize);
  pPlugInfo->RegisterFunction(pPlugInfo->hContext, "TelcoVoiceMgrDml_VoipProfileList_GetEntryCount",TelcoVoiceMgrDml_VoipProfileList_GetEntryCount);

@@ -31,8 +31,8 @@
 #include "ansc_platform.h"
 #include "ansc_string_util.h"
 
-#define TELCOVOICE_DATA_MAX 1
-#define TELCOVOICEMGR_DATA_MAX_VOICE_SERVICES         1
+#define TELCOVOICE_DATA_MAX                                1
+#define TELCOVOICEMGR_DATA_MAX_VOICE_SERVICES              1
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES        1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE          1
@@ -176,7 +176,7 @@ typedef enum _TONEFILEFORMATS_ENUM
 typedef enum _PROTOCOL_TYPE
 {
   SIP,
-  RTP,
+  RTP
 }PROTOCOL_TYPE;
 
 typedef struct _ethPriorityValStruct_t
@@ -220,98 +220,98 @@ typedef enum _POTS_DIALTYPE_ENUM
 
 typedef enum _CAPABILITIESCODEC_ENUM
 {
-   AMR,
-   CLEARMODE,
-   EVRC1,
-   EVRCB1,
-   G_711MULAW,
-   G_711ALAW,
-   G_726,
-   G_729,
-   G_729_1,
-   G_729A,
-   G_729E,
-   G_728,
-   G_723_1,
-   G_722,
-   G_722_1,
-   G_722_2,
-   GENERICCOMFORTNOISE,
-   GSM_FR,
-   GSM_HR,
-   GSM_EFR,
-   ILBC,
-   SPEEX
+   CAP_CODEC_AMR,
+   CAP_CODEC_CLEARMODE,
+   CAP_CODEC_EVRC1,
+   CAP_CODEC_EVRCB1,
+   CAP_CODEC_G_711MULAW,
+   CAP_CODEC_G_711ALAW,
+   CAP_CODEC_G_726,
+   CAP_CODEC_G_729,
+   CAP_CODEC_G_729_1,
+   CAP_CODEC_G_729A,
+   CAP_CODEC_G_729E,
+   CAP_CODEC_G_728,
+   CAP_CODEC_G_723_1,
+   CAP_CODEC_G_722,
+   CAP_CODEC_G_722_1,
+   CAP_CODEC_G_722_2,
+   CAP_CODEC_GENERICCOMFORTNOISE,
+   CAP_CODEC_GSM_FR,
+   CAP_CODEC_GSM_HR,
+   CAP_CODEC_GSM_EFR,
+   CAP_CODEC_ILBC,
+   CAP_CODEC_SPEEX
 } CAPABILITIESCODEC_ENUM;
 
 typedef enum _FACILITYACTIONS_ENUM
 {
-    AA_REGISTER,
-    AA_ERASE,
-    AA_INTERROGATE,
-    CA_ACTIVATE,
-    CCBS_ACTIVATE,
-    CCBS_DEACTIVATE,
-    CCBS_INTERROGATE,
-    CCNR_ACTIVATE,
-    CCNR_DEACTIVATE,
-    CCNR_INTERROGATE,
-    CFB_REGISTER,
-    CFB_ACTIVATE,
-    CFB_DEACTIVATE,
-    CFB_ERASE,
-    CFB_INTERROGATE,
-    CFNR_REGISTER,
-    CFNR_ACTIVATE,
-    CFNR_DEACTIVATE,
-    CFNR_ERASE,
-    CFNR_INTERROGATE,
-    CFNR_TIMER,
-    CFT_ACTIVATE,
-    CFT_DEACTIVATE,
-    CFT_INTERROGATE,
-    CFU_REGISTER,
-    CFU_ACTIVATE,
-    CFU_DEACTIVATE,
-    CFU_ERASE,
-    CFU_INTERROGATE,
-    CLIR_ACTIVATE,
-    CLIR_DEACTIVATE,
-    CLIR_INTERROGATE,
-    CP_INVOKE,
-    CW_ACTIVATE,
-    CW_DEACTIVATE,
-    CW_INVOKE,
-    DND_ACTIVATE,
-    DND_DEACTIVATE,
-    DND_INTERROGATE,
-    EXT_INVOKE,
-    LINE_INVOKE,
-    MAILBOX_INVOKE,
-    OCB_ACTIVATE,
-    OCB_DEACTIVATE,
-    OCB_INTERROGATE,
-    PSO_ACTIVATE,
-    PW_SET,
-    SCF_ACTIVATE,
-    SCF_DEACTIVATE,
-    SCF_INTERROGATE,
-    SCREJ_ACTIVATE,
-    SCREJ_DEACTIVATE,
-    SCREJ_INTERROGATE,
-    SR_ACTIVATE,
-    SR_DEACTIVATE,
-    SR_INTERROGATE
+    FACILITY_ACTION_AA_REGISTER,
+    FACILITY_ACTION_AA_ERASE,
+    FACILITY_ACTION_AA_INTERROGATE,
+    FACILITY_ACTION_CA_ACTIVATE,
+    FACILITY_ACTION_CCBS_ACTIVATE,
+    FACILITY_ACTION_CCBS_DEACTIVATE,
+    FACILITY_ACTION_CCBS_INTERROGATE,
+    FACILITY_ACTION_CCNR_ACTIVATE,
+    FACILITY_ACTION_CCNR_DEACTIVATE,
+    FACILITY_ACTION_CCNR_INTERROGATE,
+    FACILITY_ACTION_CFB_REGISTER,
+    FACILITY_ACTION_CFB_ACTIVATE,
+    FACILITY_ACTION_CFB_DEACTIVATE,
+    FACILITY_ACTION_CFB_ERASE,
+    FACILITY_ACTION_CFB_INTERROGATE,
+    FACILITY_ACTION_CFNR_REGISTER,
+    FACILITY_ACTION_CFNR_ACTIVATE,
+    FACILITY_ACTION_CFNR_DEACTIVATE,
+    FACILITY_ACTION_CFNR_ERASE,
+    FACILITY_ACTION_CFNR_INTERROGATE,
+    FACILITY_ACTION_CFNR_TIMER,
+    FACILITY_ACTION_CFT_ACTIVATE,
+    FACILITY_ACTION_CFT_DEACTIVATE,
+    FACILITY_ACTION_CFT_INTERROGATE,
+    FACILITY_ACTION_CFU_REGISTER,
+    FACILITY_ACTION_CFU_ACTIVATE,
+    FACILITY_ACTION_CFU_DEACTIVATE,
+    FACILITY_ACTION_CFU_ERASE,
+    FACILITY_ACTION_CFU_INTERROGATE,
+    FACILITY_ACTION_CLIR_ACTIVATE,
+    FACILITY_ACTION_CLIR_DEACTIVATE,
+    FACILITY_ACTION_CLIR_INTERROGATE,
+    FACILITY_ACTION_CP_INVOKE,
+    FACILITY_ACTION_CW_ACTIVATE,
+    FACILITY_ACTION_CW_DEACTIVATE,
+    FACILITY_ACTION_CW_INVOKE,
+    FACILITY_ACTION_DND_ACTIVATE,
+    FACILITY_ACTION_DND_DEACTIVATE,
+    FACILITY_ACTION_DND_INTERROGATE,
+    FACILITY_ACTION_EXT_INVOKE,
+    FACILITY_ACTION_LINE_INVOKE,
+    FACILITY_ACTION_MAILBOX_INVOKE,
+    FACILITY_ACTION_OCB_ACTIVATE,
+    FACILITY_ACTION_OCB_DEACTIVATE,
+    FACILITY_ACTION_OCB_INTERROGATE,
+    FACILITY_ACTION_PSO_ACTIVATE,
+    FACILITY_ACTION_PW_SET,
+    FACILITY_ACTION_SCF_ACTIVATE,
+    FACILITY_ACTION_SCF_DEACTIVATE,
+    FACILITY_ACTION_SCF_INTERROGATE,
+    FACILITY_ACTION_SCREJ_ACTIVATE,
+    FACILITY_ACTION_SCREJ_DEACTIVATE,
+    FACILITY_ACTION_SCREJ_INTERROGATE,
+    FACILITY_ACTION_SR_ACTIVATE,
+    FACILITY_ACTION_SR_DEACTIVATE,
+    FACILITY_ACTION_SR_INTERROGATE
 } FACILITYACTIONS_ENUM;
 
 typedef enum _H325AUTHMETHODS_ENUM
 {
-    DHEXCH,
-    PWDSYMENC,
-    PWDHASH,
-    CERTSIGN,
-    IPSEC,
-    TLS
+    H325_AUTH_DHEXCH,
+    H325_AUTH_PWDSYMENC,
+    H325_AUTH_PWDHASH,
+    H325_AUTH_CERTSIGN,
+    H325_AUTH_IPSEC,
+    H325_AUTH_TLS
 } H325AUTHMETHODS_ENUM;
 
 typedef enum _TLSAUTHENTICATIONPROTOCOLS_ENUM
@@ -334,15 +334,15 @@ typedef enum _TLSENCRYPTIONPROTOCOLS_ENUM
     TLS_ENCRYPT_PROTOCOL_CAMELLIA
 } TLSENCRYPTIONPROTOCOLS_ENUM;
 
-typedef enum _TLSKEYEXCHANGEPROTOCOLOS_ENUM
+typedef enum _TLSKEYEXCHANGEPROTOCOLS_ENUM
 {
-    RSA,
-    DSS,
-    DHE_RSA,
-    DHE_DSS,
-    ECDHE_RSA,
-    ECDHE_ECDSA
-} TLSKEYEXCHANGEPROTOCOLOS_ENUM;
+    TLS_EXCHANGE_PROTOCOL_RSA,
+    TLS_EXCHANGE_PROTOCOL_DSS,
+    TLS_EXCHANGE_PROTOCOL_DHE_RSA,
+    TLS_EXCHANGE_PROTOCOL_DHE_DSS,
+    TLS_EXCHANGE_PROTOCOL_ECDHE_RSA,
+    TLS_EXCHANGE_PROTOCOL_ECDHE_ECDSA
+} TLSKEYEXCHANGEPROTOCOLS_ENUM;
 
 typedef enum _STATUS_ENUM
 {
@@ -361,9 +361,9 @@ typedef enum _SIP_STATUS_ENUM
 
 typedef enum _APPLICATIONINTERFACE_ENUM
 {
-   VOIP,
-   VOATM,
-   DATA
+   APP_INTERFACE_VOIP,
+   APP_INTERFACE_VOATM,
+   APP_INTERFACE_DATA
 } APPLICATIONINTERFACE_ENUM;
 
 typedef enum _ISDN_BRI_PROTOCOL_ENUM
@@ -391,8 +391,8 @@ typedef enum _ISDN_PRI_PROTOCOL_ENUM
 
 typedef enum _ISDN_PROTOCOL_ENUMULATION_ENUM
 {
-    TE,
-    NT
+    ISDN_PROTO_ENUMULATION_TE,
+    ISDN_PROTO_ENUMULATION_NT
 } ISDN_PROTOCOL_ENUMULATION_ENUM;
 
 typedef enum _ISDN_TEI_NEGOTIATION_ENUM
@@ -403,9 +403,9 @@ typedef enum _ISDN_TEI_NEGOTIATION_ENUM
 
 typedef enum _ISDN_LINECODE_ENUM
 {
-    AMI,
-    HDB3,
-    B8ZS
+    ISDN_LINECODE_AMI,
+    ISDN_LINECODE_HDB3,
+    ISDN_LINECODE_B8ZS
 } ISDN_LINECODE_ENUM;
 
 typedef enum _ISDN_ESF_ENUM
@@ -421,20 +421,20 @@ typedef enum _ISDN_ESF_ENUM
 
 typedef enum _ISDN_PHYINTERFACETYPE_ENUM
 {
-    T1,
-    E1
+    ISDN_PHYINTERFACE_T1,
+    ISDN_PHYINTERFACE_E1
 }ISDN_PHYINTERFACETYPE_ENUM;
 
 typedef enum _ISDN_CLOCKMODE_ENUM
 {
-    MASTER,
-    SLAVE
+    ISDN_CLKMODE_MASTER,
+    ISDN_CLKMODE_SLAVE
 } ISDN_CLOCKMODE_ENUM;
 
 typedef enum _SIGNALING_MODE_ENUM
 {
-    LOOPSTART,
-    GROUNDSTART
+    SIGNALING_MODE_LOOPSTART,
+    SIGNALING_MODE_GROUNDSTART
 } SIGNALING_MODE_ENUM;
 
 typedef enum _DIAG_STATE_ENUM
@@ -446,34 +446,25 @@ typedef enum _DIAG_STATE_ENUM
     DIAG_STATE_ERROR_OTHER
 } DIAG_STATE_ENUM;
 
-typedef enum _SIP_NETWORK_STATUS_ENUM
-{
-    SIP_NETWORK_STATUS_NONE,
-    SIP_NETWORK_STATUS_REQUESTED,
-    SIP_NETWORK_STATUS_COMPLETE,
-    SIP_NETWORK_STATUS_ERROR_INTERNAL,
-    SIP_NETWORK_STATUS_ERROR_OTHER
-} SIP_NETWORK_STATUS_ENUM;
-
 typedef enum _FXO_TEST_SELECTOR_ENUM
 {
-    BATTERY,
-    DIALTONE
+    FXO_TEST_SELECTOR_BATTERY,
+    FXO_TEST_SELECTOR_DIALTONE
 } FXO_TEST_SELECTOR_ENUM;
 
 typedef enum _FXS_TEST_SELECTOR_ENUM
 {
-    HAZARD_POTENTIAL,
-    FOREIGN_VOLTAGE,
-    RESISTIVE_FAULTS,
-    OFF_HOOK,
-    REN
+    FXS_TEST_SELECTOR_HAZARD_POTENTIAL,
+    FXS_TEST_SELECTOR_FOREIGN_VOLTAGE,
+    FXS_TEST_SELECTOR_RESISTIVE_FAULTS,
+    FXS_TEST_SELECTOR_OFF_HOOK,
+    FXS_TEST_SELECTOR_REN
 } FXS_TEST_SELECTOR_ENUM;
 
 typedef enum _TEST_RESULT_ENUM
 {
-    SUCCESS,
-    FAILURE
+    TEST_RESULT_SUCCESS,
+    TEST_RESULT_FAILURE
 } TEST_RESULT_ENUM;
 
 typedef enum _TERMINAL_TYPE_ENUM
@@ -495,35 +486,35 @@ typedef enum _STREAM_TYPE_ENUM
 
 typedef enum _FUNCTION_TYPE_ENUM
 {
-    DEFAULT,
-    CCBSCALLBACK,
-    CCNRCALLBACK,
-    INTERNALCALL,
-    RINGSPLASH,
-    GROUP
+    FUNCTION_DEFAULT,
+    FUNCTION_CCBSCALLBACK,
+    FUNCTION_CCNRCALLBACK,
+    FUNCTION_INTERNALCALL,
+    FUNCTION_RINGSPLASH,
+    FUNCTION_GROUP
 } FUNCTION_TYPE_ENUM;
 
 typedef enum _STANDARD_ENUM
 {
-    GAP,
-    CAT_IQ_1_0,
-    CAT_IQ_2_0,
-    CAT_IQ_2_1,
-    CAT_IQ_3_0,
-    CAT_IQ_4_0
+    STANDARD_GAP,
+    STANDARD_CAT_IQ_1_0,
+    STANDARD_CAT_IQ_2_0,
+    STANDARD_CAT_IQ_2_1,
+    STANDARD_CAT_IQ_3_0,
+    STANDARD_CAT_IQ_4_0
 } STANDARD_ENUM, PORTABLE_TYPE_ENUM;
 
 typedef enum _RF_POWER_CTRL_ENUM
 {
-    NORMAL,
-    REDUCED
+    POWER_CTRL_NORMAL,
+    POWER_CTRL_REDUCED
 } RF_POWER_CTRL_ENUM;
 
 typedef enum _ENCRYPTION_TYPE_ENUM
 {
-    DSC,
-    DSC2,
-    CCM
+    ENCRYPTION_DSC,
+    ENCRYPTION_DSC2,
+    ENCRYPTION_CCM
 } ENCRYPTION_TYPE_ENUM;
 
 typedef enum _ORIGIN_ENUM
@@ -561,8 +552,8 @@ typedef enum _PASS_THROUGH_ENUM
 
 typedef enum _REGISTRATION_STATUS_ENUM
 {
-    IN_REACH,
-    NOT_IN_REACH
+    REGISTRATION_IN_REACH,
+    REGISTRATION_NOT_IN_REACH
 } REGISTRATION_STATUS_ENUM;
 
 typedef enum _CONTROL_ENUM
@@ -587,13 +578,9 @@ typedef enum _CLIENT_STATUS_ENUM
 typedef enum _NETWORK_STATUS_ENUM
 {
     NETWORK_STATUS_UP,
-    NETWORK_STATUS_INITIALIZING,
-    NETWORK_STATUS_REGISTERING,
-    NETWORK_STATUS_DEREGISTERING,
-    NETWORK_STATUS_ERROR_MISCONFIGURED,
-    NETWORK_STATUS_ERROR_NETWORK,
-    NETWORK_STATUS_ERROR_REGISTRATION,
-    NETWORK_STATUS_QUIESCENT,
+    NETWORK_STATUS_RESOLVING,
+    NETWORK_STATUS_ERROR_DNS,
+    NETWORK_STATUS_ERROR_OTHER,
     NETWORK_STATUS_DISABLED
 }NETWORK_STATUS_ENUM;
 
@@ -638,16 +625,6 @@ typedef enum _INTERWORK_STATUS_ENUM
     INTERWORK_STATUS_DISABLED
 } INTERWORK_STATUS_ENUM;
 
-typedef enum _EXTENSION_STATUS_ENUM
-{
-    EXTENSION_STATUS_UP,
-    EXTENSION_STATUS_INITIALIZING,
-    EXTENSION_STATUS_ERROR,
-    EXTENSION_STATUS_TESTING,
-    EXTENSION_STATUS_QUIESCENT,
-    EXTENSION_STATUS_DISABLED
-} EXTENSION_STATUS_ENUM;
-
 typedef enum _CALLCTRL_EXT_STATUS_ENUM
 {
     CALLCTRL_CALLSTATUS_UP,
@@ -660,8 +637,8 @@ typedef enum _CALLCTRL_EXT_STATUS_ENUM
 
 typedef enum _MGCP_REGISTER_MODE_ENUM
 {
-   WILDCARD,
-   INDIVIDUAL
+   MGCP_REGISTER_WILDCARD,
+   MGCP_REGISTER_INDIVIDUAL
 } MGCP_REGISTER_MODE_ENUM;
 
 typedef enum _CALLSTATUS_ENUM
@@ -686,17 +663,17 @@ typedef enum _CALLCTRL_EXT_CALLSTATUS_ENUM
 
 typedef enum _ACC_REGISTRATION_STATUS_ENUM
 {
-    REGISTERED,
-    UNREGISTERED
+    ACC_REGISTERED,
+    ACC_UNREGISTERED
 } ACC_REGISTRATION_STATUS_ENUM;
 
 
-typedef enum _ENABLE3_ENUM
+typedef enum _SIP_REGISTRAR_ACC_ENABLE_ENUM
 {
-    ENABLE3_ENABLE,
-    ENABLE3_QUIESCENT,
-    ENABLE3_DISABLED
-} ENABLE3_ENUM;
+    SIP_REGISTRAR_ACC_ENABLE,
+    SIP_REGISTRAR_ACC_QUIESCENT,
+    SIP_REGISTRAR_ACC_DISABLE
+} SIP_REGISTRAR_ACC_ENABLE_ENUM;
 
 typedef enum _REGISTER_MODE_ENUM
 {
@@ -705,15 +682,6 @@ typedef enum _REGISTER_MODE_ENUM
     REGISTER_MODE_RFC6140,
     REGISTER_MODE_TISPAN
 } REGISTER_MODE_ENUM;
-
-typedef enum _STATUS5_ENUM
-{
-    STATUS5_UP,
-    STATUS5_RESOLVING,
-    STATUS5_ERROR_DNS,
-    STATUS5_ERROR_OTHER,
-    STATUS5_DISABLED
-} STATUS5_ENUM;
 
 typedef enum _MGCP_NETWORK_REG_STATUS_ENUM
 {
@@ -733,7 +701,7 @@ typedef struct _DML_VOICESERVICE_CAPABILITIES_SIP_CLIENT
     CHAR                                 TLSAuthenticationKeySizes[STR_LEN_256];
     TLSENCRYPTIONPROTOCOLS_ENUM          TLSEncryptionProtocols;
     CHAR                                 TLSEncryptionKeySizes[STR_LEN_256];
-    TLSKEYEXCHANGEPROTOCOLOS_ENUM        TLSKeyExchangeProtocols;
+    TLSKEYEXCHANGEPROTOCOLS_ENUM        TLSKeyExchangeProtocols;
 } DML_VOICESERVICE_CAPABILITIES_SIP_CLIENT,*PDML_VOICESERVICE_CAPABILITIES_SIP_CLIENT;
 
 typedef struct _DML_VOICESERVICE_CAPABILITIES_SIP_REGISTRAR
@@ -745,7 +713,7 @@ typedef struct _DML_VOICESERVICE_CAPABILITIES_SIP_REGISTRAR
     CHAR                                TLSAuthenticationKeySizes[STR_LEN_256];
     TLSENCRYPTIONPROTOCOLS_ENUM         TLSEncryptionProtocols;
     CHAR                                TLSEncryptionKeySizes[STR_LEN_256];
-    TLSKEYEXCHANGEPROTOCOLOS_ENUM       TLSKeyExchangeProtocols;
+    TLSKEYEXCHANGEPROTOCOLS_ENUM       TLSKeyExchangeProtocols;
 } DML_VOICESERVICE_CAPABILITIES_SIP_REGISTRAR, *PDML_VOICESERVICE_CAPABILITIES_SIP_REGISTRAR;
 
 
@@ -794,6 +762,7 @@ typedef struct _DML_VOICESERVICE_CAPABILITIES_QUALITYINDICATOR
 typedef struct _DML_VOICESERVICE_CAPABILITIES_CODEC
  {
     ULONG                       uInstanceNumber;
+    void*                       pParentVoiceService;
     CHAR                        Alias[STR_LEN_64];
     CAPABILITIESCODEC_ENUM      Codec;
     UINT                        BitRate;
@@ -838,6 +807,7 @@ typedef struct _DML_VOICESERVICE_CAPABILITIES
 
 typedef struct _DML_RESERVEDPORTS
 {
+    void*      pParentVoiceService;
     CHAR       WANPortRange[STR_LEN_256];
     CHAR       LANPortRange[STR_LEN_256];
 } DML_RESERVEDPORTS,*PDML_RESERVEDPORTS;
@@ -846,6 +816,7 @@ typedef struct _DML_RESERVEDPORTS
 typedef struct _DML_ISDN_BRI
 {
     ULONG                            uInstanceNumber;
+    void*                            pParentVoiceService;
     BOOL                             Enable;
     STATUS_ENUM                      Status;
     CHAR                             Alias[STR_LEN_64];
@@ -870,6 +841,7 @@ typedef struct _DML_ISDN_BRI
 typedef struct _DML_ISDN_PRI
 {
     ULONG                             uInstanceNumber;
+    void*                             pParentVoiceService;
     BOOL                              Enable;
     STATUS_ENUM                       Status;
     CHAR                              Alias[STR_LEN_64];
@@ -932,6 +904,7 @@ typedef struct _DML_POTS_FXO_DIAGTESTS
 typedef struct _DML_POTS_FXO
 {
     ULONG                   uInstanceNumber;
+    void*                   pParentVoiceService;
     BOOL                    Enable;
     STATUS_ENUM             Status;
     CHAR                    Alias[STR_LEN_64];
@@ -968,11 +941,12 @@ typedef struct _DML_POTS_FXS_VOICEPROCESSING
 typedef struct _DML_POTS_FXS
 {
     ULONG                         uInstanceNumber;
+    void*                         pParentVoiceService;
     BOOL                          Enable;
     STATUS_ENUM                   Status;
     CHAR                          Alias[STR_LEN_64];
     CHAR                          Name[STR_LEN_64];
-    CHAR                          ToneEventProfile;
+    CHAR                          ToneEventProfile[STR_LEN_256];
     PASS_THROUGH_ENUM             FaxPassThrough;
     PASS_THROUGH_ENUM             ModemPassThrough;
     POTS_DIALTYPE_ENUM            DialType;
@@ -1012,6 +986,7 @@ typedef  struct _DML_POTS_FXO_LIST_
 typedef  struct _DML_POTS_RINGER_EVT
  {
     ULONG                         uInstanceNumber;
+    void*                         pParentVoiceService;
     CHAR                          Alias[STR_LEN_64];
     FUNCTION_TYPE_ENUM            Function;
     CHAR                          Cadence[STR_LEN_256];
@@ -1054,6 +1029,7 @@ typedef struct _DML_DECT_BASE_STATS
 typedef struct _DML_DECT_BASE
 {
     ULONG                     uInstanceNumber;
+    void*                     pParentVoiceService;
     BOOL                      Enable;
     STATUS_ENUM               Status;
     CHAR                      Alias[STR_LEN_64];
@@ -1078,6 +1054,7 @@ typedef struct _DML_DECT_BASE
 typedef struct _DML_DECT_PORTABLE
 {
     ULONG                       uInstanceNumber;
+    void*                       pParentVoiceService;
     BOOL                        Enable;
     STATUS_ENUM                 Status;
     CHAR                        Alias[STR_LEN_64];
@@ -1131,10 +1108,10 @@ typedef struct _DML_DECT
 typedef struct _DML_SIP_CLIENT_CONTACT
 {
     ULONG                           uInstanceNumber;
-    void*                           *pParentVoiceService;
-    void                            *pParentSipClient;
+    void*                           pParentVoiceService;
+    void*                           pParentSipClient;
     BOOL                            Enable;
-    SIP_CLIENT_CONTACT_STATUS_ENUM  Status;
+    SIP_STATUS_ENUM                 Status;
     CHAR                            Alias[STR_LEN_64];
     ORIGIN_ENUM                     Origin;
     CHAR                            IPAddress[STR_LEN_45];
@@ -1148,6 +1125,8 @@ typedef struct _DML_SIP_CLIENT_CONTACT
 typedef struct _DML_SIP_CLIENT_SIPEVENT
 {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentSipClient;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     CHAR    Event[STR_LEN_32];
@@ -1182,7 +1161,7 @@ typedef  struct _DML_SIP_CLIENT_SIPEVENTSUB_LIST_
 typedef  struct _DML_SIP_CLIENT
  {
     ULONG                             uInstanceNumber;
-    void*                             *pParentVoiceService;
+    void*                             pParentVoiceService;
     BOOL                              Enable;
     BOOL                              QuiescentMode;
     CLIENT_STATUS_ENUM                Status;
@@ -1203,6 +1182,8 @@ typedef  struct _DML_SIP_CLIENT
 typedef struct _SIP_NETWORK_FQDNSERVER
 {
     ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
+    void*           pParentSipNetwork;
     BOOL            Enable;
     CHAR            Alias[STR_LEN_64];
     ORIGIN_ENUM     Origin;
@@ -1217,6 +1198,8 @@ typedef struct _SIP_NETWORK_FQDNSERVER
 typedef struct _SIP_NETWORK_EVENTSUBSCRIBE
 {
     ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
+    void*           pParentSipNetwork;
     BOOL            Enable;
     CHAR            Alias[STR_LEN_64];
     CHAR            Event[STR_LEN_32];
@@ -1229,6 +1212,8 @@ typedef struct _SIP_NETWORK_EVENTSUBSCRIBE
 typedef struct _SIP_NETWORK_RESPMAP
 {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentSipNetwork;
     CHAR    Alias[STR_LEN_64];
     UINT    SIPResponseNumber;
     BOOL    Enable;
@@ -1288,10 +1273,10 @@ typedef enum _INBOUNDAUTH_ENUM
 typedef  struct _DML_SIP_NETWORK
  {
     ULONG                                   uInstanceNumber;
-    void*                                   *pParentVoiceService;
+    void*                                   pParentVoiceService;
     BOOL                                    Enable;
     BOOL                                    QuiescentMode;
-    SIP_NETWORK_STATUS_ENUM                 Status;
+    NETWORK_STATUS_ENUM                     Status;
     CHAR                                    Alias[STR_LEN_64];
     CHAR                                    X_RDK_Firewall_Rule_Data[STR_LEN_256];
     CHAR                                    ProxyServer[STR_LEN_256];
@@ -1354,7 +1339,7 @@ typedef  struct _DML_SIP_NETWORK
     UINT                                    MaxSessions;
     UINT                                    X_RDK_SKBMark;
     BOOL                                    X_RDK_Central_COM_NetworkDisconnect;
-    CHAR                                    X_RDK_Central_COM_ConferencingURI;
+    CHAR                                    X_RDK_Central_COM_ConferencingURI[STR_LEN_256];
     BOOL                                    X_RDK_PRACKRequired;
     DML_SIP_NETWORK_FQDNSERVER_LIST_T       FQDNServer;
     DML_SIP_NETWORK_EVENTSUBSCRIBE_LIST_T   EventSubscribe;
@@ -1388,6 +1373,7 @@ typedef  struct _DML_SIP_CLIENT_LIST_
 typedef struct _DML_SIP_PROXY
 {
     ULONG               uInstanceNumber;
+    void*               pParentVoiceService;
     BOOL                Enable;
     SIP_STATUS_ENUM     Status;
     CHAR                Alias[STR_LEN_64];
@@ -1413,6 +1399,9 @@ typedef  struct _DML_SIP_PROXY_LIST_
 typedef  struct _DML_SIP_REGISTRAR_ACCOUNT_CONTACT
  {
     ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
+    void*           pParentSipRegister;
+    void*           pParentSipRegisterAccount;
     BOOL            Enable;
     SIP_STATUS_ENUM Status;
     CHAR            Alias[STR_LEN_64];
@@ -1439,7 +1428,9 @@ typedef  struct _DML_SIP_REGISTRAR_ACCOUNT_CONTACT_LIST_
 typedef  struct _DML_SIP_REGISTRAR_ACCOUNT
  {
     ULONG                                       uInstanceNumber;
-    BOOL                                        Enable;
+    void*                                       pParentVoiceService;
+    void*                                       pParentSipRegistrar;
+    SIP_REGISTRAR_ACC_ENABLE_ENUM               Enable;
     BOOL                                        QuiescentMode;
     CLIENT_STATUS_ENUM                          Status;
     CHAR                                        Alias[STR_LEN_64];
@@ -1447,7 +1438,7 @@ typedef  struct _DML_SIP_REGISTRAR_ACCOUNT
     CALLSTATUS_ENUM                             CallStatus;
     CHAR                                        AuthUserName[STR_LEN_128];
     CHAR                                        AuthPassword[STR_LEN_128];
-    REGISTRATION_STATUS_ENUM                    RegistrationStatus;
+    ACC_REGISTRATION_STATUS_ENUM                RegistrationStatus;
     CHAR                                        URI[STR_LEN_389];
     CHAR                                        Domain[STR_LEN_256];
     CHAR                                        CodecList[STR_LEN_256];
@@ -1470,6 +1461,7 @@ typedef  struct _DML_SIP_REGISTRAR_ACCOUNT_LIST_
 typedef struct _DML_SIP_REGISTRAR
 {
     ULONG                               uInstanceNumber;
+    void*                               pParentVoiceService;
     BOOL                                Enable;
     BOOL                                QuiescentMode;
     SIP_STATUS_ENUM                     Status;
@@ -1508,12 +1500,13 @@ typedef struct _DML_SIP
 
 typedef  struct _DML_MGCP_CLIENT
  {
-    ULONG                               uInstanceNumber;
+    ULONG                   uInstanceNumber;
+    void*                   pParentVoiceService;
     BOOL                    Enable;
     BOOL                    QuiescentMode;
     CLIENT_STATUS_ENUM      Status;
     CHAR                    Alias[STR_LEN_64];
-    REGISTER_MODE_ENUM      RegisterMode;
+    MGCP_REGISTER_MODE_ENUM RegisterMode;
     UINT                    LocalPort;
     CHAR                    Domain[STR_LEN_256];
     CHAR                    User[STR_LEN_64];
@@ -1535,7 +1528,8 @@ typedef  struct _DML_MGCP_CLIENT_LIST_
 
 typedef  struct _DML_MGCP_NETWORK
  {
-    ULONG                               uInstanceNumber;
+    ULONG                           uInstanceNumber;
+    void*                           pParentVoiceService;
     BOOL                            Enable;
     BOOL                            QuiescentMode;
     MGCP_NETWORK_REG_STATUS_ENUM    Status;
@@ -1580,7 +1574,8 @@ typedef struct _DML_MGCP
 
 typedef  struct _DML_H323_CLIENT
  {
-    ULONG                               uInstanceNumber;
+    ULONG               uInstanceNumber;
+    void*               pParentVoiceService;
     BOOL                Enable;
     BOOL                QuiescentMode;
     CLIENT_STATUS_ENUM  Status;
@@ -1608,6 +1603,7 @@ typedef  struct _DML_H323_CLIENT_LIST_
 typedef  struct _DML_H323_NETWORK
  {
     ULONG                   uInstanceNumber;
+    void*                   pParentVoiceService;
     BOOL                    Enable;
     BOOL                    QuiescentMode;
     NETWORK_STATUS_ENUM     Status;
@@ -1649,18 +1645,13 @@ typedef struct _DML_H323
 typedef enum _LINE_ORIGIN_ENUM
 {
     LINE_ORIGIN_STATIC,
-    LINE_ORIGIN_DDIRange
+    LINE_ORIGIN_DDI_RANGE
 } LINE_ORIGIN_ENUM;
-
-typedef enum _CALLCTRL_ORIGIN_ENUM
-{
-    CALLCTRL_ORIGIN_STATIC,
-    CALLCTRL_ORIGIN_DDIRange
-} CALLCTRL_ORIGIN_ENUM;
 
 typedef struct _DML_TRUNK
 {
    ULONG                   uInstanceNumber;
+   void*                   pParentVoiceService;
    BOOL                    Enable;
    BOOL                    QuiescentMode;
    TRUNK_STATUS_ENUM       Status;
@@ -1691,14 +1682,15 @@ typedef  struct _DML_TRUNK_LIST_
 
 typedef enum _GROUP_RINGTYPE_ENUM
 {
-    SIMULTANEOUS,
-    HIERARCHICAL,
-    CYCLIC
+    GROUP_RINGTYPE_SIMULTANEOUS,
+    GROUP_RINGTYPE_HIERARCHICAL,
+    GROUP_RINGTYPE_CYCLIC
 } GROUP_RINGTYPE_ENUM;
 
 typedef  struct _DML_CALLCONTROL_GROUP
  {
-    ULONG   uInstanceNumber;
+    ULONG                   uInstanceNumber;
+    void*                   pParentVoiceService;
     CHAR                    Alias[STR_LEN_64];
     CHAR                    Extensions[STR_LEN_256];
     GROUP_RINGTYPE_ENUM     RingType;
@@ -1719,7 +1711,9 @@ typedef  struct _DML_CALLCONTROL_GROUP_LIST_
 
 typedef  struct _DML_CALLCONTROL_NUMBERINGPLAN_PREFIXINFO
  {
-    ULONG   uInstanceNumber;
+    ULONG       uInstanceNumber;
+    void*       pParentVoiceService;
+    void*       pParentCallCtrlNumPlan;
     CHAR        Alias[STR_LEN_64];
     BOOL        Enable;
     CHAR        PrefixRange[STR_LEN_42];
@@ -1746,7 +1740,8 @@ typedef  struct _DML_CALLCONTROL_NUMBERINGPLAN_PREFIXINFO_LIST_
 
 typedef  struct _DML_CALLCONTROL_NUMBERINGPLAN
  {
-    ULONG   uInstanceNumber;
+    ULONG                                               uInstanceNumber;
+    void*                                               pParentVoiceService;
     CHAR                                                Alias[STR_LEN_64];
     UINT                                                MinimumNumberOfDigits;
     UINT                                                MaximumNumberOfDigits;
@@ -1772,7 +1767,8 @@ typedef  struct _DML_CALLCONTROL_NUMBERINGPLAN_LIST_
 
 typedef  struct _DML_CALLCONTROL_OUTGOINGMAP
  {
-    ULONG   uInstanceNumber;
+    ULONG       uInstanceNumber;
+    void*       pParentVoiceService;
     BOOL        Enable;
     CHAR        Alias[STR_LEN_64];
     CHAR        CLIPNoScreeningNumber[STR_LEN_32];
@@ -1796,6 +1792,7 @@ typedef  struct _DML_CALLCONTROL_OUTGOINGMAP_LIST_
 typedef  struct _DML_CALLCONTROL_INCOMINGMAP
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     CHAR    Line[STR_LEN_256];
@@ -1826,7 +1823,8 @@ typedef enum _SMTP_AUTH_TYPE_ENUM
 
 typedef  struct _DML_CALLCONTROL_MAILBOX
  {
-    ULONG   uInstanceNumber;
+    ULONG                   uInstanceNumber;
+    void*                   pParentVoiceService;
     BOOL                    Enable;
     CHAR                    Alias[STR_LEN_64];
     UINT                    MaxMsg;
@@ -1914,7 +1912,8 @@ typedef enum _CONF_CALLING_STATUS_ENUM
 
 typedef  struct _DML_CALLCONTROL_EXTENSION
  {
-    ULONG   uInstanceNumber;
+    ULONG                               uInstanceNumber;
+    void*                               pParentVoiceService;
     BOOL                                Enable;
     BOOL                                QuiescentMode;
     CALLCTRL_EXT_STATUS_ENUM            Status;
@@ -1956,13 +1955,13 @@ typedef  struct _DML_CALLCONTROL_LINE_STATS
 typedef  struct _DML_CALLCONTROL_LINE
  {
     ULONG                                 uInstanceNumber;
-    void*                                 *pParentVoiceService;
+    void*                                 pParentVoiceService;
     BOOL                                  Enable;
     BOOL                                  QuiescentMode;
     TELCOVOICEMGR_LINE_STATUS_ENUM        Status;
     CHAR                                  Alias[STR_LEN_64];
     TELCOVOICEMGR_CALL_STATE_ENUM         CallStatus;
-    CALLCTRL_ORIGIN_ENUM                  Origin;
+    LINE_ORIGIN_ENUM                      Origin;
     CHAR                                  DirectoryNumber[STR_LEN_32];
     CHAR                                  Provider[STR_LEN_256];
     CHAR                                  CallingFeatures[STR_LEN_256];
@@ -1995,7 +1994,9 @@ typedef enum _DAY_ENUM
 
 typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_CFT
  {
-    ULONG   uInstanceNumber;
+    ULONG       uInstanceNumber;
+    void*       pParentVoiceService;
+    void*       pParentCallCtrlSet;
     BOOL        Enable;
     CHAR        Alias[STR_LEN_64];
     DAY_ENUM    Day;
@@ -2019,6 +2020,8 @@ typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_CFT_LIST_
 typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_SCF
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentCallCtrlSet;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     CHAR    CallingNumber[STR_LEN_32];
@@ -2039,7 +2042,9 @@ typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_SCF_LIST_
 
 typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_SCREJ
  {
-    ULONG   uInstanceNumber;
+    ULONG       uInstanceNumber;
+    void*       pParentVoiceService;
+    void*       pParentCallCtrlSet;
     BOOL        Enable;
     CHAR        Alias[STR_LEN_64];
     CHAR        CallingNumber[STR_LEN_32];
@@ -2060,6 +2065,8 @@ typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_SCREJ_LIST_
 typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_FOLLOWME
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentCallCtrlSet;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     UINT    Delay;
@@ -2091,8 +2098,8 @@ typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET_VOICE2MAIL
 typedef  struct _DML_CALLCONTROL_CALLINGFEATURES_SET
  {
     ULONG                                                   uInstanceNumber;
+    void*                                                   pParentVoiceService;
     CHAR                                                    Alias[STR_LEN_64];
-    void*                                                   *pParentVoiceService;
     BOOL                                                    CallerIDEnable;
     BOOL                                                    CallerIDNameEnable;
     BOOL                                                    CallWaitingEnable;
@@ -2163,6 +2170,8 @@ typedef struct _DML_CALLCONTROL
 typedef  struct _DML_INTERWORK_USERINTERFACE
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentInterwork;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     CHAR    Registrar[STR_LEN_256];
@@ -2183,13 +2192,15 @@ typedef  struct _DML_INTERWORK_USERINTERFACE_LIST_
 
 typedef enum _MAP_STATUS_ENUM
 {
-    ACTIVE,
-    INACTIVE
+    MAP_STATUS_ACTIVE,
+    MAP_STATUS_INACTIVE
 } MAP_STATUS_ENUM;
 
 typedef  struct _DML_INTERWORK_MAP
  {
-    ULONG   uInstanceNumber;
+    ULONG               uInstanceNumber;
+    void*               pParentVoiceService;
+    void*               pParentInterwork;
     BOOL                Enable;
     MAP_STATUS_ENUM     Status;
     CHAR                Alias[STR_LEN_64];
@@ -2217,9 +2228,9 @@ typedef  struct _DML_INTERWORK_MAP_LIST_
 
 typedef enum _OPER_STATUS_ENUM
  {
-    INSERVICE,
-    OUTOFSERVICE,
-    NETWORKSERVERSOFFLINE
+    OPER_STATUS_INSERVICE,
+    OPER_STATUS_OUTOFSERVICE,
+    OPER_STATUS_NETWORK_SERVERS_OFFLINE
  } OPER_STATUS_ENUM;
 
 typedef enum _NETWORK_CONNECTION_MODE_ENUM
@@ -2239,14 +2250,15 @@ typedef enum _USER_CONNECTION_MODE_ENUM
 
 typedef enum _CHALLENGE_MODE_ENUM
  {
-    PASSTHRU,
-    RESPONDLOCAL,
-    HOP_BY_HOP
+    CHALLENGE_MODE_PASSTHRU,
+    CHALLENGE_MODE_RESPONDLOCAL,
+    CHALLENGE_MODE_HOP_BY_HOP
  } CHALLENGE_MODE_ENUM;
 
 typedef struct _DML_INTERWORK
 {
     ULONG                                   uInstanceNumber;
+    void*                                   pParentVoiceService;
     BOOL                                    Enable;
     BOOL                                    QuiescentMode;
     INTERWORK_STATUS_ENUM                   Status;
@@ -2292,7 +2304,7 @@ typedef enum _PROTOCOL_ENUM
 
 typedef  struct _DML_CALLLOG_SIGNALINGPERF
  {
-    ULONG   uInstanceNumber;
+    ULONG           uInstanceNumber;
     PROTOCOL_ENUM   Protocol;
     UINT            CallSetupDelay;
     INT             OutgoingMediaEstablishDelay;
@@ -2385,7 +2397,7 @@ typedef struct _DML_CALLLOG_SESSION_DESTINATION
 
 typedef  struct _DML_CALLLOG_SESSION
  {
-    ULONG   uInstanceNumber;
+    ULONG                           uInstanceNumber;
     STREAM_TYPE_ENUM                StreamType;
     CHAR                            Start[STR_LEN_24];
     UINT                            Duration;
@@ -2408,44 +2420,45 @@ typedef  struct _DML_CALLLOG_SESSION_LIST_
 
 typedef enum _DIRECTION_ENUM
 {
-    INCOMING,
-    OUTGOING
+    DIRECTION_INCOMING,
+    DIRECTION_OUTGOING
 } DIRECTION_ENUM;
 
 typedef enum _CALL_TERMINATION_CAUSE_ENUM
 {
-    NOEXTENSIONSMAPPED,
-    NOEXTENSIONSAVAILABLE,
-    ANONYMOUSCALLREJECTION,
-    CALLWAITINGREJECTED,
-    CALLFORWARDINGUNCONDITIONAL,
-    CALLFORWARDINGBUSY,
-    CALLFORWARDINGNOREPLY,
-    LOCALDISCONNECT,
-    LOCALFORBIDDEN,
-    LOCALTIMEOUT,
-    LOCALMEDIAERROR,
-    LOCALPRIORITY,
-    LOCALREJECT,
-    LOCALTRANSFER,
-    LOCALINTERNALERROR,
-    REMOTEDISCONNECT,
-    REMOTEBADREQUEST,
-    REMOTEFORBIDDEN,
-    REMOTENOTFOUND,
-    REMOTEREJECT,
-    REMOTENOTALLOWED,
-    REMOTENOTACCEPTABLE,
-    REMOTETIMEOUT,
-    REMOTEUNAVAILABLE,
-    REMOTEBUSY,
-    REMOTENOTSUPPORTED,
-    REMOTENETWORKFAILURE
+    CALL_TERMINAL_CAUSE_NOEXTENSIONSMAPPED,
+    CALL_TERMINAL_CAUSE_NOEXTENSIONSAVAILABLE,
+    CALL_TERMINAL_CAUSE_ANONYMOUSCALLREJECTION,
+    CALL_TERMINAL_CAUSE_CALLWAITINGREJECTED,
+    CALL_TERMINAL_CAUSE_CALLFORWARDINGUNCONDITIONAL,
+    CALL_TERMINAL_CAUSE_CALLFORWARDINGBUSY,
+    CALL_TERMINAL_CAUSE_CALLFORWARDINGNOREPLY,
+    CALL_TERMINAL_CAUSE_LOCALDISCONNECT,
+    CALL_TERMINAL_CAUSE_LOCALFORBIDDEN,
+    CALL_TERMINAL_CAUSE_LOCALTIMEOUT,
+    CALL_TERMINAL_CAUSE_LOCALMEDIAERROR,
+    CALL_TERMINAL_CAUSE_LOCALPRIORITY,
+    CALL_TERMINAL_CAUSE_LOCALREJECT,
+    CALL_TERMINAL_CAUSE_LOCALTRANSFER,
+    CALL_TERMINAL_CAUSE_LOCALINTERNALERROR,
+    CALL_TERMINAL_CAUSE_REMOTEDISCONNECT,
+    CALL_TERMINAL_CAUSE_REMOTEBADREQUEST,
+    CALL_TERMINAL_CAUSE_REMOTEFORBIDDEN,
+    CALL_TERMINAL_CAUSE_REMOTENOTFOUND,
+    CALL_TERMINAL_CAUSE_REMOTEREJECT,
+    CALL_TERMINAL_CAUSE_REMOTENOTALLOWED,
+    CALL_TERMINAL_CAUSE_REMOTENOTACCEPTABLE,
+    CALL_TERMINAL_CAUSE_REMOTETIMEOUT,
+    CALL_TERMINAL_CAUSE_REMOTEUNAVAILABLE,
+    CALL_TERMINAL_CAUSE_REMOTEBUSY,
+    CALL_TERMINAL_CAUSE_REMOTENOTSUPPORTED,
+    CALL_TERMINAL_CAUSE_REMOTENETWORKFAILURE
 } CALL_TERMINATION_CAUSE_ENUM;
 
 typedef  struct _DML_CALLLOG
 {
     ULONG                              uInstanceNumber;
+    void*                              pParentVoiceService;
     CHAR                               Alias[STR_LEN_64];
     CHAR                               CallingPartyNumber[STR_LEN_256];
     CHAR                               CalledPartyNumber[STR_LEN_256];
@@ -2566,7 +2579,7 @@ typedef enum _DTMF_METHOD_G711
 typedef  struct  _DML_VOIPPROFILE
  {
     ULONG                   uInstanceNumber;
-    void*                   *pParentVoiceService;
+    void*                   pParentVoiceService;
     BOOL                    Enable;
     BOOL                    QuiescentMode;
     CHAR                    Name[STR_LEN_64];
@@ -2599,6 +2612,7 @@ typedef  struct  _DML_VOIPPROFILE_LIST_
 typedef  struct  _DML_CODECPROFILE
  {
     ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
     BOOL            Enable;
     CHAR            Alias[STR_LEN_64];
     CHAR            Codec[STR_LEN_256];
@@ -2621,6 +2635,7 @@ typedef  struct _DML_CODECPROFILE_LIST_
 typedef  struct  _DML_TONE_DESCRIPTION
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
     BOOL    ToneEnable;
     CHAR    Alias[STR_LEN_64];
     CHAR    ToneName[STR_LEN_64];
@@ -2645,6 +2660,7 @@ typedef  struct _DML_TONE_DESCRIPTION_LIST_
 typedef  struct _DML_TONE_PATTERN
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     BOOL    ToneOn;
@@ -2676,32 +2692,34 @@ typedef  struct _DML_TONE_PATTERN_LIST_
 
 typedef enum _FUNCTION_ENUM
 {
-    BUSY,
-    CONFIRMATION,
-    DIAL,
-    LINEMESSAGESWAITING,
-    OFFHOOKWARNING,
-    RINGBACK,
-    REORDER,
-    STUTTERDIAL,
-    CALLWAITING1,
-    CALLWAITING2,
-    CALLWAITING3,
-    CALLWAITING4,
-    ALERTINGSIGNAL,
-    SPECIALDIAL,
-    SPECIALINFO,
-    RELEASE,
-    CONGESTION,
-    USERDEFINED1,
-    USERDEFINED2,
-    USERDEFINED3,
-    USERDEFINED4
+    FUNCTION_BUSY,
+    FUNCTION_CONFIRMATION,
+    FUNCTION_DIAL,
+    FUNCTION_LINEMESSAGESWAITING,
+    FUNCTION_OFFHOOKWARNING,
+    FUNCTION_RINGBACK,
+    FUNCTION_REORDER,
+    FUNCTION_STUTTERDIAL,
+    FUNCTION_CALLWAITING1,
+    FUNCTION_CALLWAITING2,
+    FUNCTION_CALLWAITING3,
+    FUNCTION_CALLWAITING4,
+    FUNCTION_ALERTINGSIGNAL,
+    FUNCTION_SPECIALDIAL,
+    FUNCTION_SPECIALINFO,
+    FUNCTION_RELEASE,
+    FUNCTION_CONGESTION,
+    FUNCTION_USERDEFINED1,
+    FUNCTION_USERDEFINED2,
+    FUNCTION_USERDEFINED3,
+    FUNCTION_USERDEFINED4
 } FUNCTION_ENUM;
 
 typedef  struct _DML_TONE_EVENTPROFILE_EVENT
  {
-    ULONG   uInstanceNumber;
+    ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
+    void*           pParentToneEvtProfile;
     CHAR            Alias[STR_LEN_64];
     FUNCTION_ENUM   Function;
     CHAR            Tone[STR_LEN_256];
@@ -2721,7 +2739,8 @@ typedef  struct _DML_TONE_EVENTPROFILE_EVENT_LIST_
 
 typedef  struct _DML_TONE_EVENTPROFILE
  {
-    ULONG   uInstanceNumber;
+    ULONG                               uInstanceNumber;
+    void*                               pParentVoiceService;
     CHAR                                Alias[STR_LEN_64];
     DML_TONE_EVENTPROFILE_EVENT_LIST_T  Event;
  } DML_TONE_EVENTPROFILE,*PDML_TONE_EVENTPROFILE;
@@ -2758,6 +2777,8 @@ typedef struct _DML_TERMINAL_AUDIO_VOICEPROCESSING
 typedef  struct _DML_TERMINAL_AUDIO
  {
     ULONG                               uInstanceNumber;
+    void*                               pParentVoiceService;
+    void*                               pParentTerminal;
     CHAR                                Alias[STR_LEN_64];
     CHAR                                Name[STR_LEN_256];
     DML_TERMINAL_AUDIO_VOICEPROCESSING  VoiceProcessing;
@@ -2778,6 +2799,8 @@ typedef  struct _DML_TERMINAL_AUDIO_LIST_
 typedef  struct _DML_TERMINAL_BUTTONMAP_BUTTON
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentTerminal;
     CHAR    Alias[STR_LEN_64];
     CHAR    ButtonName[STR_LEN_16];
     CHAR    FacilityAction[STR_LEN_64];
@@ -2807,6 +2830,8 @@ typedef struct _DML_TERMINAL_BUTTONMAP
 typedef  struct _DML_TERMINAL_RINGER_DESCRIPTION
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentTerminal;
     BOOL    RingEnable;
     CHAR    Alias[STR_LEN_64];
     CHAR    RingName[STR_LEN_64];
@@ -2829,6 +2854,8 @@ typedef  struct _DML_TERMINAL_RINGER_DESCRIPTION_LIST_
 typedef  struct _DML_TERMINAL_RINGER_PATTERN
  {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
+    void*   pParentTerminal;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     BOOL    RingerOn;
@@ -2854,17 +2881,28 @@ typedef struct _DML_TERMINAL_RINGER
     DML_TERMINAL_RINGER_PATTERN_LIST_T      Pattern;
  } DML_TERMINAL_RINGER, *PDML_TERMINAL_RINGER;
 
+typedef enum _DIAG_TESTSELECTOR_ENUM
+{
+    DIAG_TESTSELECTOR_PHONE_CONNECTIVITY_TEST = 0,
+    DIAG_TESTSELECTOR_HAZARD_POTENTIAL,
+    DIAG_TESTSELECTOR_FOREIGN_VOLTAGE,
+    DIAG_TESTSELECTOR_RESISTIVE_FAULTS,
+    DIAG_TESTSELECTOR_OFF_HOOK,
+    DIAG_TESTSELECTOR_REN
+} DIAG_TESTSELECTOR_ENUM;
+
 typedef struct _DML_TERMINAL_DIAGTESTS
  {
-    DIAG_STATE_ENUM     DiagnosticsState;
-    CHAR                TestSelector[STR_LEN_256];
-    BOOL                PhoneRinging;
-    CHAR                X_RDK_TestResult[STR_LEN_256];
+    DIAG_STATE_ENUM           DiagnosticsState;
+    DIAG_TESTSELECTOR_ENUM    TestSelector;
+    BOOL                      PhoneRinging;
+    CHAR                      X_RDK_TestResult[STR_LEN_256];
  } DML_TERMINAL_DIAGTESTS,*PDML_TERMINAL_DIAGTESTS;
 
 typedef  struct _DML_VOICESERVICE_TERMINAL
 {
     ULONG                       uInstanceNumber;
+    void*                       pParentVoiceService;
     BOOL                        Enable;
     BOOL                        QuiescentMode;
     TERMINAL_STATUS_ENUM        Status;
@@ -2891,6 +2929,7 @@ typedef  struct _DML_VOICESERVICE_TERMINAL_LIST_
 typedef  struct _DML_VOICESERVICE_CLOCKSYNC_CLOCKSOURCE
 {
     ULONG   uInstanceNumber;
+    void*   pParentVoiceService;
     BOOL    Enable;
     CHAR    Alias[STR_LEN_64];
     UINT    Order;

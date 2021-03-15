@@ -1022,7 +1022,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLoopCurrentDisabled(uint32_t uiService, BOOL bSta
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,VOICE_SERVICE_TABLE_NAME"%s",uiService,"X_RDK_DisableLoopCurrentUntilRegistered");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",bStatus);
+    if(bStatus)
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
+    }
+    else
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","false");
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -2001,7 +2008,7 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
             DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uiProfile - 1];
             pDmlSipNetwork = &(pSipNetwork->dml);
 
-            if ( !pDmlSipNetwork )
+            if ( pDmlSipNetwork == NULL )
             {
                 CcspTraceError(("%s:%d:: pDmlSipNetwork: NULL\n", __FUNCTION__, __LINE__));
                 returnStatus = ANSC_STATUS_RESOURCES;
@@ -2331,6 +2338,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetProxyServer(uint32_t uiService, uint32_t uiProfil
     {
        return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ProxyServer", pProxyServer);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2362,6 +2370,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetProxyServerPort(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ProxyServerPort", uValue);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2398,6 +2407,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRegistrarServer(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RegistrarServer", pRegServer);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2429,6 +2439,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRegistrarServerPort(uint32_t uiService, uint32_t 
     {
        return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE,"RegistrarServerPort", uValue);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2529,7 +2540,15 @@ ANSC_STATUS TelcoVoiceMgrDmlSetNetworkDisconnect(uint32_t uiService, uint32_t ui
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_NetworkDisconnect");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",bValue);
+
+    if(bValue)
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
+    }
+    else
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","false");
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -2562,7 +2581,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(uint32_t uiService, uint32_t uiProf
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"X_RDK_PRACKRequired");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",bValue);
+    if(bValue)
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
+    }
+    else
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","false");
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -2914,11 +2940,10 @@ ANSC_STATUS TelcoVoiceMgrDmlResetLineStats(uint32_t uiService, uint32_t uiProfil
 {
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
-    bool reset = TRUE;
 
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_STATS_TABLE_NAME"%s",uiService,uiProfile,uiLine,"ResetStatistics");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",reset);
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -3074,7 +3099,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
         return ANSC_STATUS_FAILURE;
     }
 
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",bStatus);
+    if(bStatus)
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","true");
+    }
+    else
+    {
+       snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s","false");
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_BOOLEAN,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
@@ -3104,6 +3136,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
 {
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    uint32_t inLen, outLen; char *pOutBuf = NULL;
 
     if(!pBuffer)
     {
@@ -3126,7 +3159,21 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
 #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthPassword");
 #endif
-       (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "AuthPassword",pBuffer);
+        inLen = strlen(pBuffer);
+        outLen = 1 + 2*inLen;
+        /* Encrypt the password before storing in NVRAM */
+        pOutBuf = malloc(outLen);
+        if(pOutBuf)
+        {
+            jsonPwdEncode(pBuffer, inLen, pOutBuf, outLen);
+            (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "AuthPassword",pOutBuf);
+            free(pOutBuf);
+        }
+        else
+        {
+            CcspTraceError(("%s pOutBuf NULL, Set failed\n", __FUNCTION__));
+            return ANSC_STATUS_FAILURE;
+        }
     }
     else
     {
