@@ -335,16 +335,6 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"SIP"))
-    {
-        //VoiceService.{i}.SIP{i}.
-        retStatus = Map_hal_dml_SIP(pVoiceServiceList, ParamName, pValue);
-        if(retStatus != ANSC_STATUS_SUCCESS)
-        {
-            AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
-    }
     else if(strstr(ParamName,"MGCP"))
     {
         //VoiceService.{i}.MGCP{i}.
@@ -355,7 +345,17 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-        else if(strstr(ParamName,"H323"))
+    else if(strstr(ParamName,"SIP"))
+    {
+        //VoiceService.{i}.SIP{i}.
+        retStatus = Map_hal_dml_SIP(pVoiceServiceList, ParamName, pValue);
+        if(retStatus != ANSC_STATUS_SUCCESS)
+        {
+            AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
+            return ANSC_STATUS_FAILURE;
+        }
+    }
+    else if(strstr(ParamName,"H323"))
     {
         //VoiceService.{i}.H323{i}.
         retStatus = Map_hal_dml_H323(pVoiceServiceList, ParamName, pValue);
@@ -1481,11 +1481,6 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             //VoiceService.{i}.Capabilities.QualityIndicator.MaxWorstQIValues
             pCapabilitiesQualityInd->MaxWorstQIValues = strtoul(pValue,&err, 10);
         }
-        else if( strstr(ParamName, "MaxWorstQIValues") )
-        {
-            //VoiceService.{i}.Capabilities.QualityIndicator.MaxWorstQIValues
-            pCapabilitiesQualityInd->MaxWorstQIValues = strtoul(pValue,&err, 10);
-        }
         else
         {
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
@@ -1663,6 +1658,22 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
+        else if( strstr(ParamName, "ProtocolEmulation") )
+        {
+            //VoiceService.{i}.ISDN.BRI.{i}.ProtocolEmulation
+            if(strcmp(pValue,"TE") == 0)
+            {
+                pIsdnBri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_TE;
+            }
+            else if(strcmp(pValue,"NT") == 0)
+            {
+                pIsdnBri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_NT;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
         else if( strstr(ParamName, "Protocol") )
         {
             //VoiceService.{i}.ISDN.BRI.{i}.Protocol
@@ -1697,22 +1708,6 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             else if(strcmp(pValue,"Q.SIG") == 0)
             {
                 pIsdnBri->Protocol = BRI_PROTOCOL_QSIG;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
-        }
-        else if( strstr(ParamName, "ProtocolEmulation") )
-        {
-            //VoiceService.{i}.ISDN.BRI.{i}.ProtocolEmulation
-            if(strcmp(pValue,"TE") == 0)
-            {
-                pIsdnBri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_TE;
-            }
-            else if(strcmp(pValue,"NT") == 0)
-            {
-                pIsdnBri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_NT;
             }
             else
             {
@@ -1929,6 +1924,22 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
+        else if( strstr(ParamName, "ProtocolEmulation") )
+        {
+            //VoiceService.{i}.ISDN.PRI.{i}.ProtocolEmulation
+            if(strcmp(pValue,"TE") == 0)
+            {
+                pIsdnPri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_TE;
+            }
+            else if(strcmp(pValue,"NT") == 0)
+            {
+                pIsdnPri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_NT;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
         else if( strstr(ParamName, "Protocol") )
         {
             //VoiceService.{i}.ISDN.PRI.{i}.Protocol
@@ -1959,22 +1970,6 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             else if(strcmp(pValue,"Q.SIG") == 0)
             {
                 pIsdnPri->Protocol = PRI_PROTOCOL_QSIG;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
-        }
-        else if( strstr(ParamName, "ProtocolEmulation") )
-        {
-            //VoiceService.{i}.ISDN.PRI.{i}.ProtocolEmulation
-            if(strcmp(pValue,"TE") == 0)
-            {
-                pIsdnPri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_TE;
-            }
-            else if(strcmp(pValue,"NT") == 0)
-            {
-                pIsdnPri->ProtocolEmulation = ISDN_PROTO_ENUMULATION_NT;
             }
             else
             {
@@ -3197,15 +3192,15 @@ ANSC_STATUS Map_hal_dml_DECT(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
-        else if( strstr(ParamName, "IPUI") )
-        {
-            //VoiceService.{i}.DECT.Portable.{i}.IPUI
-            strncpy(pDectPortable->IPUI, pValue,strlen(pValue)+1);
-        }
         else if( strstr(ParamName, "IPUILength") )
         {
             //VoiceService.{i}.DECT.Portable.{i}.IPUILength
             pDectPortable->IPUILength = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "IPUI") )
+        {
+            //VoiceService.{i}.DECT.Portable.{i}.IPUI
+            strncpy(pDectPortable->IPUI, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "IPEI") )
         {
@@ -3818,11 +3813,6 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
-        else if( strstr(ParamName, "ProxyServer") )
-        {
-            //VoiceService.{i}.SIP.Network.{i}.ProxyServer
-            strncpy(pSipNetwork->ProxyServer, pValue,strlen(pValue)+1);
-        }
         else if( strstr(ParamName, "ProxyServerPort") )
         {
             //VoiceService.{i}.SIP.Network.{i}.ProxyServerPort
@@ -3852,10 +3842,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
-        else if( strstr(ParamName, "RegistrarServer") )
+        else if( strstr(ParamName, "ProxyServer") )
         {
-            //VoiceService.{i}.SIP.Network.{i}.RegistrarServer
-            strncpy(pSipNetwork->RegistrarServer, pValue,strlen(pValue)+1);
+            //VoiceService.{i}.SIP.Network.{i}.ProxyServer
+            strncpy(pSipNetwork->ProxyServer, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "RegistrarServerPort") )
         {
@@ -3885,6 +3875,11 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             {
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
+        }
+        else if( strstr(ParamName, "RegistrarServer") )
+        {
+            //VoiceService.{i}.SIP.Network.{i}.RegistrarServer
+            strncpy(pSipNetwork->RegistrarServer, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "ServerDomain") )
         {
@@ -3940,11 +3935,6 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
         }
-        else if( strstr(ParamName, "OutboundProxy") )
-        {
-            //VoiceService.{i}.SIP.Network.{i}.OutboundProxy
-            strncpy(pSipNetwork->OutboundProxy, pValue,strlen(pValue)+1);
-        }
         else if( strstr(ParamName, "OutboundProxyResolvedAddress") )
         {
             //VoiceService.{i}.SIP.Network.{i}.OutboundProxyResolvedAddress
@@ -3970,6 +3960,11 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         {
             //VoiceService.{i}.SIP.Network.{i}.OutboundProxyPort
             pSipNetwork->OutboundProxyPort = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "OutboundProxy") )
+        {
+            //VoiceService.{i}.SIP.Network.{i}.OutboundProxy
+            strncpy(pSipNetwork->OutboundProxy, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "STUNEnable") )
         {
@@ -4083,15 +4078,15 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             //VoiceService.{i}.SIP.Network.{i}.TimerK
             pSipNetwork->TimerK = strtoul(pValue,&err, 10);
         }
-        else if( strstr(ParamName, "InviteExpires") )
-        {
-            //VoiceService.{i}.SIP.Network.{i}.InviteExpires
-            pSipNetwork->InviteExpires = strtoul(pValue,&err, 10);
-        }
         else if( strstr(ParamName, "ReInviteExpires") )
         {
             //VoiceService.{i}.SIP.Network.{i}.ReInviteExpires
             pSipNetwork->ReInviteExpires = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "InviteExpires") )
+        {
+            //VoiceService.{i}.SIP.Network.{i}.InviteExpires
+            pSipNetwork->InviteExpires = strtoul(pValue,&err, 10);
         }
         else if( strstr(ParamName, "RegisterExpires") )
         {
@@ -4102,6 +4097,16 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         {
             //VoiceService.{i}.SIP.Network.{i}.RegisterRetryIntrval
             pSipNetwork->RegisterRetryInterval = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "InboundAuthUsername") )
+        {
+            //VoiceService.{i}.SIP.Network.{i}.InboundAuthUsername
+            strncpy(pSipNetwork->InboundAuthUsername, pValue,strlen(pValue)+1);
+        }
+        else if( strstr(ParamName, "InboundAuthPassword") )
+        {
+            //VoiceService.{i}.SIP.Network.{i}.InboundAuthPassword
+            strncpy(pSipNetwork->InboundAuthPassword, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "InboundAuth") )
         {
@@ -4122,16 +4127,6 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             {
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
-        }
-        else if( strstr(ParamName, "InboundAuthUsername") )
-        {
-            //VoiceService.{i}.SIP.Network.{i}.InboundAuthUsername
-            strncpy(pSipNetwork->InboundAuthUsername, pValue,strlen(pValue)+1);
-        }
-        else if( strstr(ParamName, "InboundAuthPassword") )
-        {
-            //VoiceService.{i}.SIP.Network.{i}.InboundAuthPassword
-            strncpy(pSipNetwork->InboundAuthPassword, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "UseCodecPriorityInSDPResponse") )
         {
@@ -4392,11 +4387,6 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
                 //VoiceService.{i}.SIP.Network.{i}.EventSubscribe.{i}.Event
                 strncpy(pSipNetworkEvtSubscribe->Event, pValue,strlen(pValue)+1);
             }
-            else if( strstr(ParamName, "Notifier") )
-            {
-                //VoiceService.{i}.SIP.Network.{i}.EventSubscribe.{i}.Notifier
-                strncpy(pSipNetworkEvtSubscribe->Notifier, pValue,strlen(pValue)+1);
-            }
             else if( strstr(ParamName, "NotifierPort") )
             {
                 //VoiceService.{i}.SIP.Network.{i}.EventSubscribe.{i}.NotifierPort
@@ -4425,6 +4415,11 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
                 {
                     AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
                 }
+            }
+            else if( strstr(ParamName, "Notifier") )
+            {
+                //VoiceService.{i}.SIP.Network.{i}.EventSubscribe.{i}.Notifier
+                strncpy(pSipNetworkEvtSubscribe->Notifier, pValue,strlen(pValue)+1);
             }
             else if( strstr(ParamName, "ExpireTime") )
             {
@@ -5733,11 +5728,6 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             }
 
         }
-        else if( strstr(ParamName, "Gatekeeper") )
-        {
-            //VoiceService.{i}.H323.Network.{i}.Gatekeeper
-            strncpy(pH323Nwk->Gatekeeper, pValue,strlen(pValue)+1);
-        }
         else if( strstr(ParamName, "GatekeeperPort") )
         {
             //VoiceService.{i}.H323.Network.{i}.GatekeeperPort
@@ -5747,6 +5737,11 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         {
             //VoiceService.{i}.H323.Network.{i}.GatekeeperID
             strncpy(pH323Nwk->GatekeeperID, pValue,strlen(pValue)+1);
+        }
+        else if( strstr(ParamName, "Gatekeeper") )
+        {
+            //VoiceService.{i}.H323.Network.{i}.Gatekeeper
+            strncpy(pH323Nwk->Gatekeeper, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "TimeToLive") )
         {
@@ -6105,34 +6100,6 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                  pCallCtrlLine->QuiescentMode = false;
             }
         }
-        else if( strstr(ParamName, "Status") )
-        {
-            //VoiceService.{i}.CallControl.Line.{i}.Status
-            if(strcmp(pValue,"Up") == 0)
-            {
-                pCallCtrlLine->Status = VOICE_LINE_STATE_UP;
-            }
-            else if(strcmp(pValue,"Error") == 0)
-            {
-                pCallCtrlLine->Status = VOICE_LINE_STATE_ERROR;
-            }
-            else if(strcmp(pValue,"Testing") == 0)
-            {
-                pCallCtrlLine->Status = VOICE_LINE_STATE_TESTING;
-            }
-            else if(strcmp(pValue,"Quiescent") == 0)
-            {
-                pCallCtrlLine->Status = VOICE_LINE_STATE_QUIESCENT;
-            }
-            else if(strcmp(pValue,"Disabled") == 0)
-            {
-                pCallCtrlLine->Status = VOICE_LINE_STATE_DISABLED;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
-        }
         else if( strstr(ParamName, "CallStatus") )
         {
             //VoiceService.{i}.CallControl.Line.{i}.CallStatus
@@ -6159,6 +6126,34 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             else if (strcmp(pValue,"Disconnected") == 0)
             {
                 pCallCtrlLine->CallStatus = VOICE_CALL_STATE_DISCONNECTED;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
+        else if( strstr(ParamName, "Status") )
+        {
+            //VoiceService.{i}.CallControl.Line.{i}.Status
+            if(strcmp(pValue,"Up") == 0)
+            {
+                pCallCtrlLine->Status = VOICE_LINE_STATE_UP;
+            }
+            else if(strcmp(pValue,"Error") == 0)
+            {
+                pCallCtrlLine->Status = VOICE_LINE_STATE_ERROR;
+            }
+            else if(strcmp(pValue,"Testing") == 0)
+            {
+                pCallCtrlLine->Status = VOICE_LINE_STATE_TESTING;
+            }
+            else if(strcmp(pValue,"Quiescent") == 0)
+            {
+                pCallCtrlLine->Status = VOICE_LINE_STATE_QUIESCENT;
+            }
+            else if(strcmp(pValue,"Disabled") == 0)
+            {
+                pCallCtrlLine->Status = VOICE_LINE_STATE_DISABLED;
             }
             else
             {
@@ -6396,6 +6391,38 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                  pCallCtrlExt->QuiescentMode = false;
             }
         }
+        else if( strstr(ParamName, "CallStatus") )
+        {
+            //VoiceService.{i}.CallControl.Extension.{i}.CallStatus
+            if (strcmp(pValue,"Idle") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_IDLE;
+            }
+            else if (strcmp(pValue,"Dialing") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DIALING;
+            }
+            else if (strcmp(pValue,"Delivered") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DELIVERED;
+            }
+            else if (strcmp(pValue,"Connected") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_CONNECTED;
+            }
+            else if (strcmp(pValue,"Alerting") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_ALERTING;
+            }
+            else if (strcmp(pValue,"Disconnected") == 0)
+            {
+                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DISCONNECTED;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
         else if( strstr(ParamName, "Status") )
         {
             //VoiceService.{i}.CallControl.Extension.{i}.Status
@@ -6428,38 +6455,6 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
 
-        }
-        else if( strstr(ParamName, "CallStatus") )
-        {
-            //VoiceService.{i}.CallControl.Extension.{i}.CallStatus
-            if (strcmp(pValue,"Idle") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_IDLE;
-            }
-            else if (strcmp(pValue,"Dialing") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DIALING;
-            }
-            else if (strcmp(pValue,"Delivered") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DELIVERED;
-            }
-            else if (strcmp(pValue,"Connected") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_CONNECTED;
-            }
-            else if (strcmp(pValue,"Alerting") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_ALERTING;
-            }
-            else if (strcmp(pValue,"Disconnected") == 0)
-            {
-                pCallCtrlExt->CallStatus = CALLCTRL_STATUS_DISCONNECTED;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
         }
         else if( strstr(ParamName, "Origin") )
         {
@@ -7194,15 +7189,15 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                 //VoiceService.{i}.CallControl.NumberingPlan.{i}.PrefixInfo.{i}.DialTone
                 strncpy(pCallCtrlNumPlanPrefixInfo->DialTone, pValue,strlen(pValue)+1);
             }
-            else if( strstr(ParamName, "FacilityAction") )
-            {
-                //VoiceService.{i}.CallControl.NumberingPlan.{i}.PrefixInfo.{i}.FacilityAction
-                strncpy(pCallCtrlNumPlanPrefixInfo->DialTone, pValue,strlen(pValue)+1);
-            }
             else if( strstr(ParamName, "FacilityActionArgument") )
             {
                 //VoiceService.{i}.CallControl.NumberingPlan.{i}.PrefixInfo.{i}.FacilityActionArgument
                 strncpy(pCallCtrlNumPlanPrefixInfo->FacilityActionArgument, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "FacilityAction") )
+            {
+                //VoiceService.{i}.CallControl.NumberingPlan.{i}.PrefixInfo.{i}.FacilityAction
+                strncpy(pCallCtrlNumPlanPrefixInfo->DialTone, pValue,strlen(pValue)+1);
             }
             else
             {
@@ -7364,18 +7359,6 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                      pCallCtrlCFSet->CallTransferEnable = false;
                 }
             }
-            else if( strstr(ParamName, "MWIEnable") )
-            {
-                //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.MWIEnable
-                if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
-                {
-                     pCallCtrlCFSet->MWIEnable = true;
-                }
-                else
-                {
-                     pCallCtrlCFSet->MWIEnable = false;
-                }
-            }
             else if( strstr(ParamName, "VMWIEnable") )
             {
                 //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.VMWIEnable
@@ -7386,6 +7369,18 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                 else
                 {
                      pCallCtrlCFSet->VMWIEnable = false;
+                }
+            }
+            else if( strstr(ParamName, "MWIEnable") )
+            {
+                //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.MWIEnable
+                if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
+                {
+                     pCallCtrlCFSet->MWIEnable = true;
+                }
+                else
+                {
+                     pCallCtrlCFSet->MWIEnable = false;
                 }
             }
             else if( strstr(ParamName, "LineMessagesWaiting") )
@@ -8008,6 +8003,31 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
              pInterwork->QuiescentMode = false;
         }
     }
+    else if( strstr(ParamName, "OperationalStatusReason") )
+    {
+        //VoiceService.{i}.Interwork.{i}.OperationalStatusReason
+        strncpy(pInterwork->OperationalStatusReason, pValue,strlen(pValue)+1);
+    }
+    else if( strstr(ParamName, "OperationalStatus") )
+    {
+        //VoiceService.{i}.Interwork.{i}.OperationalStatus
+        if (strcmp(pValue,"InService") == 0)
+        {
+            pInterwork->OperationalStatus = OPER_STATUS_INSERVICE;
+        }
+        else if (strcmp(pValue,"OutOfService") == 0)
+        {
+            pInterwork->OperationalStatus = OPER_STATUS_OUTOFSERVICE;
+        }
+        else if (strcmp(pValue,"NetworkServersOffline") == 0)
+        {
+            pInterwork->OperationalStatus = OPER_STATUS_NETWORK_SERVERS_OFFLINE;
+        }
+        else
+        {
+            AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+        }
+    }
     else if( strstr(ParamName, "Status") )
     {
         //VoiceService.{i}.Interwork.{i}.Status
@@ -8031,31 +8051,6 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
         {
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
-    }
-    else if( strstr(ParamName, "OperationalStatus") )
-    {
-        //VoiceService.{i}.Interwork.{i}.OperationalStatus
-        if (strcmp(pValue,"InService") == 0)
-        {
-            pInterwork->OperationalStatus = OPER_STATUS_INSERVICE;
-        }
-        else if (strcmp(pValue,"OutOfService") == 0)
-        {
-            pInterwork->OperationalStatus = OPER_STATUS_OUTOFSERVICE;
-        }
-        else if (strcmp(pValue,"NetworkServersOffline") == 0)
-        {
-            pInterwork->OperationalStatus = OPER_STATUS_NETWORK_SERVERS_OFFLINE;
-        }
-        else
-        {
-            AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-        }
-    }
-    else if( strstr(ParamName, "OperationalStatusReason") )
-    {
-        //VoiceService.{i}.Interwork.{i}.OperationalStatusReason
-        strncpy(pInterwork->OperationalStatusReason, pValue,strlen(pValue)+1);
     }
     else if( strstr(ParamName, "NetworkConnectionMode") )
     {
@@ -8299,6 +8294,11 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
                  pInterworkMap->Enable = false;
             }
         }
+        else if( strstr(ParamName, "StatusDescription") )
+        {
+            //VoiceService.{i}.Interwork.{i}.Map.{i}.StatusDescription
+            strncpy(pInterworkMap->StatusDescription, pValue,strlen(pValue)+1);
+        }
         else if( strstr(ParamName, "Status") )
         {
             //VoiceService.{i}.Interwork.{i}.Map.{i}.Status
@@ -8314,11 +8314,6 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
             {
                 AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
             }
-        }
-        else if( strstr(ParamName, "StatusDescription") )
-        {
-            //VoiceService.{i}.Interwork.{i}.Map.{i}.StatusDescription
-            strncpy(pInterworkMap->StatusDescription, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "LastTime") )
         {
@@ -8351,11 +8346,6 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
             //VoiceService.{i}.Interwork.{i}.Map.{i}.UserConnection
             strncpy(pInterworkMap->UserConnection, pValue,strlen(pValue)+1);
         }
-        else if( strstr(ParamName, "DigitMap") )
-        {
-            //VoiceService.{i}.Interwork.{i}.Map.{i}.DigitMap
-            strncpy(pInterworkMap->DigitMap, pValue,strlen(pValue)+1);
-        }
         else if( strstr(ParamName, "DigitMapEnable") )
         {
             //VoiceService.{i}.Interwork.{i}.Map.{i}.DigitMapEnable
@@ -8367,6 +8357,11 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
             {
                  pInterworkMap->DigitMapEnable = false;
             }
+        }
+        else if( strstr(ParamName, "DigitMap") )
+        {
+            //VoiceService.{i}.Interwork.{i}.Map.{i}.DigitMap
+            strncpy(pInterworkMap->DigitMap, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "Priority") )
         {
@@ -8897,7 +8892,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDspRevCodec = &(pCallLogSessionSrcDsp->ReceiveCodec);
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.
-                    if( strstr(ParamName, "Codec") )
+                    if( strstr(ParamName, "ReceiveCodec.Codec") )
                     {
                         //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Codec
                         strncpy(pCallLogSessDspRevCodec->Codec, pValue,strlen(pValue)+1);
@@ -8934,7 +8929,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDspTXCodec = &(pCallLogSessionSrcDsp->TransmitCodec);
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.
-                    if( strstr(ParamName, "Codec") )
+                    if( strstr(ParamName, "TransmitCodec.Codec") )
                     {
                         //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Codec
                         strncpy(pCallLogSessDspTXCodec->Codec, pValue,strlen(pValue)+1);
@@ -8982,12 +8977,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
             {
                 PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessSrcVoipVQ = &(pCallLogSessionSrc->VoiceQuality);
                 //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.
-                if( strstr(ParamName, "VoIPQualityIndicator") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.VoIPQualityIndicator
-                    strncpy(pCallLogSessSrcVoipVQ->VoIPQualityIndicator, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
+                if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorsValues
                     strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
@@ -8996,6 +8986,11 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
                     strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "VoIPQualityIndicator") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.VoIPQualityIndicator
+                    strncpy(pCallLogSessSrcVoipVQ->VoIPQualityIndicator, pValue,strlen(pValue)+1);
                 }
                 else
                 {
@@ -9098,16 +9093,6 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndPacketLossRate
                 }
-                else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceiveInterarrivalJitter
-                    pCallLogSessDstRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "FarEndInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndInterarrivalJitter
-                    pCallLogSessDstRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
                 else if( strstr(ParamName, "AverageReceiveInterarrivalJitter") )
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageReceiveInterarrivalJitter
@@ -9118,15 +9103,25 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageFarEndInterarrivalJitter
                     pCallLogSessDstRtp->AverageFarEndInterarrivalJitter = strtoul(pValue,&err, 10);
                 }
-                else if( strstr(ParamName, "RoundTripDelay") )
+                else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
                 {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.RoundTripDelay
-                    pCallLogSessDstRtp->RoundTripDelay = strtoul(pValue,&err, 10);
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceiveInterarrivalJitter
+                    pCallLogSessDstRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "FarEndInterarrivalJitter") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndInterarrivalJitter
+                    pCallLogSessDstRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
                 }
                 else if( strstr(ParamName, "AverageRoundTripDelay") )
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageRoundTripDelay
                     pCallLogSessDstRtp->AverageRoundTripDelay = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "RoundTripDelay") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.RoundTripDelay
+                    pCallLogSessDstRtp->RoundTripDelay = strtoul(pValue,&err, 10);
                 }
                 else if( strstr(ParamName, "SamplingFrequency") )
                 {
@@ -9147,7 +9142,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDstDspRXCodec = &(pCallLogSessDstDsp->ReceiveCodec);
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.
-                    if( strstr(ParamName, "Codec") )
+                    if( strstr(ParamName, "ReceiveCodec.Codec") )
                     {
                         //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Codec
                         strncpy(pCallLogSessDstDspRXCodec->Codec, pValue,strlen(pValue)+1);
@@ -9184,7 +9179,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDstDspTXCodec = &(pCallLogSessDstDsp->TransmitCodec);
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.
-                    if( strstr(ParamName, "Codec") )
+                    if( strstr(ParamName, "TransmitCodec.Codec") )
                     {
                         //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Codec
                         strncpy(pCallLogSessDstDspTXCodec->Codec, pValue,strlen(pValue)+1);
@@ -9232,12 +9227,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
             {
                 PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessDstDspVQVoipQI = &(pCallLogSessDst->VoiceQuality);
                 //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.
-                if( strstr(ParamName, "VoIPQualityIndicator") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.VoIPQualityIndicator
-                    strncpy(pCallLogSessDstDspVQVoipQI->VoIPQualityIndicator, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
+                if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorsValues
                     strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
@@ -9246,6 +9236,11 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
                 {
                     //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
                     strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "VoIPQualityIndicator") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.VoIPQualityIndicator
+                    strncpy(pCallLogSessDstDspVQVoipQI->VoIPQualityIndicator, pValue,strlen(pValue)+1);
                 }
                 else
                 {
@@ -9608,15 +9603,15 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                      pRTPRedundancy->Enable = false;
                 }
             }
-            else if( strstr(ParamName, "PayloadType") )
-            {
-                //VoiceService.{i}.VoIPProfile.{i}.RTP.Redundancy.PayloadType
-                pRTPRedundancy->PayloadType = strtoul(pValue,&err, 10);
-            }
             else if( strstr(ParamName, "BlockPayloadType") )
             {
                 //VoiceService.{i}.VoIPProfile.{i}.RTP.Redundancy.BlockPayloadType
                 pRTPRedundancy->BlockPayloadType = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PayloadType") )
+            {
+                //VoiceService.{i}.VoIPProfile.{i}.RTP.Redundancy.PayloadType
+                pRTPRedundancy->PayloadType = strtoul(pValue,&err, 10);
             }
             else if( strstr(ParamName, "FaxAndModemRedundancy") )
             {
@@ -10423,7 +10418,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
     {
         PDML_TERMINAL_BUTTONMAP pTermButtonMap = &(pTerminal->ButtonMap);
         //VoiceService.{i}.Terminal.{i}.ButtonMap.
-        if( strstr(ParamName,"Button") )
+        if( strstr(ParamName,"ButtonMap.Button") )
         {
             //VoiceService.{i}.Terminal.{i}.ButtonMap.Button.{i}.
             if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_ButtonMap_Button_index(ParamName, DML_VOICESERVICE_TERMINAL_BUTTONMAP_BUTTON, &hal_index)) ||
