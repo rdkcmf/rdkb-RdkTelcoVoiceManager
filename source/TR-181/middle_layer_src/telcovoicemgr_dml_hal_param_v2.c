@@ -261,13 +261,13 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     }
     else if( strstr(ParamName, "X_RDK_Debug"))
     {
-        if( strstr(ParamName, "LogServer"))
-        {
-           strncpy(pVoiceService->X_RDK_DebugObj.LogServer, pValue,strlen(pValue)+1);
-        }
-        else if( strstr(ParamName, "LogServerPort"))
+        if( strstr(ParamName, "LogServerPort"))
         {
            pVoiceService->X_RDK_DebugObj.LogServerPort = strtoul(pValue,&err,10);
+        }
+        else if( strstr(ParamName, "LogServer"))
+        {
+           strncpy(pVoiceService->X_RDK_DebugObj.LogServer, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "CCTKTraceGroup"))
         {

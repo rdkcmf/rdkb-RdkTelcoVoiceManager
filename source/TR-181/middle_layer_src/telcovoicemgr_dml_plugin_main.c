@@ -929,6 +929,7 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Debug_GetParamStringValue",  X_RDK_Debug_GetParamStringValue);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Debug_GetParamUlongValue",  X_RDK_Debug_GetParamUlongValue);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Debug_SetParamStringValue",  X_RDK_Debug_SetParamStringValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Debug_SetParamUlongValue",X_RDK_Debug_SetParamUlongValue);
 
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "VoiceProfile_IsUpdated", VoiceProfile_IsUpdated);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "VoiceProfile_Synchronize", VoiceProfile_Synchronize);
