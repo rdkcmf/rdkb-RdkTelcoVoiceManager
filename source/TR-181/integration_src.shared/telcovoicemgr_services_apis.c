@@ -1313,7 +1313,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,X_RDK_DEBUG_TABLE_NAME"%s",uiService,"LogServerPort");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uLSPort);
 
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
     }

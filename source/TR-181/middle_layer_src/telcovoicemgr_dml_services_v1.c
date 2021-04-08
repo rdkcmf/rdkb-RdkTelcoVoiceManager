@@ -560,7 +560,7 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
             }
             if( AnscEqualString(ParamName, "X_RDK_Enable", TRUE))
             {
-                * pValue = pVoiceService->X_RDK_Enable;
+                *pValue = pVoiceService->X_RDK_Enable;
                 ret = TRUE;
             }
             else if( AnscEqualString(ParamName, "X_RDK_Status", TRUE))
@@ -568,7 +568,7 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
                 if(TelcoVoiceMgrDmlGetVoiceProcessStatus(pVoiceService->InstanceNumber, &voiceStatus) == ANSC_STATUS_SUCCESS)
                 {
                     pVoiceService->X_RDK_Status = voiceStatus;
-                    * pValue = pVoiceService->X_RDK_Status;
+                    *pValue = pVoiceService->X_RDK_Status;
                     ret = TRUE;
                 }
             }
@@ -887,7 +887,7 @@ BOOL X_RDK_Debug_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, UL
             {
                 if( AnscEqualString(ParamName, "LogServerPort", TRUE))
                 {
-                    * pValue = pVoiceService->X_RDK_DebugObj.LogServerPort;
+                    *pValue = pVoiceService->X_RDK_DebugObj.LogServerPort;
                     ret = TRUE;
                 }
             }
