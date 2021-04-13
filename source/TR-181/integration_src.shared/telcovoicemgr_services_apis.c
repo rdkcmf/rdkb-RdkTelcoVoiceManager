@@ -51,7 +51,7 @@
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
 #else
 /* TR104 V1 DML Tables*/
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d."
+#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d.Tests."
 #define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoiceProfile.%d."
 #define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP."
 #define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.RTP."
@@ -3234,7 +3234,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(uint32_t uiService, uint32_t uiProfile
 
 ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInterface, ULONG uState)
 {
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     char testState[JSON_MAX_VAL_ARR_SIZE]={0};
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
@@ -3243,11 +3242,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
 #define FIELD_NAME "TestState"
 #endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,PHYINTERFACE_TABLE_NAME"%s",uiService,uiPhyInterface,FIELD_NAME);
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uState);
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_LONG,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
-    }
     switch(uState)
     {
         case PHYINTERFACE_TESTSTATE_NONE:
@@ -3266,6 +3260,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
             CcspTraceWarning(("[%s][%d] Invalid \n", __FUNCTION__,__LINE__));
             return ANSC_STATUS_FAILURE;
     }
+
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,testState) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
     (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "DiagnosticsState", testState);
     return ANSC_STATUS_SUCCESS;
 }
@@ -3273,16 +3273,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
 
 ANSC_STATUS TelcoVoiceMgrDmlSetTestSelector(uint32_t uiService, uint32_t uiPhyInterface, ULONG uState)
 {
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     char testSelector[JSON_MAX_VAL_ARR_SIZE]={0};
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,PHYINTERFACE_TABLE_NAME"%s",uiService,uiPhyInterface,"TestSelector");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uState);
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
-    }
     switch(uState)
     {
         case PHYINTERFACE_TESTSELECTOR_PHONE_CONNECTIVITY_TEST:
@@ -3307,6 +3301,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestSelector(uint32_t uiService, uint32_t uiPhyIn
             CcspTraceWarning(("[%s][%d] Invalid \n", __FUNCTION__,__LINE__));
             return ANSC_STATUS_FAILURE;
     }
+
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,testSelector) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
     (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "TestSelector", testSelector);
     return ANSC_STATUS_SUCCESS;
 }
