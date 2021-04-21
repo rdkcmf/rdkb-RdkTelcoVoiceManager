@@ -3513,6 +3513,9 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
+                                    uNetworkIndex, "OutboundProxy", pString);
+
             ret = TRUE;
         }
     }

@@ -335,6 +335,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_CallControl_LineList_GetEntry(ANSC_HANDLE hInsConte
 BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+ 
+    TELCOVOICEMGR_LINE_STATUS_ENUM lineStatus = VOICE_LINE_STATE_DISABLED;
+
+    PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -350,8 +354,19 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsCo
 
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        pVoiceService = pHEAD->pParentVoiceService;
+
+        if(pVoiceService == NULL)
+        {
+            CcspTraceWarning(("%s: Invalid pVoiceService[NULL]\n", __func__));
+        }
+        else if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineStatus(pVoiceService->InstanceNumber, TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE,
+                                             pHEAD->uInstanceNumber, &lineStatus))
+        {
+            pHEAD->Status = lineStatus;
+            *puLong = pHEAD->Status;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "Origin", TRUE) )
     {
