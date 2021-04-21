@@ -3370,6 +3370,8 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
         pSipCli->uInstanceNumber = hal_index;
 
+        pSipCli->pParentVoiceService = pVoiceService;
+
         //VoiceService.{i}.SIP.Client.{i}.
         if( strstr(ParamName, "Enable") )
         {
@@ -3562,6 +3564,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
             pSipCliContact->uInstanceNumber = hal_index;
 
+            pSipCliContact->pParentSipClient = pSipCli;
+
+            pSipCliContact->pParentVoiceService = pVoiceService;
+
             //VoiceService.{i}.SIP.Client.{i}.Contact.{i}.
             if( strstr(ParamName, "Enable") )
             {
@@ -3682,6 +3688,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
             pSipCliEvtSubscribe->uInstanceNumber = hal_index;
 
+            pSipCliEvtSubscribe->pParentSipClient = pSipCli;
+
+            pSipCliEvtSubscribe->pParentVoiceService = pVoiceService;
+
             if( strstr(ParamName, "Enable") )
             {
                 //VoiceService.{i}.SIP.Client.{i}.EventSubscribe.{i}.Enable
@@ -3754,6 +3764,8 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         PDML_SIP_NETWORK pSipNetwork = &(pSipNetworkData->dml);
 
         pSipNetwork->uInstanceNumber = hal_index;
+
+        pSipNetwork->pParentVoiceService = pVoiceService;
 
         //VoiceService.{i}.SIP.Network.{i}.
         if( strstr(ParamName, "X_RDK_Firewall_Rule_Data") )
@@ -4276,6 +4288,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
             pSipNetworkFqdnSrv->uInstanceNumber = hal_index;
 
+            pSipNetworkFqdnSrv->pParentSipNetwork = pSipNetwork;
+
+            pSipNetworkFqdnSrv->pParentVoiceService = pVoiceService;
+
             if( strstr(ParamName, "Enable") )
             {
                 //VoiceService.{i}.SIP.Network.{i}.FQDNServer.{i}.Enable
@@ -4369,6 +4385,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             PDML_SIP_NETWORK_EVENTSUBSCRIBE pSipNetworkEvtSubscribe = &(pSipNetworkEvtSubscribeData->dml);
 
             pSipNetworkEvtSubscribe->uInstanceNumber = hal_index;
+
+            pSipNetworkEvtSubscribe->pParentSipNetwork = pSipNetwork;
+
+            pSipNetworkEvtSubscribe->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "Enable") )
             {
@@ -4467,6 +4487,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
             pSipNetworkRespMap->uInstanceNumber = hal_index;
 
+            pSipNetworkRespMap->pParentSipNetwork = pSipNetwork;
+
+            pSipNetworkRespMap->pParentVoiceService = pVoiceService;
+
             if( strstr(ParamName, "SIPResponseNumber") )
             {
                 //VoiceService.{i}.SIP.Network.{i}.ResponseMap.{i}.SIPResponseNumber
@@ -4539,6 +4563,8 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         PDML_SIP_PROXY pSipProxy = &(pSipProxyData->dml);
 
         pSipProxy->uInstanceNumber = hal_index;
+
+        pSipProxy->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -4648,6 +4674,8 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         PDML_SIP_REGISTRAR pSipRegistrar = &(pSipRegistrarData->dml);
 
         pSipRegistrar->uInstanceNumber = hal_index;
+
+        pSipRegistrar->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -4783,6 +4811,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             PDML_SIP_REGISTRAR_ACCOUNT pSipRegistrarAcc = &(pSipRegistrarAccData->dml);
 
             pSipRegistrarAcc->uInstanceNumber = hal_index;
+
+            pSipRegistrarAcc->pParentSipRegistrar = pSipRegistrar;
+
+            pSipRegistrarAcc->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "Enable") )
             {
@@ -4990,6 +5022,11 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
                 pSipRegistrarAccContact->uInstanceNumber = hal_index;
 
+                pSipRegistrarAccContact->pParentSipRegistrarAccount = pSipRegistrarAcc;
+
+                pSipRegistrarAccContact->pParentSipRegistrar = pSipRegistrar;
+
+                pSipRegistrarAccContact->pParentVoiceService = pVoiceService;
 
                 if( strstr(ParamName, "Enable") )
                 {
@@ -5145,6 +5182,8 @@ ANSC_STATUS Map_hal_dml_MGCP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
         pMGCP_Client->uInstanceNumber = hal_index;
 
+        pMGCP_Client->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Enable") )
         {
             //VoiceService.{i}.MGCP.Client.{i}.Enable
@@ -5294,6 +5333,8 @@ ANSC_STATUS Map_hal_dml_MGCP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         PDML_MGCP_NETWORK pMGCP_Network = &(pMGCP_NetworkData->dml);
 
         pMGCP_Network->uInstanceNumber = hal_index;
+
+        pMGCP_Network->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -5528,6 +5569,8 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
         pH323Cli->uInstanceNumber = hal_index;
 
+        pH323Cli->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Enable") )
         {
             //VoiceService.{i}.H323.Client.{i}.Enable
@@ -5674,6 +5717,8 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         PDML_H323_NETWORK pH323Nwk = &(pH323NwkData->dml);
 
         pH323Nwk->uInstanceNumber = hal_index;
+
+        pH323Nwk->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -5867,6 +5912,8 @@ ANSC_STATUS Map_hal_dml_Trunk(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char*
     PDML_TRUNK pTrunk = &(pTrunkData->dml);
 
     pTrunk->uInstanceNumber = hal_index;
+
+    pTrunk->pParentVoiceService = pVoiceService;
 
     if( strstr(ParamName, "Enable") )
     {
@@ -6075,6 +6122,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         PDML_CALLCONTROL_LINE pCallCtrlLine = &(pCallCtrlLineData->dml);
 
         pCallCtrlLine->uInstanceNumber = hal_index;
+
+        pCallCtrlLine->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -6366,6 +6415,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         PDML_CALLCONTROL_EXTENSION pCallCtrlExt = &(pCallCtrlExtData->dml);
 
         pCallCtrlExt->uInstanceNumber = hal_index;
+
+        pCallCtrlExt->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -6743,6 +6794,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
         pCallCtrlGrp->uInstanceNumber = hal_index;
 
+        pCallCtrlGrp->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Extensions") )
         {
             //VoiceService.{i}.CallControl.Group.{i}.Extensions
@@ -6813,6 +6866,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         PDML_CALLCONTROL_MAILBOX pCallCtrlMailBox = &(pCallCtrlMailBoxData->dml);
 
         pCallCtrlMailBox->uInstanceNumber = hal_index;
+
+        pCallCtrlMailBox->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -6931,6 +6986,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
         pCallCtrlInMap->uInstanceNumber = hal_index;
 
+        pCallCtrlInMap->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Enable") )
         {
             //VoiceService.{i}.CallControl.IncomingMap.{i}.Enable
@@ -7003,6 +7060,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         PDML_CALLCONTROL_OUTGOINGMAP pCallCtrlOutMap = &(pCallCtrlOutMapData->dml);
 
         pCallCtrlOutMap->uInstanceNumber = hal_index;
+
+        pCallCtrlOutMap->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -7077,6 +7136,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
         pCallCtrlNumPlan->uInstanceNumber = hal_index;
 
+        pCallCtrlNumPlan->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "MinimumNumberOfDigits") )
         {
             //VoiceService.{i}.CallControl.NumberingPlan.{i}.MinimumNumberOfDigits
@@ -7146,6 +7207,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             PDML_CALLCONTROL_NUMBERINGPLAN_PREFIXINFO pCallCtrlNumPlanPrefixInfo = &(pCallCtrlNumPlanPrefixInfoData->dml);
 
             pCallCtrlNumPlanPrefixInfo->uInstanceNumber = hal_index;
+
+            pCallCtrlNumPlanPrefixInfo->pParentCallCtrlNumPlan = pCallCtrlNumPlan;
+
+            pCallCtrlNumPlanPrefixInfo->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "Enable") )
             {
@@ -7249,6 +7314,8 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             PDML_CALLCONTROL_CALLINGFEATURES_SET pCallCtrlCFSet = &(pCallCtrlCFSetData->dml);
 
             pCallCtrlCFSet->uInstanceNumber = hal_index;
+
+            pCallCtrlCFSet->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "CallerIDEnable") )
             {
@@ -7591,6 +7658,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
                 pCallCtrlCFSetCFT->uInstanceNumber = hal_index;
 
+                pCallCtrlCFSetCFT->pParentCallCtrlSet  = pCallCtrlCFSet;
+                
+                pCallCtrlCFSetCFT->pParentVoiceService = pVoiceService;
+
                 if( strstr(ParamName, "Enable") )
                 {
                     //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.CFT.{i}.Enable
@@ -7699,6 +7770,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
                 pCallCtrlCFSetSCF->uInstanceNumber = hal_index;
 
+                pCallCtrlCFSetSCF->pParentCallCtrlSet  = pCallCtrlCFSet;
+
+                pCallCtrlCFSetSCF->pParentVoiceService = pVoiceService;
+
                 if( strstr(ParamName, "Enable") )
                 {
                     //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.SCF.{i}.Enable
@@ -7762,6 +7837,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
                 pCallCtrlCFSetSCREJ->uInstanceNumber = hal_index;
 
+                pCallCtrlCFSetSCREJ->pParentCallCtrlSet  = pCallCtrlCFSet;
+
+                pCallCtrlCFSetSCREJ->pParentVoiceService = pVoiceService;
+
                 if( strstr(ParamName, "Enable") )
                 {
                     //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.SCREJ.{i}.Enable
@@ -7819,6 +7898,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
                 PDML_CALLCONTROL_CALLINGFEATURES_SET_FOLLOWME pCallCtrlCFSetFollowMe = &(pCallCtrlCFSetFollowMeData->dml);
 
                 pCallCtrlCFSetFollowMe->uInstanceNumber = hal_index;
+
+                pCallCtrlCFSetFollowMe->pParentCallCtrlSet = pCallCtrlCFSet;
+
+                pCallCtrlCFSetFollowMe->pParentVoiceService = pVoiceService;
 
                 if( strstr(ParamName, "Enable") )
                 {
@@ -7978,6 +8061,8 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
     PDML_INTERWORK pInterwork = &(pInterworkData->dml);
 
     pInterwork->uInstanceNumber = hal_index;
+
+    pInterwork->pParentVoiceService = pVoiceService;
 
     if( strstr(ParamName, "Enable") )
     {
@@ -8219,6 +8304,10 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
 
         pInterworkUI->uInstanceNumber = hal_index;
 
+        pInterworkUI->pParentInterwork = pInterwork;
+
+        pInterworkUI->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Enable") )
         {
             //VoiceService.{i}.Interwork.{i}.UserInterface.{i}.Enable
@@ -8281,6 +8370,10 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
         PDML_INTERWORK_MAP pInterworkMap = &(pInterworkMapData->dml);
 
         pInterworkMap->uInstanceNumber = hal_index;
+
+        pInterworkMap->pParentInterwork = pInterwork;
+
+        pInterworkMap->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -8430,6 +8523,8 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
     PDML_CALLLOG pCallLog = &(pCallLogData->dml);
 
     pCallLog->uInstanceNumber = hal_index;
+
+    pCallLog->pParentVoiceService = pVoiceService;
 
     if( strstr(ParamName, "CallingPartyNumber") )
     {
@@ -8643,6 +8738,10 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
 
         pCallLogSignPerf->uInstanceNumber = hal_index;
 
+        pCallLogSignPerf->pParentCallLog = pCallLog;
+
+        pCallLogSignPerf->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Protocol") )
         {
             //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.Protocol
@@ -8714,6 +8813,10 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
         PDML_CALLLOG_SESSION pCallLogSession = &(pCallLogSessionData->dml);
 
         pCallLogSession->uInstanceNumber = hal_index;
+
+        pCallLogSession->pParentCallLog  = pCallLog;
+
+        pCallLogSession->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "StreamType") )
         {
@@ -9315,6 +9418,8 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
     pVoipProfile->uInstanceNumber = hal_index;
 
+    pVoipProfile->pParentVoiceService = pVoiceService;
+
     if( strstr(ParamName, "Enable") )
     {
         //VoiceService.{i}.VoIPProfile.{i}.Enable
@@ -9746,6 +9851,8 @@ ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
 
     pCodecProfile->uInstanceNumber = hal_index;
 
+    pCodecProfile->pParentVoiceService = pVoiceService;
+
     if( strstr(ParamName, "Enable") )
     {
         //VoiceService.{i}.CodecProfile.{i}.Enable
@@ -9846,6 +9953,8 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         PDML_TONE_DESCRIPTION pToneDesc = &(pToneDescData->dml);
 
         pToneDesc->uInstanceNumber = hal_index;
+    
+        pToneDesc->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "ToneEnable") )
         {
@@ -9924,6 +10033,8 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         PDML_TONE_PATTERN pTonePattern = &(pTonePatternData->dml);
 
         pTonePattern->uInstanceNumber = hal_index;
+
+        pTonePattern->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {
@@ -10050,6 +10161,8 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
         pToneEvtProf->uInstanceNumber = hal_index;
 
+        pToneEvtProf->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Event") )
         {
             //VoiceService.{i}.Tone.EventProfile.{i}.Event.{i}.
@@ -10084,6 +10197,10 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             PDML_TONE_EVENTPROFILE_EVENT pToneEvtProfEvt = &(pToneEvtProfEvtData->dml);
 
             pToneEvtProfEvt->uInstanceNumber = hal_index;
+
+            pToneEvtProfEvt->pParentToneEvtProfile = pToneEvtProf;
+
+            pToneEvtProfEvt->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "Function") )
             {
@@ -10249,6 +10366,8 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
 
     pTerminal->uInstanceNumber = hal_index;
 
+    pTerminal->pParentVoiceService = pVoiceService;
+
     //VoiceService.{i}.Terminal.{i}.
     if( strstr(ParamName, "Enable") )
     {
@@ -10354,6 +10473,10 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
 
         pTerminalAudio->uInstanceNumber = hal_index;
 
+        pTerminalAudio->pParentTerminal = pTerminal;
+
+        pTerminalAudio->pParentVoiceService = pVoiceService;
+
         if( strstr(ParamName, "Name") )
         {
             //VoiceService.{i}.Terminal.{i}.Audio.{i}.Name
@@ -10453,6 +10576,10 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
 
             pTermButtonMapButton->uInstanceNumber = hal_index;
 
+            pTermButtonMapButton->pParentTerminal = pTerminal;
+
+            pTermButtonMapButton->pParentVoiceService = pVoiceService;
+
             if( strstr(ParamName, "ButtonName") )
             {
                 //VoiceService.{i}.Terminal.{i}.ButtonMap.Button.{i}.ButtonName
@@ -10541,6 +10668,10 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
 
             pTermRingerDesc->uInstanceNumber = hal_index;
 
+            pTermRingerDesc->pParentTerminal = pTerminal;
+            
+            pTermRingerDesc->pParentVoiceService = pVoiceService;
+            
             if( strstr(ParamName, "RingEnable") )
             {
                 //VoiceService.{i}.Terminal.{i}.Ringer.Description.{i}.RingEnable
@@ -10602,6 +10733,10 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
             PDML_TERMINAL_RINGER_PATTERN pTermRingerPattern = &(pTermRingerPatternData->dml);
 
             pTermRingerPattern->uInstanceNumber = hal_index;
+
+            pTermRingerPattern->pParentTerminal = pTerminal;
+
+            pTermRingerPattern->pParentVoiceService = pVoiceService;
 
             if( strstr(ParamName, "Enable") )
             {
@@ -10822,6 +10957,8 @@ ANSC_STATUS Map_hal_dml_clockSync(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
         PDML_VOICESERVICE_CLOCKSYNC_CLOCKSOURCE pClkSyncSrc = &(pClkSyncSrcData->dml);
 
         pClkSyncSrc->uInstanceNumber = hal_index;
+
+        pClkSyncSrc->pParentVoiceService = pVoiceService;
 
         if( strstr(ParamName, "Enable") )
         {

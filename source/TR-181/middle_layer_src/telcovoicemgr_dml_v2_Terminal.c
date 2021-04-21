@@ -3556,6 +3556,8 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamStringValue(ANSC_HANDLE hIn
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, 
+                                    uTerminalIndex, "TestSelector", pString);
             ret = TRUE;
         }
     }
@@ -3765,6 +3767,9 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamUlongValue(ANSC_HANDLE hIns
             pHEAD->DiagnosticsState = uValue;
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, 
+                                    uTerminalIndex, "DiagnosticsState", enumValue[uValue]);
 
             ret = TRUE;
         }

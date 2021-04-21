@@ -9075,7 +9075,7 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_SetParamStringVa
 
     if(pHEAD != NULL)
     {
-        pDmlSipRegAcc = (PDML_SIP_REGISTRAR_ACCOUNT)pHEAD->pParentSipRegisterAccount;
+        pDmlSipRegAcc = (PDML_SIP_REGISTRAR_ACCOUNT)pHEAD->pParentSipRegistrarAccount;
     }
 
     if(pDmlSipRegAcc != NULL)
@@ -9280,7 +9280,7 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_SetParamBoolValu
 
     if(pHEAD != NULL)
     {
-        pDmlSipRegAcc = (PDML_SIP_REGISTRAR_ACCOUNT)pHEAD->pParentSipRegisterAccount;
+        pDmlSipRegAcc = (PDML_SIP_REGISTRAR_ACCOUNT)pHEAD->pParentSipRegistrarAccount;
     }
 
     if(pDmlSipRegAcc != NULL)

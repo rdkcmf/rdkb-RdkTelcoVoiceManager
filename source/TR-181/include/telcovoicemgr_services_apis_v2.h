@@ -104,7 +104,8 @@ typedef enum _TELCOVOICEMGR_PHYINTERFACE_TESTSTATE_ENUM
     PHYINTERFACE_TESTSTATE_NONE = 0,
     PHYINTERFACE_TESTSTATE_REQUESTED,
     PHYINTERFACE_TESTSTATE_COMPLETE,
-    PHYINTERFACE_TESTSTATE_ERROR_TESTNOTSUPPORTED
+    PHYINTERFACE_TESTSTATE_ERROR_INTERNAL,
+    PHYINTERFACE_TESTSTATE_ERROR_OTHER
 } TELCOVOICEMGR_PHYINTERFACE_TESTSTATE_ENUM;
 
 typedef enum _TELCOVOICEMGR_PHYINTERFACE_TESTSELECTOR_ENUM
@@ -1400,8 +1401,8 @@ typedef  struct _DML_SIP_REGISTRAR_ACCOUNT_CONTACT
  {
     ULONG           uInstanceNumber;
     void*           pParentVoiceService;
-    void*           pParentSipRegister;
-    void*           pParentSipRegisterAccount;
+    void*           pParentSipRegistrar;
+    void*           pParentSipRegistrarAccount;
     BOOL            Enable;
     SIP_STATUS_ENUM Status;
     CHAR            Alias[STR_LEN_64];
@@ -2305,6 +2306,8 @@ typedef enum _PROTOCOL_ENUM
 typedef  struct _DML_CALLLOG_SIGNALINGPERF
  {
     ULONG           uInstanceNumber;
+    void*           pParentVoiceService;
+    void*           pParentCallLog;
     PROTOCOL_ENUM   Protocol;
     UINT            CallSetupDelay;
     INT             OutgoingMediaEstablishDelay;
@@ -2398,6 +2401,8 @@ typedef struct _DML_CALLLOG_SESSION_DESTINATION
 typedef  struct _DML_CALLLOG_SESSION
  {
     ULONG                           uInstanceNumber;
+    void*                           pParentVoiceService;
+    void*                           pParentCallLog;
     STREAM_TYPE_ENUM                StreamType;
     CHAR                            Start[STR_LEN_24];
     UINT                            Duration;

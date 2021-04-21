@@ -364,8 +364,15 @@ static int32_t jsonCfgSetTestState(uint32_t service, uint32_t phy_interface, cha
        uState = PHYINTERFACE_TESTSTATE_REQUESTED;
     else if(!strcmp(value, "Complete"))
        uState = PHYINTERFACE_TESTSTATE_COMPLETE;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    else if(!strcmp(value,"Error_Internal"))
+       uState = PHYINTERFACE_TESTSTATE_ERROR_INTERNAL;
+    else if(!strcmp(value,"Error_Other"))
+       uState = PHYINTERFACE_TESTSTATE_ERROR_OTHER;
+#else
     else if(!strcmp(value, "Error_TestNotSupported"))
        uState = PHYINTERFACE_TESTSTATE_ERROR_TESTNOTSUPPORTED;
+#endif
     TelcoVoiceMgrDmlSetTestState(service, phy_interface, uState);
     return 0;
 }
@@ -424,7 +431,7 @@ static struct
     { "X_RDK_Debug", NULL, jsonParseX_RDK_Debug },
     { "PhyInterface", NULL, jsonParseAllPhyInterfaces },
     { "VoiceProfile", NULL, jsonParseAllVoiceProfiles },
-    { "X_RDK_DisableLoopCurrentUntilRegistered", jsonCfgDoDisableLoopCurrent, NULL },
+    { "X_RDK_DisableLoopCurrentUntilRegistered", jsonCfgDoDisableLoopCurrent, NULL }
 };
 #define VOICE_HAL_NUM_ELEMS(x) (sizeof(x)/sizeof(x[0]))
 
