@@ -1206,6 +1206,13 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "Session_Commit",               Session_Commit);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "Session_Rollback",             Session_Rollback );
 #endif
+
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_GetParamStringValue", X_RDK_TelcoVoice_GetParamStringValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_SetParamStringValue", X_RDK_TelcoVoice_SetParamStringValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Validate",  X_RDK_TelcoVoice_Validate);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Commit",  X_RDK_TelcoVoice_Commit);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Rollback", X_RDK_TelcoVoice_Rollback );
+
     pGetParamValueByPathNameProc = (COSAGetParamValueByPathNameProc)pPlugInfo->AcquireFunction("COSAGetParamValueByPathName");
 
     if( pGetParamValueByPathNameProc != NULL)

@@ -171,6 +171,9 @@ ANSC_STATUS TelcoVoiceMgr_BackEndManagerInitialize(ANSC_HANDLE hThisObject)
     pMyObject->hServices      = (ANSC_HANDLE)TelcoVoiceMgrServicesCreate();
     CcspTraceWarning(("RDKB_SYSTEM_BOOT_UP_LOG : Telcovoicemgr & Services DM initialization done!\n"));
 
+    pMyObject->hTelcoVoice    = (ANSC_HANDLE)TelcoVoiceMgrTelcoVoiceCreate();
+    CcspTraceInfo(("RDKB_SYSTEM_BOOT_UP_LOG : Telcovoicemgr telcovoice DM initialization done!\n"));
+
     return returnStatus;
 }
 

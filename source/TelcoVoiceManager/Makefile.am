@@ -25,6 +25,8 @@ AM_CPPFLAGS = -I$(top_srcdir)/hal/include \
                 -I=${includedir} \
                 -I=${includedir}/ccsp
 
+AM_LDFLAGS = -lwebconfig_framework
+
 AM_CXXFLAGS = -I$(top_srcdir)/breakpad_wrapper_telco.h
 
 telcovoice_manager_DEPENDENCIES = \
@@ -34,7 +36,7 @@ telcovoice_manager_DEPENDENCIES = \
 
 telcovoice_manager_CFLAGS = -D_ANSC_LINUX -D_ANSC_USER -D_ANSC_LITTLE_ENDIAN_ -DFEATURE_SUPPORT_RDKLOG $(DBUS_CFLAGS) $(SYSTEMD_CFLAGS) -DVOICE_IPV6_SUPPORT
 telcovoice_manager_CPPFLAGS = -I$(top_srcdir)/source/TR-181/middle_layer_src -I$(top_srcdir)/source/TR-181/include $(CPPFLAGS)
-telcovoice_manager_LDFLAGS = -lccsp_common -lrdkloggers -lsyscfg -lsysevent $(DBUS_LIBS) $(SYSTEMD_LDFLAGS)
+telcovoice_manager_LDFLAGS = -lccsp_common -lrdkloggers -lsyscfg -lsysevent $(DBUS_LIBS) $(SYSTEMD_LDFLAGS) -lwebconfig_framework
 
 telcovoice_manager_SOURCES = telcovoicemgr_ssp_action.c telcovoicemgr_ssp_messagebus_interface.c telcovoicemgr_ssp_main.c telcovoicemgr_breakpad_wrapper.cpp telcovoicemgr_controller.c telcovoicemgr_nw_monitor.c
 

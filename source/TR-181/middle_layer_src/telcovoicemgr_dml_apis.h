@@ -27,6 +27,8 @@
 #include "telcovoicemgr_services_apis_v1.h"
 #endif
 
+#include "telcovoicemgr_telcovoice_apis.h"
+
 typedef ANSC_HANDLE(*PFN_COSADM_CREATE)(VOID);
 
 typedef ANSC_STATUS(*PFN_COSADM_REMOVE)(ANSC_HANDLE hThisObject);
@@ -96,6 +98,16 @@ _TELCOVOICEMGR_DATAMODEL_SERVICES
 }
 TELCOVOICEMGR_DATAMODEL_SERVICES,  *PTELCOVOICEMGR_DATAMODEL_SERVICES;
 
+#define  COSA_DATAMODEL_TELCOVOICE_CLASS_CONTENT                                              \
+    /* duplication of the base object class content */                                      \
+    TELCOVOICEMGR_BASE_CONTENT                                                              \
+
+typedef  struct
+_COSA_DATAMODEL_TELCOVOICE
+{
+	COSA_DATAMODEL_TELCOVOICE_CLASS_CONTENT
+}
+TELCOVOICEMGR_DATAMODEL_TELCOVOICE,  *PTELCOVOICEMGR_DATAMODEL_TELCOVOICE;
 
 /**********************************
   Standard function declaration
@@ -103,6 +115,10 @@ TELCOVOICEMGR_DATAMODEL_SERVICES,  *PTELCOVOICEMGR_DATAMODEL_SERVICES;
 ANSC_HANDLE TelcoVoiceMgrServicesCreate(VOID);
 ANSC_STATUS TelcoVoiceMgrServicesInitialize(ANSC_HANDLE hThisObject);
 ANSC_STATUS TelcoVoiceMgrServicesRemove(ANSC_HANDLE hThisObject);
+
+ANSC_HANDLE TelcoVoiceMgrTelcoVoiceCreate(VOID);
+ANSC_STATUS TelcoVoiceMgrTelcoVoiceInitialize(ANSC_HANDLE hThisObject);
+ANSC_STATUS TelcoVoiceMgrTelcoVoiceRemove(ANSC_HANDLE hThisObject);
 
 ANSC_STATUS CosaSListPushEntryByInsNum(PSLIST_HEADER pListHead, PTELCOVOICE_CONTEXT_LINK_OBJECT pCosaContext);
 PTELCOVOICE_CONTEXT_LINK_OBJECT CosaSListGetEntryByInsNum(PSLIST_HEADER pListHead, ULONG InstanceNumber);

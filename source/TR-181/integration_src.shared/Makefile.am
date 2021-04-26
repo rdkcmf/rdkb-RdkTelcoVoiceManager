@@ -20,6 +20,7 @@ AM_CFLAGS = -D_ANSC_LINUX
 AM_CFLAGS += -D_ANSC_USER
 AM_CFLAGS += -D_ANSC_LITTLE_ENDIAN_
 AM_LDFLAGS = -lccsp_common
+AM_LDFLAGS += -lwebconfig_framework
 
 AM_CPPFLAGS = -Wall -Werror
 ACLOCAL_AMFLAGS = -I m4
@@ -29,5 +30,5 @@ noinst_LTLIBRARIES = libCcsptelcovoice_manager_integration_src_shared.la
 
 libCcsptelcovoice_manager_integration_src_shared_la_CPPFLAGS  = -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/custom -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/include -I$(top_srcdir)/../CcspCommonLibrary/source/debug_api/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include/linux -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/package/slap/include -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/http/include -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/ansc/include -I$(top_srcdir)/source/TR-181/middle_layer_src -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/common/MessageBusHelper/include -I$(top_srcdir)/source/TR-181/include -I$(top_srcdir)/source/Custom $(CPPFLAGS)
 
-libCcsptelcovoice_manager_integration_src_shared_la_SOURCES =  telcovoicemgr_services_apis.c telcovoicemgr_dml_json_cfg_init.c telcovoicemgr_dml_json_save.c 
-libCcsptelcovoice_manager_integration_src_shared_la_LDFLAGS = -lccsp_common -lsysevent -lutctx -lutapi -ljson-c -lcjson -lhal_platform
+libCcsptelcovoice_manager_integration_src_shared_la_SOURCES =  telcovoicemgr_webconfig.c telcovoicemgr_telcovoice_apis.c telcovoicemgr_telcovoice_apis.c telcovoicemgr_services_apis.c telcovoicemgr_dml_json_cfg_init.c telcovoicemgr_dml_json_save.c 
+libCcsptelcovoice_manager_integration_src_shared_la_LDFLAGS = -lccsp_common -lsysevent -lutctx -lutapi -ljson-c -lcjson -lhal_platform -lwebconfig_framework -lmsgpackc

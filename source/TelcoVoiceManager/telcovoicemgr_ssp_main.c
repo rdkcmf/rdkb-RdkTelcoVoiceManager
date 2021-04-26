@@ -69,6 +69,8 @@
 #include "telcovoicemgr_breakpad_wrapper.h"
 #endif
 
+#include "webconfig_framework.h"
+
 extern char* pComponentName;
 char g_Subsystem[32]         = {0};
 extern ANSC_HANDLE bus_handle;
@@ -367,6 +369,17 @@ int main(int argc, char* argv[])
 
     CcspTraceInfo(("RDKB_SYSTEM_BOOT_UP_LOG : telcovoice_manager sd_notify Called\n"));
 #endif
+
+    /* Inform Webconfig framework if component is coming after crash */
+    check_component_crash("/tmp/telcovoicemgr_initialized");
+
+    /* Creating file after initialization to indicate manager is up and running */
+    if ((fd = fopen ("/tmp/telcovoicemgr_initialized", "w+")) != NULL) {
+        fprintf(fd,"1");
+        fclose(fd);
+    }
+
+    CcspTraceInfo(("RDKB_SYSTEM_BOOT_UP_LOG : TelcoVoiceMgr Initialized Successfully\n"));
 
     if ( bRunAsDaemon )
     {

@@ -41,6 +41,7 @@ libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_dml_v2_Ca
 else
 libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_dml_data_v1.c telcovoicemgr_dml_services_v1.c telcovoicemgr_dml_profile_v1.c telcovoicemgr_dml_line_v1.c telcovoicemgr_dml_tone_v1.c telcovoicemgr_dml_numberingplan_v1.c telcovoicemgr_dml_hal_param_v1.c telcovoicemgr_dml_capabilities_v1.c telcovoicemgr_dml_physical_interface_v1.c 
 endif
+libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_dml_telcovoice.c
 libCcsptelcovoice_manager_middle_layer_src_la_LDFLAGS =  -lccsp_common -ljson_hal_client -ljson-c -lcjson
 
 
