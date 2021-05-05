@@ -1,0 +1,5 @@
+{
+   "hal_schema_path": "/etc/rdk/schemas/telcovoice_hal_schema.json",
+   "server_port":40104
+}
+

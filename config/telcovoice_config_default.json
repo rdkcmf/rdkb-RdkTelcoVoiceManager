@@ -1,0 +1,89 @@
+{
+    "FileVersion": 3,
+    "Services":
+    {
+        "VoiceService": [
+            {
+                "VoiceServiceIndex": 1,
+                "X_RDK_BoundIfName": "Any_WAN",
+                "X_RDK_IpAddressFamily": "IPv6",
+                "X_RDK_Debug":
+                {
+                    "CCTKTraceGroup": "None",
+                    "CCTKTraceLevel": "Off",
+                    "ModuleLogLevels": "general=3,cmgr=3,disp=3,sipcctk=3,bos=3,ept=3,cms=3,prov=3,lhapi=3,istw=3,dsphal=4,slicslac=4",
+                    "LogServer": "",
+                    "LogServerPort": 0
+                },
+                "PhyInterface": [
+                    {
+                        "PhyInterfaceIndex": 1,
+                        "Tests":
+                        {
+                            "TestState": "None",
+                            "TestSelector": ""
+                        }
+                    }
+                ],
+                "VoiceProfile": [
+                    {
+                        "VoiceProfileIndex": 1,
+                        "Line": [
+                        {
+                            "LineIndex":1,
+                            "CallingFeatures":
+                            {
+                                "CallWaitingEnable": "true",
+                                "MWIEnable": "true",
+                                "X_RDK-Central_COM_ConferenceCallingEnable": "true",
+                                "X_RDK-Central_COM_HoldEnable": "true",
+                                "X_RDK-Central_COM_PhoneCallerIDEnable": "true"
+                            },
+                            "DirectoryNumber": "",
+                            "Enable": "Disabled",
+                            "SIP":
+                                {
+                                    "AuthPassword": "370014171C0F11125B220719021620",
+                                    "AuthUserName": "defaultauthname",
+                                    "URI": "defaultuser"
+                                },
+                            "VoiceProcessing":
+                                {
+                                    "ReceiveGain": 0,
+                                    "TransmitGain": 0
+                                }
+                        }
+                        ],
+
+                    "SIP":
+                        {
+                            "OutboundProxy": "voip.it.isp.sky",
+                            "OutboundProxyPort": 0,
+                            "ProxyServer": "voip.sky.it",
+                            "ProxyServerPort": 5060,
+                            "RegistrarServer": "voip.sky.it",
+                            "RegistrarServerPort": 5060,
+                            "UserAgentDomain": "voip.sky.it",
+                            "X_RDK-Central_COM_ConferencingURI": "sip:conf@voip.sky.it",
+                            "X_RDK-Central_COM_NetworkDisconnect": "true",
+                            "DSCPMark": 26,
+                            "EthernetPriorityMark": 0,
+                            "X_RDK_PRACKRequired": "true"
+                        },
+                    "RTP":
+                        {
+                            "DSCPMark": 46,
+                            "EthernetPriorityMark": 0
+                        },
+                        "X_RDK-Central_COM_DigitMap": "xx.S|*xx.*xx.#|*#xx.#|#xx.#|*xx.#",
+                        "X_RDK-Central_COM_EmergencyDigitMap": "11[2-5]|118",
+                        "DigitMap": "xx.S|*xx.*xx.#|*#xx.#|#xx.#|*xx.#",
+                        "X_RDK-Central_COM_SDigitTimer": 4,
+                        "X_RDK-Central_COM_ZDigitTimer": 16
+                    }
+                    ],
+            "X_RDK_DisableLoopCurrentUntilRegistered": "true"
+            }
+        ]
+    }
+}
