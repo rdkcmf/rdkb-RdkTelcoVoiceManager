@@ -3188,17 +3188,8 @@ LONG LineSIP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char*
                     }
                     else if( AnscEqualString(ParamName, "AuthPassword", TRUE) )
                     {
-                        snprintf(buf, sizeof(buf), "%s", pLine->LineSipObj.AuthPassword);
-                        if ( AnscSizeOfString(buf) < *pUlSize)
-                        {
-                            AnscCopyString(pValue, buf);
-                            ret = 0;
-                        }
-                        else
-                        {
-                            *pUlSize = AnscSizeOfString(pValue);
-                            ret = 1;
-                        }
+                        //Avoid returning password in dmcli get.
+                        ret = 0;
                     }
                     else if( AnscEqualString(ParamName, "URI", TRUE) )
                     {
