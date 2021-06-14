@@ -2775,8 +2775,8 @@ EXIT:
 */
 ANSC_STATUS TelcoVoiceMgrDmlSetDigitMap(uint32_t uiService, uint32_t uiProfile, char* pDigitMap, char* typeOfDigitMap)
 {
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    char strValue[MAXLENGTH_DIGITMAP]={0};
 
     if(!pDigitMap || !typeOfDigitMap)
     {
@@ -2803,7 +2803,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDigitMap(uint32_t uiService, uint32_t uiProfile, 
        CcspTraceWarning(("%s Invalid type passed, set failed\n", __FUNCTION__));
        return ANSC_STATUS_FAILURE;
     }
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%s",pDigitMap);
+    snprintf(strValue,MAXLENGTH_DIGITMAP,"%s",pDigitMap);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_STRING,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;

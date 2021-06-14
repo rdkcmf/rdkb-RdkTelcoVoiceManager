@@ -71,6 +71,7 @@
 #define  BUF_LEN_16                          16
 #define  BUF_LEN_512                         512
 #define  BUF_LEN_256                         256
+#define MAXLENGTH_DIGITMAP                   2048
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES      1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE       1
@@ -2594,8 +2595,8 @@ typedef  struct  _DML_VOIPPROFILE
     CHAR                    QIModelUsed[STR_LEN_128];
     UINT                    QICalculationInterval;
     UINT                    NumberOfWorstQIValues;
-    CHAR                    X_RDK_Central_COM_DigitMap[STR_LEN_256];
-    CHAR                    X_RDK_Central_COM_EmergencyDigitMap[STR_LEN_256];
+    CHAR                    X_RDK_Central_COM_DigitMap[MAXLENGTH_DIGITMAP];
+    CHAR                    X_RDK_Central_COM_EmergencyDigitMap[MAXLENGTH_DIGITMAP];
     UINT                    X_RDK_Central_COM_SDigitTimer;
     UINT                    X_RDK_Central_COM_ZDigitTimer;
     DML_VOIPPROFILE_RTP     RTP;

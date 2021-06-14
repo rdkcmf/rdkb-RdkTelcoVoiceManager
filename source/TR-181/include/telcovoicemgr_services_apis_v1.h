@@ -63,6 +63,7 @@
 #define BUF_LEN_16                          16
 #define BUF_LEN_512                         512
 #define BUF_LEN_256                         256
+#define MAXLENGTH_DIGITMAP                  2048
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES      1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE       1
@@ -947,8 +948,8 @@ typedef struct _TELCOVOICEMGR_DML_VOICEPROFILE
     CHAR                                         Region[128];
     CHAR                                         DigitMap[BUF_LEN_256];
     BOOL                                         DigitMapEnable;
-    CHAR                                         X_RDK_DigitMap[BUF_LEN_256];
-    CHAR                                         EmergencyDigitMap[BUF_LEN_256];
+    CHAR                                         X_RDK_DigitMap[MAXLENGTH_DIGITMAP];
+    CHAR                                         EmergencyDigitMap[MAXLENGTH_DIGITMAP];
     UINT                                         SDigitTimer;
     UINT                                         ZDigitTimer;
     BOOL                                         STUNEnable;
