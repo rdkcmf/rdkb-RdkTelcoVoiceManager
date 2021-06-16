@@ -464,13 +464,27 @@ ULONG TelcoVoiceMgrDml_VoipProfileList_GetParamStringValue(ANSC_HANDLE hInsConte
 
     if( AnscEqualString(ParamName, "X_RDK-Central_COM_EmergencyDigitMap", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->X_RDK_Central_COM_EmergencyDigitMap);
-        ret = 0;
+        if(strlen(pHEAD->X_RDK_Central_COM_EmergencyDigitMap) < *pulSize)
+        {
+          AnscCopyString(pValue,pHEAD->X_RDK_Central_COM_EmergencyDigitMap);
+          ret = 0;
+        }
+        else
+        {
+          CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+        }
     }
     else if( AnscEqualString(ParamName, "X_RDK-Central_COM_DigitMap", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->X_RDK_Central_COM_DigitMap);
-        ret = 0;
+        if(strlen(pHEAD->X_RDK-Central_COM_DigitMap) < *pulSize)
+        {
+          AnscCopyString(pValue,pHEAD->X_RDK_Central_COM_DigitMap);
+          ret = 0;
+        }
+        else
+        {
+          CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+        }
     }
     else if( AnscEqualString(ParamName, "QIModelUsed", TRUE) )
     {

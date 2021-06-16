@@ -152,8 +152,15 @@ LONG VoiceProfile_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
           {
             if( AnscEqualString(ParamName, "X_RDK-Central_COM_DigitMap", TRUE) )
             { 
-                AnscCopyString(pValue, pVoiceProfile->X_RDK_DigitMap);
-                ret = 0;
+                if(strlen(pVoiceProfile->X_RDK_DigitMap) < *pUlSize)
+                {
+                  AnscCopyString(pValue, pVoiceProfile->X_RDK_DigitMap);
+                  ret = 0;
+                }
+                else
+                {
+	           CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+                }
             }
             else if( AnscEqualString(ParamName, "Enable", TRUE) )
             {
@@ -162,8 +169,15 @@ LONG VoiceProfile_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
             }
             else if( AnscEqualString(ParamName, "X_RDK-Central_COM_EmergencyDigitMap", TRUE) )
             {
-                AnscCopyString(pValue, pVoiceProfile->EmergencyDigitMap);
-                ret = 0;
+                if(strlen(pVoiceProfile->EmergencyDigitMap) < *pUlSize)
+                {
+                  AnscCopyString(pValue, pVoiceProfile->EmergencyDigitMap);
+                  ret = 0;
+                }
+                else
+                {
+                   CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+                }
             }
             else if( AnscEqualString(ParamName, "Alias", TRUE) )
             {

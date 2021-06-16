@@ -638,13 +638,13 @@
                                 </parameter>
                                 <parameter>
                                     <name>X_RDK-Central_COM_DigitMap</name>
-                                    <type>string</type>
+                                    <type>string(2048)</type>
                                     <syntax>string</syntax>
                                     <writable>true</writable>
                                 </parameter>
                                 <parameter>
                                     <name>X_RDK-Central_COM_EmergencyDigitMap</name>
-                                    <type>string</type>
+                                    <type>string(2048)</type>
                                     <syntax>string</syntax>
                                     <writable>true</writable>
                                 </parameter>
