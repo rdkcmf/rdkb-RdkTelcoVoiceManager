@@ -57,14 +57,14 @@
 
                     "SIP":
                         {
-                            "OutboundProxy": "voip.it.isp.sky",
+                            "OutboundProxy": "defaultproxy",
                             "OutboundProxyPort": 0,
-                            "ProxyServer": "voip.sky.it",
+                            "ProxyServer": "defaultServer",
                             "ProxyServerPort": 5060,
-                            "RegistrarServer": "voip.sky.it",
+                            "RegistrarServer": "defaultServer",
                             "RegistrarServerPort": 5060,
-                            "UserAgentDomain": "voip.sky.it",
-                            "X_RDK-Central_COM_ConferencingURI": "sip:conf@voip.sky.it",
+                            "UserAgentDomain": "defaultDomain",
+                            "X_RDK-Central_COM_ConferencingURI": "defaultConfUri",
                             "X_RDK-Central_COM_NetworkDisconnect": "true",
                             "DSCPMark": 26,
                             "EthernetPriorityMark": 0,
