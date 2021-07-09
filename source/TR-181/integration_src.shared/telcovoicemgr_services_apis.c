@@ -3253,9 +3253,18 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
         case PHYINTERFACE_TESTSTATE_COMPLETE:
             snprintf(testState, JSON_MAX_VAL_ARR_SIZE, "%s", "Complete");
             break;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        case PHYINTERFACE_TESTSTATE_ERROR_INTERNAL:
+            snprintf(testState, JSON_MAX_VAL_ARR_SIZE, "%s", "Error_Internal");
+            break;
+        case PHYINTERFACE_TESTSTATE_ERROR_OTHER:
+            snprintf(testState, JSON_MAX_VAL_ARR_SIZE, "%s", "Error_Other");
+            break;
+#else
         case PHYINTERFACE_TESTSTATE_ERROR_TESTNOTSUPPORTED:
             snprintf(testState, JSON_MAX_VAL_ARR_SIZE, "%s", "Error_TestNotSupported");
             break;
+#endif
         default:
             CcspTraceWarning(("[%s][%d] Invalid \n", __FUNCTION__,__LINE__));
             return ANSC_STATUS_FAILURE;
