@@ -181,6 +181,51 @@ typedef enum _PROTOCOL_TYPE
   RTP
 }PROTOCOL_TYPE;
 
+typedef struct
+{
+    UINT  id;               /**< for internal use only */
+    BOOL  ResetStatistics;  /**< ResetStatistics */
+    UINT  PacketsSent;      /**< Total number of RTP packets sent for this line. */
+    UINT  PacketsReceived;  /**< Total number of RTP payload bytes received for this line. */
+    UINT  BytesSent;        /**< Total number of RTP payload bytes sent for this line.  */
+    UINT  BytesReceived;    /**< Total number of RTP payload bytes received for this line. */
+    UINT  PacketsLost;      /**< Total number of RTP packets that have been lost for this line. */
+    UINT  Overruns;
+    UINT  Underruns;
+    UINT  IncomingCallsReceived;  /**< Total incoming calls received. */
+    UINT  IncomingCallsAnswered;  /**< Total incoming calls answered by the local user. */
+    UINT  IncomingCallsConnected; /**< Total incoming calls that successfully completed call setup signalling. */
+    UINT  IncomingCallsFailed;    /**< Total incoming calls that failed to successfully complete call setup signalling. */
+    UINT  OutgoingCallsAttempted; /**< Total outgoing calls attempted. */
+    UINT  OutgoingCallsAnswered;  /**< Total outgoing calls answered by the remote user. */
+    UINT  OutgoingCallsConnected; /**< Total outgoing calls that successfully completed call setup signalling. */
+    UINT  OutgoingCallsFailed;    /**< Total outgoing calls that failed to successfully complete call setup signaling. */
+    UINT  CallsDropped;
+    UINT  TotalCallTime;
+    UINT  ServerDownTime;
+    UINT  ReceivePacketLossRate;              /**< Current receive packet loss rate in percent,
+                                                   calculated as defined in [section 6.4-RFC3550] */
+    UINT  FarEndPacketLossRate;               /**< Current far end receive packet lost rate in percent,
+                                                   calculated as defined in  [Section6.4/RFC3550]. */
+    UINT  ReceiveInterarrivalJitter;          /**< Current receive interarrival jitter in�| microseconds.
+                                                   Calculated from J(i) as defined in [Section6.4/RFC3550],
+                                                   with units converted to microseconds. */
+    UINT  FarEndInterarrivalJitter;           /**< Current Interarrival jitter in microseconds as reported from the
+                                                   far-end device via RTCP. Calculated from J(i) as defined in
+                                                   [Section64./RFC3550], with units converted to microseconds. */
+    UINT  RoundTripDelay;                     /**< Current round trip delay in microseconds calculated as
+                                                   defined in [section 6.4-RFC3550]. */
+    UINT  AverageReceiveInterarrivalJitter;   /**< Average receive interarrival jitter in microseconds since the beginning
+                                                   of the current call. Calculated as the average of D(i,j) as defined in
+                                                   [Section6.4/RFC3550], with units converted to microseconds.*/
+    UINT  AverageFarEndInterarrivalJitter;    /**< Average far-end interarrival jitter in microseconds since the beginning
+                                                   of the current call. Calculated as the average of the interarrival jitter
+                                                   values reported by the far-end, with units converted to microseconds. */
+    UINT  AverageRoundTripDelay;              /**< Average round trip delay in microseconds since the beginning of the current
+                                                   call. Average of the RoundTripDelay statistic accumulated each time the delay
+                                                   is calculated. */
+} TELCOVOICEMGR_DML_VOICESERVICE_STATS;
+
 typedef struct _ethPriorityValStruct_t
 {
   PROTOCOL_TYPE protocol;
@@ -3134,5 +3179,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetReceiveGain(UINT uiService, UINT uiProfile,UINT u
 ANSC_STATUS TelcoVoiceMgrDmlSetTransmitGain(UINT uiService, UINT uiProfile,UINT uiLine, int32_t iGain);
 ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(UINT uiService, UINT uiProfile, UINT uiLine, char*pSipURI);
 ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(UINT uiService, UINT uiProfile, BOOL bValue);
+ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(UINT uiService, UINT uiProfile, UINT uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats);
 
 #endif /* _TELCOVOICEMGR_SERVICES_APIS_H */

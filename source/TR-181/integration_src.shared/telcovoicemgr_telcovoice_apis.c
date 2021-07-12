@@ -191,7 +191,7 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
             (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->SIPObj.DSCPMark);
         }
 
-        if( TRUE == pServiceCfg->IsRTPDSCPMarkPresent ) 
+        if( TRUE == pServiceCfg->IsRTPDSCPMarkPresent )
         {
             pVoiceProfile->RTPObj.DSCPMark  =  pServiceCfg->RTPDSCPMark;
             (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->RTPObj.DSCPMark);
@@ -219,7 +219,7 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
 
         //DML Resource Unlocked
         TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
-    
+
         for( j = 0; j < pServiceCfg->LineCount; j++ )
         {
             WebConfig_LineTable_t *pstLineCfg = &(pServiceCfg->pstLineInfo[j]);
@@ -283,7 +283,7 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
             {
                 TELCOVOICEMGR_ENABLE_ENUM enVoiceEnable;
                 unsigned char        bValidVoiceEnableParam = TRUE;
-                 
+
                 if ( 0 == strcmp(pstLineCfg->LineEnable, "Enabled" ) )
                 {
                     enVoiceEnable = ENABLED;
@@ -342,7 +342,6 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
 
     return execRetVal;
 }
-
 /**
  *  Function to calculate timeout value for executing the blob
  *
@@ -371,7 +370,7 @@ void TelcoVoiceMgr_TelcoVoiceData_Free_Resources(void *arg)
 {
     CcspTraceInfo(("Entering: %s\n",__FUNCTION__));
 
-    if ( arg == NULL ) 
+    if ( arg == NULL )
     {
         CcspTraceError(("%s: Input Data is NULL\n",__FUNCTION__));
         return;
@@ -381,7 +380,7 @@ void TelcoVoiceMgr_TelcoVoiceData_Free_Resources(void *arg)
     TelcoVoice_WebConfig_t *pWebConfig   = (TelcoVoice_WebConfig_t *) blob_exec_data->user_data;
     free(blob_exec_data);
 
-    if ( NULL != pWebConfig ) 
+    if ( NULL != pWebConfig )
     {
         if( NULL != pWebConfig->pstServiceInfo )
         {
@@ -390,7 +389,7 @@ void TelcoVoiceMgr_TelcoVoiceData_Free_Resources(void *arg)
                 free(pWebConfig->pstServiceInfo->pstLineInfo);
                 pWebConfig->pstServiceInfo->pstLineInfo = NULL;
             }
-            
+
             free(pWebConfig->pstServiceInfo);
             pWebConfig->pstServiceInfo = NULL;
         }
@@ -399,7 +398,7 @@ void TelcoVoiceMgr_TelcoVoiceData_Free_Resources(void *arg)
         pWebConfig = NULL;
 
         CcspTraceInfo(("%s:Success in clearing TelcoVoice webconfig resources\n",__FUNCTION__));
-    } 
+    }
 }
 
 /* TelcoVoiceMgrDmlTelcoVoiceDataSet: */
@@ -424,9 +423,9 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
     msgpack_object_map *map = NULL;
     msgpack_object_kv* map_ptr  = NULL;
     execData *execDataPf = NULL;
-    TelcoVoice_WebConfig_t *pWebConfig = NULL;  
+    TelcoVoice_WebConfig_t *pWebConfig = NULL;
     int i = 0;
- 
+
     msgpack_unpacked_init( &msg );
     len +=  1;
 
@@ -440,9 +439,9 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
 
     CcspTraceInfo(("%s:Msg unpack success. Offset is %lu\n", __FUNCTION__,offset));
     msgpack_object obj = msg.data;
-    
+
     map = &msg.data.via.map;
-    
+
     map_ptr = obj.via.map.ptr;
     if ((!map) || (!map_ptr)) {
         CcspTraceError(("Failed to get object map\n"));
@@ -458,7 +457,7 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
 
     /* Allocate memory for telcovoice webconfig structure */
     pWebConfig = (TelcoVoice_WebConfig_t *) malloc(sizeof(TelcoVoice_WebConfig_t));
-    if ( pWebConfig == NULL ) 
+    if ( pWebConfig == NULL )
     {
         CcspTraceError(("%s: Telcovoice Struct malloc error\n",__FUNCTION__));
         msgpack_unpacked_destroy( &msg );
@@ -468,7 +467,7 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
     memset( pWebConfig, 0, sizeof(TelcoVoice_WebConfig_t) );
 
     /* Parsing Config Msg String to TelcoVoice Structure */
-    for (i = 0;i < map->size;i++) 
+    for (i = 0;i < map->size;i++)
     {
         if (strncmp(map_ptr->key.via.str.ptr, "telcovoip",map_ptr->key.via.str.size) == 0) {
             if (TelcoVoiceMgr_WebConfig_Process_TelcoVoipParams(map_ptr->val, pWebConfig) != ANSC_STATUS_SUCCESS) {
@@ -487,7 +486,7 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
                     }
                     free(pWebConfig);
                     pWebConfig = NULL;
-                } 
+                }
 
                 return ANSC_STATUS_FAILURE;
             }
@@ -523,7 +522,7 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
 
     //Push blob request after collection
     execDataPf = (execData*) malloc (sizeof(execData));
-    if ( execDataPf != NULL ) 
+    if ( execDataPf != NULL )
     {
         memset(execDataPf, 0, sizeof(execData));
         execDataPf->txid = pWebConfig->transaction_id;
@@ -539,7 +538,7 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceDataSet(const void *pData, size_t len)
         CcspTraceInfo(("%s PushBlobRequest Complete\n",__FUNCTION__));
     }
 
-    return ANSC_STATUS_SUCCESS;  
+    return ANSC_STATUS_SUCCESS;
 }
 
 /* TelcoVoiceMgrDmlTelcoVoiceWebConfigInit: */
@@ -560,19 +559,19 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceWebConfigInit( void )
     blobRegInfo *blobData        = NULL,
                 *blobDataPointer = NULL;
     int i;
-    
+
     //Allocate memory for blob registration structure
     blobData = (blobRegInfo*) malloc(TELCOVOICEDATA_SUBDOC_COUNT * sizeof(blobRegInfo));
 
     //Validate Memory
-    if (blobData == NULL) 
+    if (blobData == NULL)
     {
-        CcspTraceError(("%s: Failed to allocate memory\n",__FUNCTION__)); 
+        CcspTraceError(("%s: Failed to allocate memory\n",__FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
 
     memset(blobData, 0, TELCOVOICEDATA_SUBDOC_COUNT * sizeof(blobRegInfo));
-    
+
     //Separate subdocs information
     blobDataPointer = blobData;
     for ( i = 0; i < TELCOVOICEDATA_SUBDOC_COUNT; i++ )
@@ -581,15 +580,15 @@ ANSC_STATUS TelcoVoiceMgrDmlTelcoVoiceWebConfigInit( void )
         blobDataPointer++;
     }
     blobDataPointer = blobData;
- 
+
     //Register subdocs
     getVersion versionGet = getTelcoVoiceDataBlobVersion;
     setVersion versionSet = setTelcoVoiceDataBlobVersion;
     register_sub_docs(blobData, TELCOVOICEDATA_SUBDOC_COUNT, versionGet, versionSet);
 
-    CcspTraceInfo(("%s Telcovoice Webconfig Subdoc Registration Complete\n",__FUNCTION__));    
+    CcspTraceInfo(("%s Telcovoice Webconfig Subdoc Registration Complete\n",__FUNCTION__));
 
-    return ANSC_STATUS_SUCCESS;  
+    return ANSC_STATUS_SUCCESS;
 }
 
 /**
@@ -630,7 +629,7 @@ unsigned int getTelcoVoiceDataBlobVersion(char *pSubDoc)
  */
 int setTelcoVoiceDataBlobVersion(char *pSubDoc, unsigned int version)
 {
-    char subdoc_ver[BUFFER_LENGTH_64] = {0}, 
+    char subdoc_ver[BUFFER_LENGTH_64] = {0},
          buf[BUFFER_LENGTH_64]        = {0};
 
     snprintf(subdoc_ver, sizeof(subdoc_ver), "%u", version);
@@ -643,7 +642,7 @@ int setTelcoVoiceDataBlobVersion(char *pSubDoc, unsigned int version)
     }
     else
     {
-        if ( 0 != syscfg_commit( ) ) 
+        if ( 0 != syscfg_commit( ) )
         {
             return -1;
         }

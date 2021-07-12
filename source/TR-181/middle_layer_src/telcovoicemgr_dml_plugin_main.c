@@ -57,7 +57,7 @@
 #include "cosa_plugin_api.h"
 #include "telcovoicemgr_dml_plugin_main.h"
 #include "telcovoicemgr_dml_backendmgr.h"
-
+#include "telcovoicemgr_dml_report.h"
 #include "ccsp_trace.h"
 
 PCOSA_BACKEND_MANAGER_OBJECT g_pTelcoVoiceBEManager;
@@ -1212,6 +1212,20 @@ int ANSC_EXPORT_API TELCOVOICEMGR_Init(ULONG uMaxVersionSupported, void* hCosaPl
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Validate",  X_RDK_TelcoVoice_Validate);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Commit",  X_RDK_TelcoVoice_Commit);
     pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_TelcoVoice_Rollback", X_RDK_TelcoVoice_Rollback );
+
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_GetParamUlongValue",  X_RDK_Report_VoiceService_GetParamUlongValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_SetParamUlongValue",  X_RDK_Report_VoiceService_SetParamUlongValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_GetParamStringValue",  X_RDK_Report_VoiceService_GetParamStringValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_GetParamBoolValue",  X_RDK_Report_VoiceService_GetParamBoolValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_SetParamBoolValue",  X_RDK_Report_VoiceService_SetParamBoolValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_Validate",  X_RDK_Report_VoiceService_Validate);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_Commit",  X_RDK_Report_VoiceService_Commit);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_Rollback",  X_RDK_Report_VoiceService_Rollback);
+
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_Default_GetParamUlongValue", 
+                                 X_RDK_Report_VoiceService_Default_GetParamUlongValue);
+    pPlugInfo->RegisterFunction(pPlugInfo->hContext, "X_RDK_Report_VoiceService_Default_SetParamUlongValue",
+                                 X_RDK_Report_VoiceService_Default_SetParamUlongValue);
 
     pGetParamValueByPathNameProc = (COSAGetParamValueByPathNameProc)pPlugInfo->AcquireFunction("COSAGetParamValueByPathName");
 

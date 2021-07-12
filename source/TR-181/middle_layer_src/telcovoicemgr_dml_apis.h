@@ -35,6 +35,23 @@ typedef ANSC_STATUS(*PFN_COSADM_REMOVE)(ANSC_HANDLE hThisObject);
 
 typedef ANSC_STATUS(*PFN_COSADM_INITIALIZE)(ANSC_HANDLE hThisObject);
 
+typedef  struct _X_RDK_REPORT_VOICE_SERVICE_DEFAULT
+{
+    UINT                        ReportingPeriod;
+    UINT                        OverrideTTL;
+}
+DML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT, *PDML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT;
+
+typedef  struct _DML_X_RDK_REPORT_VOICE_SERVICE
+{
+    BOOL                                      Enabled;
+    UINT                                      ReportingPeriod;
+    BOOL                                      bEnableChanged;
+    BOOL                                      bReportingPeriodChanged;
+    PDML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT   pVoiceServiceDefaultReport;
+}
+DML_X_RDK_REPORT_VOICE_SERVICE, *PDML_X_RDK_REPORT_VOICE_SERVICE;
+
 /*
  * the main struct in cosa_xxx_apis.h need includes this struct and realize all functions. 
  */
@@ -65,6 +82,7 @@ TELCOVOICEMGR_BASE_OBJECT,  *PTELCOVOICEMGR_BASE_OBJECT;
          BOOL                             bNew;                                             \
          ANSC_HANDLE                      hPoamIrepUpperFo;                                 \
          ANSC_HANDLE                      hPoamIrepFo;                                      \
+         PDML_X_RDK_REPORT_VOICE_SERVICE  pVoiceServiceReport;                              \
 
 typedef  struct
 _TELCOVOICE_CONTEXT_LINK_OBJECT
@@ -119,6 +137,8 @@ ANSC_STATUS TelcoVoiceMgrServicesRemove(ANSC_HANDLE hThisObject);
 ANSC_HANDLE TelcoVoiceMgrTelcoVoiceCreate(VOID);
 ANSC_STATUS TelcoVoiceMgrTelcoVoiceInitialize(ANSC_HANDLE hThisObject);
 ANSC_STATUS TelcoVoiceMgrTelcoVoiceRemove(ANSC_HANDLE hThisObject);
+
+ANSC_STATUS DmlVoiceServiceReportInit(PANSC_HANDLE phContext);
 
 ANSC_STATUS CosaSListPushEntryByInsNum(PSLIST_HEADER pListHead, PTELCOVOICE_CONTEXT_LINK_OBJECT pCosaContext);
 PTELCOVOICE_CONTEXT_LINK_OBJECT CosaSListGetEntryByInsNum(PSLIST_HEADER pListHead, ULONG InstanceNumber);

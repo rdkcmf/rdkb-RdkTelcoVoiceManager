@@ -109,8 +109,8 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamString(char* HalName, char* sValue);
 ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities);
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, int vsIndex);
 ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterfaceList, int vsIndex);
-ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pLineStats);
 #endif
+ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pLineStats);
 ANSC_STATUS TelcoVoiceMgrHal_GetInitData(void);
 ANSC_STATUS TelcoVoiceMgrHal_EventSubscribe(event_callback callback, const char* event_name, const char* event_notification_type);
 void eventcb_FirewallRuleData(const char *msg, const int len);

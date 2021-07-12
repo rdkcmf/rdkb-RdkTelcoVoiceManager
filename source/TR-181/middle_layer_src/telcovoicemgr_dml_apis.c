@@ -21,6 +21,7 @@
 #include "ccsp_dm_api.h"
 #include "telcovoicemgr_dml_backendmgr.h"
 #include "telcovoicemgr_dml_hal.h"
+#include "voice_report.h"
 
 #ifdef _ANSC_LINUX
 #include <stdio.h>
@@ -33,6 +34,9 @@
 #endif
 #include "ansc_platform.h"
 
+extern char * VoiceServiceReportStatusEnable;
+extern char * VoiceServiceReportStatusDfltReportingPeriod;
+extern char * VoiceServiceReportStatusReportingPeriod;
 /**********************************************************************
 
     caller:     owner of the object
@@ -157,9 +161,69 @@ ANSC_STATUS TelcoVoiceMgrServicesInitialize(ANSC_HANDLE hThisObject)
         CcspTraceError(("TelcoVoiceMgr_Controller_Init failed !!!!\n"));
         return returnStatus;
     }
+
+    /*
+     * Voice Diagnostics init
+     * Services.X_RDK_Report.Voice.
+     */
+    returnStatus = DmlVoiceServiceReportInit( (PANSC_HANDLE)pMyObject );
+    if(returnStatus != ANSC_STATUS_SUCCESS)
+    {
+        CcspTraceError(("DmlVoiceServiceReportInit failed !!!!\n"));
+        return returnStatus;
+    }
     return returnStatus;
 }
 
+/* DmlVoiceServiceReportInit */
+ANSC_STATUS DmlVoiceServiceReportInit(PANSC_HANDLE phContext)
+{
+    int                               retPsmGet                        = 0;
+    ULONG                             psmValue                         = 0;
+    PTELCOVOICE_CONTEXT_LINK_OBJECT   pMyObject                        = (PTELCOVOICE_CONTEXT_LINK_OBJECT)phContext;
+    PDML_X_RDK_REPORT_VOICE_SERVICE   pVoiceServiceReportTmp           = NULL;
+    PDML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT pVoiceServiceReportDfltTmp = NULL;
+
+    //Parodus init
+    initparodusTask();
+
+    pVoiceServiceReportTmp = (PDML_X_RDK_REPORT_VOICE_SERVICE) AnscAllocateMemory( sizeof(DML_X_RDK_REPORT_VOICE_SERVICE) );
+    //Return failure if allocation failiure
+    if( NULL == pVoiceServiceReportTmp )
+    {
+        return ANSC_STATUS_FAILURE;
+    }
+
+    pVoiceServiceReportDfltTmp = (PDML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT) AnscAllocateMemory (sizeof (DML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT));
+    //Return failure if allocation failiure
+    if( NULL == pVoiceServiceReportDfltTmp )
+    {
+        AnscFreeMemory(pVoiceServiceReportTmp);
+        return ANSC_STATUS_FAILURE;
+    }
+
+    //Memset all memory
+    memset( pVoiceServiceReportDfltTmp, 0, sizeof(DML_X_RDK_REPORT_VOICE_SERVICE_DEFAULT) );
+    GetNVRamULONGConfiguration(VoiceServiceReportStatusDfltReportingPeriod, &psmValue);
+    VoiceServiceReportSetDefaultReportingPeriod(psmValue);
+    pVoiceServiceReportDfltTmp->ReportingPeriod = psmValue;
+
+    //Memset all memory
+    memset( pVoiceServiceReportTmp, 0, sizeof(DML_X_RDK_REPORT_VOICE_SERVICE) );
+    GetNVRamULONGConfiguration(VoiceServiceReportStatusReportingPeriod, &psmValue);
+    VoiceServiceReportSetReportingPeriod(psmValue);
+    pVoiceServiceReportTmp->ReportingPeriod = psmValue;
+
+    GetNVRamULONGConfiguration(VoiceServiceReportStatusEnable, &psmValue);
+    VoiceServiceReportSetStatus(psmValue);
+    pVoiceServiceReportTmp->Enabled = psmValue;
+
+    //Assign the memory address to oringinal structure
+    pVoiceServiceReportTmp->pVoiceServiceDefaultReport = pVoiceServiceReportDfltTmp;
+    pMyObject->pVoiceServiceReport = pVoiceServiceReportTmp;
+
+    return ANSC_STATUS_SUCCESS;
+}
 /**********************************************************************
 
     caller:     self

@@ -1,0 +1,763 @@
+{
+  "namespace": "com.comcast.kestrel.odp.event",
+  "name": "VoiceDiagnostics",
+  "type": "record",
+  "doc": "Contains a list of zero of more reports for each device connected to a network interface (Ethernet/Moca/WiFi). Each report contains device status and L2 counters",
+  "fields": [
+    {
+      "name": "header",
+      "type": {
+        "namespace": "com.comcast.kestrel",
+        "name": "CoreHeader",
+        "type": "record",
+        "doc": "Common information related to the event which MUST be included in any kestrel event. It allows some common processing at the system level, and some consistency for processing events.",
+        "fields": [
+          {
+            "name": "timestamp",
+            "type": [
+              "null",
+              {
+                "logicalType": "timestamp-millis",
+                "type": "long"
+              }
+            ],
+            "doc": "The UTC time stamp in milliseconds since Unix epoch (January 1, 1970 midnight) when the event is generated.",
+            "default": null
+          },
+          {
+            "name": "uuid",
+            "type": [
+              "null",
+              {
+                "name": "UUID",
+                "namespace": "com.comcast.kestrel.datatype",
+                "size": 16,
+                "type": "fixed"
+              }
+            ],
+            "doc": "Unique identifier for the event used for event de-duplication and tracing.",
+            "default": null
+          },
+          {
+            "name": "source",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Source of this report - generally the application or process generating the event",
+            "default": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "cpe_id",
+      "type": {
+        "namespace": "com.comcast.kestrel.odp",
+        "name": "CPEIdentifier",
+        "type": "record",
+        "doc": "Unique identifying fields for a CPE device. All fields are optional, but at least one field should be populated with a non null value",
+        "fields": [
+          {
+            "name": "mac_address",
+            "type": [
+              "null",
+              {
+                "name": "MacAddress",
+                "namespace": "com.comcast.kestrel.datatype",
+                "size": 6,
+                "type": "fixed"
+              }
+            ],
+            "doc": "Canonical (Identifying) MAC address for the gateway. (Eg, may be CM Mac for cable modems)",
+            "default": null
+          },
+          {
+            "name": "cpe_type",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Contains the cpe type e.g. Extender or Gateway",
+            "default": null
+          },
+          {
+            "name": "cpe_parent",
+            "type": [
+              "null",
+              "com.comcast.kestrel.odp.CPEIdentifier"
+            ],
+            "doc": "If this device is a child device (it is managed by another CPE device), this field identifies the parent device. Canonical identifier for the CPE. (Eg, may be CM Mac for cable modems)",
+            "default": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "data",
+      "type": {
+      "items": {
+        "namespace": "com.comcast.kestrel.odp",
+        "name": "VoipData",
+        "type": "record",
+        "doc": "Contains gateway network and L3 data for a network related to a specific connected device at a point in time",
+        "fields": [
+          {
+            "name": "VoiceServiceVersion",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "The version of the voice service",
+            "default": null
+          },
+          {
+            "name": "BoundIfName",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Name of the network interface that the voice service should run on. For example  nas_0_0_35. This parameter also supports two special values Any_WAN the voice service is started on the first WAN connection that comes up when the modem boots. LAN: the voice service is started on the default LAN subnet br0.  This option is used by developers who may not have a WAN connection. There is a valid string array named BoundIfNameValues which contains the Any_WAN and LAN strings  so the MDMVS_ defines will get generated for them  but the MDM does not force this parameter to be one of those strings because this parameter can also have a free-form ifName.",
+            "default": null
+          },
+          {
+            "name": "IpAddressFamily",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "IP address family that voice currently uses.",
+            "default": null
+          },
+          {
+            "name": "BoundIpAddr",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "IP address of the network interface that the voice service should run on.",
+            "default": null
+          },
+          {
+            "name": "CCTKTraceGroup",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "CCTK Trace Group bitmask.",
+            "default": null
+          },
+          {
+            "name": "CCTKTraceLevel",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "CCTK trace log level.",
+            "default": null
+          },
+          {
+            "name": "VoiceProcessState",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "VoiceProcessStatus",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "MaxServiceCount",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "MaxPhyInterfaceCount",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "MaxProfileCount",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "VoiceServiceNumberOfEntries",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "PhyInterfaceNumberOfEntries",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "VoiceProfileNumberOfEntries",
+            "type": [
+              "null",
+              "int"
+            ],
+            "doc": "",
+            "default": null
+          },
+          {
+            "name": "VoiceProfiles", "type": {
+            "type": "array", "items": {
+                "name": "VoiceProfile",
+                "type": "record",
+                "doc": "Voice Profiles with respect to voice services",
+                "fields": [
+                  {
+                    "name": "SIPOutboundProxy",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "Host name or IP address of the outbound proxy.If a non-empty value is specified; the SIP endpoint MUST send all SIP traffic (requests and responses) to the host indicated by this parameter and the port indicated by the OutboundProxyPort parameter. This MUST be done regardless of the routes discovered using normal SIP operations; including use of Route headers initialized from Service-Route and Record-Route headers previously received. The OutboundProxy value is NOT used to generate the URI placed into the Route header of any requests",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPOutboundProxyPort",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "Destination port to be used in connecting to the SIP server.",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPProxyServer",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "TODO",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPProxyServerPort",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "Destination port to be used in connecting to the SIP server.",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPRegistrarServer",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "TODO",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPRegistrarServerPort",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "TODO",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPUserAgentDomain",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "CPE domain string. If an empty string; the CPE SHOULD use its IP address as the domain.",
+                    "default": null
+                  },
+                  {
+                    "name": "SIPConferencingURI",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "Conferencing server URI.",
+                    "default": null
+                  },
+                  {
+                    "name": "DigitMap",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "digitmap",
+                    "default": null
+                  },
+                  {
+                    "name": "EmergencyDigitMap",
+                    "type": [
+                      "null",
+                      "string"
+                    ],
+                    "doc": "Emergency digitmap",
+                    "default": null
+                  },
+                  {
+                    "name": "SDigitTimer",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "S Digit Timer",
+                    "default": null
+                  },
+                  {
+                    "name": "ZDigitTimer",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "Z Digit Timer",
+                    "default": null
+                  },
+                  {
+                    "name": "MaxLineCount",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "",
+                    "default": null
+                  },
+                  {
+                    "name": "VoiceProfileNumberOfLines",
+                    "type": [
+                      "null",
+                      "int"
+                    ],
+                    "doc": "",
+                    "default": null
+                  },
+                  {
+                    "name": "Lines", "type": {
+                    "type": "array", "items": {
+                        "name": "Line",
+                        "type": "record",
+                        "doc": "Lines with respect to voice profiles",
+                        "fields": [
+                          {
+                            "name": "CallWaitingEnable",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "Enable or disable call waiting in the endpoint. This parameter should not be present if the CPE does not support endpoint managed call waiting.",
+                            "default": null
+                          },
+                          {
+                            "name": "MWIEnable",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "Enable or disable Message Waiting Indication by the endpoint. This parameter should not be present if the CPE does not support MWI.",
+                            "default": null
+                          },
+                          {
+                            "name": "ConferenceCallingEnable",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "conference calling enable",
+                            "default": null
+                          },
+                          {
+                            "name": "HoldEnable",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "hold enable",
+                            "default": null
+                          },
+                          {
+                            "name": "PhoneCallerIDEnable",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "phone caller id enable",
+                            "default": null
+                          },
+                          {
+                            "name": "CallerIDName",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "",
+                            "default": null
+                          },
+                          {
+                            "name": "CallState",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Indicates the call state for this line. Enumeration of: Idle Calling Ringing Connecting InCall Hold Disconnecting",
+                            "default": null
+                          },
+                          {
+                            "name": "DirectoryNumber",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Directory number associated with this line. May be used to identify the line to the user. In case of H.323 signaling. this MUST be an E.164 number.",
+                            "default": null
+                          },
+                          {
+                            "name": "VoiceServiceEnable",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Enables or disables this line. TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "SIPAuthUserName",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Username used to authenticate the connection to the server.",
+                            "default": null
+                          },
+                          {
+                            "name": "SIPURI",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "URI by which the user agent will identify itself for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageFarEndInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Average far-end interarrival jitter",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageReceiveInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Average receive interarrival jitter",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageRoundTripDelay",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "BytesReceived",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes received for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "BytesSent",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes sent for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "FarEndInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "FarEndPacketLossRate",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current far end receive packet lost rate in percent; calculated as defined in [Section6.4/RFC3550].",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsAnswered",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls answered by the local user.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsConnected",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls that successfully completed call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsFailed",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls that failed to successfully complete call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsReceived",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls received.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsAnswered",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls answered by the local user.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsAttempted",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls attempted.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsConnected",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls that successfully completed call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsFailed",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls that failed to successfully complete call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsLost",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP packets that have been lost for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsReceived",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes received for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsSent",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP packets sent for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "ReceiveInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "ReceivePacketLossRate",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current receive packet loss rate in percent; calculated as defined in [Section6.4/RFC3550]",
+                            "default": null
+                          },
+                          {
+                            "name": "ResetStatistics",
+                            "type": [
+                              "null",
+                              "boolean"
+                            ],
+                            "doc": "When set to one; resets the statistics for this voice line. Always False when read.",
+                            "default": null
+                          },
+                          {
+                            "name": "RoundTripDelay",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "Status",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Indicates the status of this line. Enumeration of: Up Initializing Registering Unregistering Error Testing Quiescent Disabled",
+                            "default": null
+                          },
+                          {
+                            "name": "ReceiveGain",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "TransmitGain",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "TODO",
+                            "default": null
+                          },
+                          {
+                            "name": "OutboundProxyAddresses",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Ordered list of resolved IP Addresses from the configured FQDN",
+                            "default": null
+                          },
+                          {
+                            "name": "OverRuns",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of times the receive jitter buffer has overrun for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "UnderRuns",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of times the receive jitter buffer has underrun for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "CallsDropped",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total calls that were successfully connected (incoming or outgoing), but dropped unexpectedly while in progress without explicit user termination",
+                            "default": null
+                          },
+                          {
+                            "name": "TotalCallTime",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Cumulative call duration in seconds.",
+                            "default": null
+                          },
+                          {
+                            "name": "ServerDownTime",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "The number of seconds the CPE is unable to maintain a connection to the server. SHOULD not include time in which overall network connectivity is unavailable. Applies only to SIP.",
+                            "default": null
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "type": "array"
+      }
+    }
+  ]
+}

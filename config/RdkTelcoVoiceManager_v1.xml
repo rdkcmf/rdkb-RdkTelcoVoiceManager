@@ -2,15 +2,15 @@
 <!--
  If not stated otherwise in this file or this component's LICENSE file the
  following copyright and licenses apply:
- 
+
  Copyright 2020 Sky
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@
     <objects>
         <object>
             <name>X_RDK_TelcoVoice</name>
-            <objectType>object</objectType> 
+            <objectType>object</objectType>
             <functions>
                     <func_GetParamStringValue>X_RDK_TelcoVoice_GetParamStringValue</func_GetParamStringValue>
                     <func_SetParamStringValue>X_RDK_TelcoVoice_SetParamStringValue</func_SetParamStringValue>
@@ -48,6 +48,74 @@
             <name>Services</name>
             <objectType>object</objectType>
             <objects>
+                <object>
+                    <name>X_RDK_Report</name>
+                    <objectType>object</objectType>
+                    <objects>
+                        <object>
+                            <name>Voice</name>
+                            <objectType>object</objectType>
+                            <functions>
+                                <func_GetParamUlongValue>X_RDK_Report_VoiceService_GetParamUlongValue</func_GetParamUlongValue>
+                                <func_SetParamUlongValue>X_RDK_Report_VoiceService_SetParamUlongValue</func_SetParamUlongValue>
+                                <func_GetParamStringValue>X_RDK_Report_VoiceService_GetParamStringValue</func_GetParamStringValue>
+                                <func_GetParamBoolValue>X_RDK_Report_VoiceService_GetParamBoolValue</func_GetParamBoolValue>
+                                <func_SetParamBoolValue>X_RDK_Report_VoiceService_SetParamBoolValue</func_SetParamBoolValue>
+                                <func_Validate>X_RDK_Report_VoiceService_Validate</func_Validate>
+                                <func_Commit>X_RDK_Report_VoiceService_Commit</func_Commit>
+                                <func_Rollback>X_RDK_Report_VoiceService_Rollback</func_Rollback>
+                            </functions>
+                            <parameters>
+                                <parameter>
+                                    <name>Enabled</name>
+                                    <type>boolean</type>
+                                    <syntax>bool</syntax>
+                                    <writable>true</writable>
+                                </parameter>
+                                <parameter>
+                                    <name>ReportingPeriod</name>
+                                    <type>unsignedInt</type>
+                                    <syntax>uint32</syntax>
+                                    <writable>true</writable>
+                                </parameter>
+                                <parameter>
+                                    <name>Schema</name>
+                                    <type>string</type>
+                                    <syntax>string</syntax>
+                                </parameter>
+                                <parameter>
+                                    <name>SchemaID</name>
+                                    <type>string</type>
+                                    <syntax>string</syntax>
+                                </parameter>
+                            </parameters>
+                            <objects>
+                                <object>
+                                    <name>Default</name>
+                                    <objectType>object</objectType>
+                                    <functions>
+                                        <func_GetParamUlongValue>X_RDK_Report_VoiceService_Default_GetParamUlongValue</func_GetParamUlongValue>
+                                        <func_SetParamUlongValue>X_RDK_Report_VoiceService_Default_SetParamUlongValue</func_SetParamUlongValue>
+                                    </functions>
+                                    <parameters>
+                                        <parameter>
+                                            <name>ReportingPeriod</name>
+                                            <type>unsignedInt</type>
+                                            <syntax>uint32</syntax>
+                                            <writable>true</writable>
+                                        </parameter>
+                                        <parameter>
+                                            <name>OverrideTTL</name>
+                                            <type>unsignedInt[1:900]</type>
+                                            <syntax>uint32</syntax>
+                                            <writable>true</writable>
+                                        </parameter>
+                                    </parameters>
+                                </object>
+                            </objects>
+                        </object>
+                    </objects>
+                </object>
                 <object>
                     <name>VoiceService</name>
                     <objectType>dynamicTable</objectType>
@@ -1202,7 +1270,7 @@
                                             <func_SetParamBoolValue>H323_SetParamBoolValue</func_SetParamBoolValue>
                                             <func_SetParamIntValue>H323_SetParamIntValue</func_SetParamIntValue>
                                             <func_SetParamUlongValue>H323_SetParamUlongValue</func_SetParamUlongValue>
-                                            <func_SetParamStringValue>H323_SetParamStringValue</func_SetParamStringValue>                
+                                            <func_SetParamStringValue>H323_SetParamStringValue</func_SetParamStringValue>
                                         </functions>
                                         <parameters>
                                             <parameter>
@@ -1356,7 +1424,7 @@
                                                         <syntax>string</syntax>
                                                         <writable>true</writable>
                                                     </parameter>
-                                                </parameters>                
+                                                </parameters>
                                             </object>
                                             <object>
                                                 <name>SRTP</name>
@@ -1386,7 +1454,7 @@
                                                         <syntax>string</syntax>
                                                         <writable>true</writable>
                                                     </parameter>
-                                                </parameters>                
+                                                </parameters>
                                             </object>
                                             <object>
                                                 <name>Redundancy</name>
@@ -1448,7 +1516,7 @@
                                                         <syntax>uint32</syntax>
                                                         <writable>true</writable>
                                                     </parameter>
-                                                </parameters>                
+                                                </parameters>
                                             </object>
                                         </objects>
                                     </object>
@@ -1585,7 +1653,7 @@
                                                     <func_SetParamStringValue>ToneEvent_SetParamStringValue</func_SetParamStringValue>
                                                     <func_GetParamStringValue>ToneEvent_GetParamStringValue</func_GetParamStringValue>
                                                 </functions>
-                                                <parameters>        
+                                                <parameters>
                                                     <parameter>
                                                         <name>Alias</name>
                                                         <type>string(64)</type>
@@ -1855,7 +1923,7 @@
                                                 </parameter>
                                             </parameters>
                                         </object>
-                                    </object>    
+                                    </object>
                                     <object>
                                         <name>FaxT38</name>
                                         <objectType>object</objectType>
@@ -2110,7 +2178,7 @@
                                                         <writable>true</writable>
                                                     </parameter>
                                                 </parameters>
-                                            </object>    
+                                            </object>
                                             <object>
                                                 <name>H323</name>
                                                 <objectType>object</objectType>
@@ -2126,7 +2194,7 @@
                                                         <writable>true</writable>
                                                     </parameter>
                                                 </parameters>
-                                            </object>    
+                                            </object>
                                             <object>
                                                 <name>Ringer</name>
                                                 <objectType>object</objectType>
@@ -2282,7 +2350,7 @@
                                                         </parameters>
                                                     </object>
                                                 </objects>
-                                            </object>                
+                                            </object>
                                             <object>
                                                 <name>CallingFeatures</name>
                                                 <objectType>object</objectType>

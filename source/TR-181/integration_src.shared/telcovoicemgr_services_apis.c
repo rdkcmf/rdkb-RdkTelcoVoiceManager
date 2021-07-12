@@ -49,6 +49,7 @@
 #define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.CallControl.CallingFeatures.Set.%d."
 #define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
+#define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats."
 #else
 /* TR104 V1 DML Tables*/
 #define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d.Tests."
@@ -2892,7 +2893,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(uint32_t uiService, uint32_t uiProfil
 *
 */
 
-#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
+
 ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats)
 {
     //Fetch line stats from voice stack
@@ -2905,11 +2906,16 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(uint32_t uiService, uint32_t uiProfile,
         CcspTraceError(("%s %d - Invalid buffer\n",__FUNCTION__,__LINE__));
         return returnStatus;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    // Device.Services.VoiceService.%d.CallControl.Line.%d.Stats.
+    snprintf(strName, JSON_MAX_STR_ARR_SIZE, LINE_STATS_TABLE_NAME, uiService, uiLine);
+#else
     /**
      * Construct Full DML path.
      * Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Stats
      */
     snprintf(strName, JSON_MAX_STR_ARR_SIZE, LINE_STATS_TABLE_NAME, uiService, uiProfile, uiLine);
+#endif
     if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetLineStats(strName, pStats))
     {
         CcspTraceError(("%s:%d:: Line Stats get failed \n", __FUNCTION__, __LINE__));
@@ -2919,7 +2925,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(uint32_t uiService, uint32_t uiProfile,
     CcspTraceInfo(("%s:%d:: Line Stats fetched \n", __FUNCTION__, __LINE__));
     return  ANSC_STATUS_SUCCESS;
 }
-
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 /* TelcoVoiceMgrDmlResetLineStats : */
 /**
 * @description Reset Line Stats

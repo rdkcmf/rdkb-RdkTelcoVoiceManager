@@ -34,9 +34,7 @@
 #endif
 
 static ANSC_STATUS voice_process_get_info(hal_param_t *get_param);
-#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_STATS *stVoiceStats);
-#endif
 
 #define HALINIT  "Devices.Services.VoiceHalInit"
 /*******************************************************************************
@@ -246,7 +244,7 @@ static ANSC_STATUS voice_process_get_info(hal_param_t *get_param)
     FREE_JSON_OBJECT(jreply_msg);
     return ANSC_STATUS_SUCCESS;
 }
-#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
+
 ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pLineStats)
 {
     CHECK(param_name != NULL);
@@ -297,6 +295,41 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
             CcspTraceError(("%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i));
             continue;
         }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+        if( strstr(resp_param.name, "RTP.BytesReceived") )
+        {
+            stVoiceStats->BytesReceived = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "RTP.BytesSent") )
+        {
+            stVoiceStats->BytesSent = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "IncomingCalls.CallsConnected") )
+        {
+            stVoiceStats->IncomingCallsConnected = atol(resp_param.value);
+            stVoiceStats->IncomingCallsAnswered= atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "IncomingCalls.CallsFailed") )
+        {
+            stVoiceStats->IncomingCallsFailed = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "IncomingCalls.CallsReceived") )
+        {
+            stVoiceStats->IncomingCallsReceived= atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "OutgoingCalls.CallsAttempted") )
+        {
+            stVoiceStats->OutgoingCallsAttempted = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "OutgoingCalls.CallsConnected") )
+        {
+            stVoiceStats->OutgoingCallsConnected = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "OutgoingCalls.CallsFailed") )
+        {
+            stVoiceStats->OutgoingCallsFailed = atol(resp_param.value);
+        }
+#else
         if( strstr(resp_param.name, "AverageFarEndInterarrivalJitter") )
         {
             stVoiceStats->AverageFarEndInterarrivalJitter = atol(resp_param.value);
@@ -401,6 +434,7 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
         {
             stVoiceStats->ServerDownTime = atol(resp_param.value);
         }
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
         else
         {
             CcspTraceWarning(("%s::Unknown ParamName:%s\n", __FUNCTION__, resp_param.name));
@@ -409,7 +443,7 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
 
     return ANSC_STATUS_SUCCESS;
 }
-#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList)
 {
     if (pVoiceServiceList == NULL)
