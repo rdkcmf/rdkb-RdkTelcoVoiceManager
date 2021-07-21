@@ -50,6 +50,8 @@
 pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
 {
     pErr execRetVal = NULL;
+/* TO DO: Implement Webconfig for TR104V2  (RDKB-36794) */
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     int i, j;
     unsigned int uVsIndex = 0, uVpIndex = 0, uVlIndex = 0;
     unsigned long ulInstance;
@@ -308,7 +310,7 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
             TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
         }
     }
-
+#endif
     CcspTraceInfo(("%s : Telcovoice Blob Data Applied Successfully\n",__FUNCTION__));
 
     return execRetVal;

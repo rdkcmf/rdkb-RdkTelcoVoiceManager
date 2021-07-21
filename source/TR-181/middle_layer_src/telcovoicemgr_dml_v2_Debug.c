@@ -222,6 +222,7 @@ BOOL X_RDK_Debug_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, c
             TELCOVOICEMGR_LOCK_OR_EXIT()
             AnscCopyString(pVoiceService->X_RDK_DebugObj.CCTKTraceGroup, pString);
             TELCOVOICEMGR_UNLOCK()
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "TraceGroup", pString);
             ret = TRUE;
         }
     }
@@ -232,6 +233,7 @@ BOOL X_RDK_Debug_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, c
             TELCOVOICEMGR_LOCK_OR_EXIT()
             AnscCopyString(pVoiceService->X_RDK_DebugObj.CCTKTraceLevel, pString);
             TELCOVOICEMGR_UNLOCK()
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "TraceLevel", pString);
             ret = TRUE;
         }
     }
@@ -242,6 +244,7 @@ BOOL X_RDK_Debug_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, c
             TELCOVOICEMGR_LOCK_OR_EXIT()
             AnscCopyString(pVoiceService->X_RDK_DebugObj.ModuleLogLevels, pString);
             TELCOVOICEMGR_UNLOCK()
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "ModuleLogLevels", pString);
             ret = TRUE;
         }
     }
@@ -252,6 +255,7 @@ BOOL X_RDK_Debug_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, c
             TELCOVOICEMGR_LOCK_OR_EXIT()
             AnscCopyString(pVoiceService->X_RDK_DebugObj.LogServer, pString);
             TELCOVOICEMGR_UNLOCK()
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "LogServer", pString);
             ret = TRUE;
         }
     }
@@ -319,6 +323,7 @@ BOOL X_RDK_Debug_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, UL
                 TELCOVOICEMGR_LOCK_OR_EXIT()
                 pVoiceService->X_RDK_DebugObj.LogServerPort = uValue;
                 TELCOVOICEMGR_UNLOCK()
+                (void)storeObjectInteger(uVsIndex, 1, 1, 1, "LogServerPort", uValue);
                 ret = TRUE;
             }
         }

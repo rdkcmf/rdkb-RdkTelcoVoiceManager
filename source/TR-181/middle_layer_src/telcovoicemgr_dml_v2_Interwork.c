@@ -2068,6 +2068,8 @@ BOOL TelcoVoiceMgrDml_InterworkList_MapList_SetParamStringValue(ANSC_HANDLE hIns
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, 1, 1,uInterworkIndex, "DigitMap", pString);
+
             ret = TRUE;
         }
     }

@@ -602,6 +602,8 @@ BOOL VoiceService_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "Set-BoundIfName", pString);
+
             ret = TRUE;
         }
     }
@@ -614,6 +616,8 @@ BOOL VoiceService_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
             AnscCopyString(pVoiceService->X_RDK_IpAddressFamily, pString);
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectString(uVsIndex, 1, 1, 1, "Set-IpAddressFamily", pString);
 
             ret = TRUE;
         }

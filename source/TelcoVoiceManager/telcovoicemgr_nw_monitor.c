@@ -443,7 +443,7 @@ static void event_set_wan_status (void)
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iEthPriority);
                         }
-                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, SIP, &iEthPriority))
+                        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, RTP_INDEX, RTP, &iEthPriority))
                         {
                             TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iEthPriority);
                         }

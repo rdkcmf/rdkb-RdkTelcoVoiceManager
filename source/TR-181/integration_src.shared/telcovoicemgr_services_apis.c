@@ -2679,7 +2679,8 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
         goto EXIT;
     }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-    DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoIPProfile->pdata[uiProfile - 1];
+    PDML_VOIPPROFILE_LIST_T    pVoipProfileList = pDmlVoiceService->VoIPProfile;
+    DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pVoipProfileList->pdata[uiProfile - 1];
 #else
     DML_PROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoiceProfileList.pdata[uiProfile - 1];
 #endif

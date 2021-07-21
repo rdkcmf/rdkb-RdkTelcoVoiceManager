@@ -2183,8 +2183,12 @@ ANSC_STATUS TelcoVoiceMgrDmlAddVoipProfile(PDML_VOIPPROFILE_LIST_T pVoipProfileL
                     pDmlVoipProfile->uInstanceNumber = index + 1;
                 }
                 pVoipProfileList->ulQuantity++;
+                result = ANSC_STATUS_SUCCESS;
             }
-            result = ANSC_STATUS_SUCCESS;
+            else
+            {
+                CcspTraceError(("%s - Failed \n", __FUNCTION__));
+            } 
         }
     }
     return result;

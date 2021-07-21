@@ -57,9 +57,10 @@ static ANSC_STATUS TelcoVoiceMgr_subscribe_hal_events(void)
                     }
                 }
 
-                for (uVpIndex = 0; uVpIndex < pDmlVoiceService->VoIPProfile->ulQuantity; uVpIndex++)
+                PDML_VOIPPROFILE_LIST_T pVoipProfileList = pDmlVoiceService->VoIPProfile;
+                for (uVpIndex = 0; uVpIndex < pVoipProfileList->ulQuantity; uVpIndex++)
                 {
-                    DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pDmlVoiceService->VoIPProfile->pdata[uVpIndex];
+                    DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pVoipProfileList->pdata[uVpIndex];
                     pDmlVoipProfile = &(pVoipProfileData->dml);
                     if(pDmlVoipProfile)
                     {

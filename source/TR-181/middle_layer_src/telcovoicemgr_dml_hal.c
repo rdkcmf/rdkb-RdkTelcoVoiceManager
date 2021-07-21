@@ -848,10 +848,10 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                     ret = Map_hal_dml_VoipProfile(&(pTelcoVoiceMgrData->Service.VoiceService), event_name, event_val);
                     if(ret == ANSC_STATUS_SUCCESS)
                     {
-                        PDML_SIP_NETWORK_CTRL_T    pSipNetworkData = pDmlVoiceService->SIP_obj.Network.pdata[uIndex - 1];
+                        PDML_SIP_NETWORK_CTRL_T    pSipNetworkData = pDmlVoiceService->SIP_obj.Network.pdata[uIndex];
                         PDML_SIP_NETWORK pDmlSipNetwork = &(pSipNetworkData->dml);
 
-                        DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pDmlVoiceService->VoIPProfile->pdata[uVpIndex];
+                        DML_VOIPPROFILE_CTRL_T* pVoipProfileData = pDmlVoiceService->VoIPProfile->pdata[uVpIndex - 1];
                         PDML_VOIPPROFILE   pDmlVoipProfile  = &(pVoipProfileData->dml);
                         PDML_VOIPPROFILE_RTP pDmlRtpObj = &(pDmlVoipProfile->RTP);
                         //Function to set sysevent for firewall rule

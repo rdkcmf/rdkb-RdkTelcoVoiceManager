@@ -98,10 +98,9 @@ int32_t TelcoVoiceJsonCfgSetDmDefaults(void)
     {
         /* Copy telcovoip_config_default.json to telcovoice_config_current.json */
 
-        char region[MAX_REGION_LENGTH] = {0};
-
         char filename[MAX_FILENAME_LENGTH] = {0};
-
+#ifdef SKY_HUB_COMMON_REQ
+        char region[MAX_REGION_LENGTH] = {0};
         if(platform_hal_GetRouterRegion(region) == RETURN_OK)
         {
             if(0 == strncmp(region,"IT",2))
@@ -121,20 +120,21 @@ int32_t TelcoVoiceJsonCfgSetDmDefaults(void)
                 CcspTraceError(("Unknown Region %s\n",region));
                 snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_NAME);
             }
-
-            snprintf(filename, MAX_FILENAME_LENGTH, "%s%s", VOICE_CONFIG_DEFAULT_PATH,gVOICE_CONFIG_DEFAULT_NAME);
-
-            CcspTraceInfo(("copying %s to %s\n",
-                filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME));
-
-            fcopy(filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
-
         }
         else
         {
             CcspTraceError(("platform_hal_GetRouterRegion - Failed\n"));
             return ANSC_STATUS_FAILURE;
         }
+#else
+        snprintf(gVOICE_CONFIG_DEFAULT_NAME, MAX_FILENAME_LENGTH, VOICE_CONFIG_DEFAULT_NAME);
+#endif
+        snprintf(filename, MAX_FILENAME_LENGTH, "%s%s", VOICE_CONFIG_DEFAULT_PATH,gVOICE_CONFIG_DEFAULT_NAME);
+
+        CcspTraceInfo(("copying %s to %s\n",
+            filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME));
+
+        fcopy(filename, VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
         if (0 != createChecksumFile())
             return ANSC_STATUS_FAILURE;
         else

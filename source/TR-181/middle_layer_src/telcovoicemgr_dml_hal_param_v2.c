@@ -9395,7 +9395,7 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_VOIPPROFILE_LIST_T    pVoipProfileList = &(pVoiceService->VoIPProfile);
+    PDML_VOIPPROFILE_LIST_T    pVoipProfileList = pVoiceService->VoIPProfile;
 
     PDML_VOIPPROFILE_CTRL_T    pVoipProfileData = pVoipProfileList->pdata[hal_index - 1];
 
@@ -9801,6 +9801,7 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
         return ANSC_STATUS_FAILURE;
     }
+    return ANSC_STATUS_SUCCESS;
 }
 ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue)
 {

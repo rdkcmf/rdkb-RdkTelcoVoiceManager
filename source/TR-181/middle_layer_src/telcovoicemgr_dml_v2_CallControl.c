@@ -23,6 +23,7 @@
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
 
+static char *bTrueStr = "true", *bFalseStr = "false";
 /**********************************************************************
 
     caller:     owner of this object
@@ -578,6 +579,8 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_SetParamStringValue(ANSC_HANDLE hInsC
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, uLineIndex, 1, 1, "DirectoryNumber", pString);
+
             ret = TRUE;
         }
     }
@@ -759,15 +762,17 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_SetParamBoolValue(ANSC_HANDLE hInsCon
     }
     else if( AnscEqualString(ParamName, "Enable", TRUE) )
     {
-        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.QuiescentMode",uVsIndex,uLineIndex);
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Enable",uVsIndex,uLineIndex);
 
         if (TelcoVoiceMgrHal_SetParamBool(HalName,bValue) == ANSC_STATUS_SUCCESS)
         {
             TELCOVOICEMGR_LOCK_OR_EXIT()
 
-            pHEAD->QuiescentMode = bValue;
+            pHEAD->Enable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectString(uVsIndex, 1, 1, uLineIndex, "Enable", bValue == TRUE ?"Enabled" : "Disabled");
 
             ret = TRUE;
         }
@@ -7173,6 +7178,8 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCID", bValue ? bTrueStr : bFalseStr);
+
             ret = TRUE;
         }
     }
@@ -7188,6 +7195,8 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesHE", bValue ? bTrueStr : bFalseStr);
+
             ret = TRUE;
         }
     }
@@ -7202,6 +7211,8 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
             pHEAD->X_RDK_Central_COM_ConferenceCallingEnable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCCE", bValue ? bTrueStr : bFalseStr);
 
             ret = TRUE;
         }
@@ -7278,6 +7289,8 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesMWI",bValue ? bTrueStr : bFalseStr);
+
             ret = TRUE;
         }
     }
@@ -7352,6 +7365,8 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
             pHEAD->CallWaitingEnable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCWI", bValue ? bTrueStr : bFalseStr);
 
             ret = TRUE;
         }
