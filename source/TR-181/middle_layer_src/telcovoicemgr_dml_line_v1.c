@@ -2686,17 +2686,27 @@ BOOL CallingFeatures_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName
 **********************************************************************/
 BOOL CallingFeatures_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* pValue)
 {
+
+    DML_LINE_CTRL_T* pTelcoVoiceMgrCtrl = (DML_LINE_CTRL_T*) hInsContext;
+
+    TELCOVOICEMGR_DML_LINE* pLine = &(pTelcoVoiceMgrCtrl->dml);
+
+    if( !pLine || !pValue || !ParamName )
+    {
+        return FALSE;
+    }
+
     if( AnscEqualString(ParamName, "MaxSessions", TRUE) )
     {
-        *pValue = 0;
+        *pValue = pLine->LineCallingFeaturesObj.MaxSessions;
     }
     else if( AnscEqualString(ParamName, "ConferenceCallingSessionCount", TRUE) )
     {
-        *pValue = 0;
+        *pValue = pLine->LineCallingFeaturesObj.ConferenceCallingSessionCount;
     }
     else if( AnscEqualString(ParamName, "CallForwardOnNoAnswerRingCount", TRUE) )
     {
-        *pValue = 0;
+        *pValue = pLine->LineCallingFeaturesObj.CallForwardOnNoAnswerRingCount;
     }
     else
     {
@@ -2708,29 +2718,92 @@ BOOL CallingFeatures_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName
 
 LONG CallingFeatures_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pUlSize)
 {
+    DML_LINE_CTRL_T* pTelcoVoiceMgrCtrl = (DML_LINE_CTRL_T*) hInsContext;
+
+    TELCOVOICEMGR_DML_LINE* pLine = &(pTelcoVoiceMgrCtrl->dml);
+
+    if( !pLine || !pValue || !ParamName )
+    {
+        return -1;
+    }
+
     if( AnscEqualString(ParamName, "CallerIDName", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        AnscCopyString(pValue, pLine->LineCallingFeaturesObj.CallerIDName);
     }
     else if( AnscEqualString(ParamName, "CallWaitingStatus", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        switch( pLine->LineCallingFeaturesObj.CallWaitingStatus )
+        {
+            case VOICE_CW_STATE_DISABLED:
+                AnscCopyString(pValue, "Disabled");
+                break;
+
+            case VOICE_CW_STATE_IDLE:
+                AnscCopyString(pValue, "Idle");
+                break;
+
+            case VOICE_CW_STATE_SECONDARY_RINGING:
+                AnscCopyString(pValue, "Ringing");
+                break;
+
+            case VOICE_CW_STATE_SECONDARY_CONNECTING:
+                AnscCopyString(pValue, "Connecting");
+                break;
+
+            case VOICE_CW_STATE_SECONDARY_CONNECTED:
+                AnscCopyString(pValue, "Connected");
+                break;
+
+            default:
+                AnscCopyString(pValue, "");
+                break;
+        }
     }
     else if( AnscEqualString(ParamName, "ConferenceCallingStatus", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        switch( pLine->LineCallingFeaturesObj.ConferenceCallingStatus )
+        {
+            case VOICE_CONFERENCE_CALLING_STATE_DISABLED:
+                AnscCopyString(pValue, "Disabled");
+                break;
+
+            case VOICE_CONFERENCE_CALLING_STATE_IDLE:
+                AnscCopyString(pValue, "Idle");
+                break;
+
+            case VOICE_CONFERENCE_CALLING_STATE_SECONDARY_RINGING:
+                AnscCopyString(pValue, "Ringing");
+                break;
+
+            case VOICE_CONFERENCE_CALLING_STATE_SECONDARY_CONNECTING:
+                AnscCopyString(pValue, "Connecting");
+                break;
+
+            case VOICE_CONFERENCE_CALLING_STATE_SECONDARY_CONNECTED:
+                AnscCopyString(pValue, "Connected");
+                break;
+
+            case VOICE_CONFERENCE_CALLING_STATE_IN_CONFERENCE_CALL:
+                AnscCopyString(pValue, "In Call");
+                break;
+
+            default:
+                AnscCopyString(pValue, "");
+                break;
+        }
     }
     else if( AnscEqualString(ParamName, "CallForwardOnBusyNumber", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        AnscCopyString(pValue, pLine->LineCallingFeaturesObj.CallForwardOnBusyNumber);
     }
     else if( AnscEqualString(ParamName, "CallForwardUnconditionalNumber", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        AnscCopyString(pValue, pLine->LineCallingFeaturesObj.CallForwardUnconditionalNumber);
     }
     else if( AnscEqualString(ParamName, "CallForwardOnNoAnswerNumber", TRUE) )
     {
-        AnscCopyString(pValue, "");
+        AnscCopyString(pValue, pLine->LineCallingFeaturesObj.CallForwardOnNoAnswerNumber);
     }
     else
     {
@@ -2771,92 +2844,102 @@ BOOL CallingFeatures_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamNam
 
 BOOL CallingFeatures_GetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamName, BOOL* pBool)
 {
+
+    DML_LINE_CTRL_T* pTelcoVoiceMgrCtrl = (DML_LINE_CTRL_T*) hInsContext;
+
+    TELCOVOICEMGR_DML_LINE* pLine = &(pTelcoVoiceMgrCtrl->dml);
+
     BOOL ret = FALSE;
 
+    if( !pLine || !pBool || !ParamName )
+    {
+        return ret;
+    }
+    
     CcspTraceWarning(("%s::ParamName:%s\n", __FUNCTION__, ParamName));
     if( AnscEqualString(ParamName, "CallerIDEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallerIDEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "AnonymousCallBlockEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.AnonymousCallBlockEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "AnonymousCalEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.AnonymousCalEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "DoNotDisturbEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool =  pLine->LineCallingFeaturesObj.DoNotDisturbEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallReturnEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallReturnEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "RepeatDialEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.RepeatDialEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallForwardOnNoAnswerEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallForwardOnNoAnswerEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallTransferEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallTransferEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "MessageWaiting", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.MessageWaiting;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallForwardUnconditionalEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallForwardUnconditionalEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallerIDNameEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallerIDNameEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallForwardOnBusyEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallForwardOnBusyEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "CallWaitingEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.CallWaitingEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "MWIEnable", TRUE) )
     {
-        *pBool = TRUE;
+        *pBool = pLine->LineCallingFeaturesObj.MWIEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "X_RDK-Central_COM_ConferenceCallingEnable", TRUE) )
     {
-        * pBool = TRUE;
+        * pBool = pLine->LineCallingFeaturesObj.ConferenceCallingEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "X_RDK-Central_COM_HoldEnable", TRUE) )
     {
-        * pBool = TRUE;
+        * pBool = pLine->LineCallingFeaturesObj.HoldEnable;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "X_RDK-Central_COM_PhoneCallerIDEnable", TRUE) )
     {
-        * pBool = TRUE;
+        * pBool = pLine->LineCallingFeaturesObj.PhoneCallerIDEnable;
         ret = TRUE;
     }
     else
