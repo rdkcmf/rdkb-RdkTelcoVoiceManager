@@ -407,7 +407,7 @@ ULONG TelcoVoiceMgrDml_SIP_ClientList_GetParamStringValue(ANSC_HANDLE hInsContex
     }
     else if( AnscEqualString(ParamName, "AuthPassword", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->AuthPassword);
+        //Avoid returning password in dmcli get.
         ret = 0;
     }
     else if( AnscEqualString(ParamName, "Alias", TRUE) )
@@ -553,7 +553,22 @@ BOOL TelcoVoiceMgrDml_SIP_ClientList_SetParamStringValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uClientIndex, "AuthPassword",pString);
+            char *pOutBuf = NULL;
+            uint32_t inLen = strlen(pString);
+            uint32_t outLen = 1 + 2*inLen;
+            /* Encrypt the password before storing in NVRAM */
+            pOutBuf = malloc(outLen);
+            if(pOutBuf)
+            {
+                jsonPwdEncode(pString, inLen, pOutBuf, outLen);
+                (void)storeObjectString(uVsIndex, 1, 1, uClientIndex, "AuthPassword",pOutBuf);
+                free(pOutBuf);
+            }
+            else
+            {
+                CcspTraceError(("%s pOutBuf NULL, Set failed\n", __FUNCTION__));
+                return ANSC_STATUS_FAILURE;
+            }
 
             ret = TRUE;
         }

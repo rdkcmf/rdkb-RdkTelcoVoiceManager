@@ -747,7 +747,7 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamULong(char* HalName, ULONG uValue)
 
     snprintf(strValue, JSON_MAX_VAL_ARR_SIZE, "%ld", uValue);
 
-    if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_UNSIGNED_LONG, strValue) == ANSC_STATUS_SUCCESS)
+    if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_UNSIGNED_INTEGER, strValue) == ANSC_STATUS_SUCCESS)
     {
         return ANSC_STATUS_SUCCESS;
     }
