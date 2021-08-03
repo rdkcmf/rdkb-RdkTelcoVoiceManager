@@ -130,83 +130,89 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
         //DML Resource Locked
         pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
 
-        if(TelcoVoiceMgrDmlSetOutboundProxy(uVsIndex, uVpIndex, pServiceCfg->OutboundProxy) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsOutboundProxyPresent ) && ( TelcoVoiceMgrDmlSetOutboundProxy(uVsIndex, uVpIndex, pServiceCfg->OutboundProxy) == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->SIPObj.OutboundProxy, sizeof(pVoiceProfile->SIPObj.OutboundProxy), "%s", pServiceCfg->OutboundProxy);
         }
 
-        if(TelcoVoiceMgrDmlSetProxyServer(uVsIndex, uVpIndex, pServiceCfg->ProxyServer) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsProxyServerPresent ) &&  ( TelcoVoiceMgrDmlSetProxyServer(uVsIndex, uVpIndex, pServiceCfg->ProxyServer) == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->SIPObj.ProxyServer, sizeof(pVoiceProfile->SIPObj.ProxyServer), "%s", pServiceCfg->ProxyServer);
         }
 
-        if(TelcoVoiceMgrDmlSetRegistrarServer(uVsIndex, uVpIndex, pServiceCfg->RegistrarServer) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsRegistrarServerPresent ) &&  ( TelcoVoiceMgrDmlSetRegistrarServer(uVsIndex, uVpIndex, pServiceCfg->RegistrarServer) == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->SIPObj.RegistrarServer, sizeof(pVoiceProfile->SIPObj.RegistrarServer), "%s", pServiceCfg->RegistrarServer);
         }
 
-        if(TelcoVoiceMgrDmlSetUserAgentDomain(uVsIndex, uVpIndex, pServiceCfg->UserAgentDomain) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsUserAgentDomainPresent ) &&  ( TelcoVoiceMgrDmlSetUserAgentDomain(uVsIndex, uVpIndex, pServiceCfg->UserAgentDomain) == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->SIPObj.UserAgentDomain, sizeof(pVoiceProfile->SIPObj.UserAgentDomain), "%s", pServiceCfg->UserAgentDomain);
         }
 
-        if(TelcoVoiceMgrDmlSetConferencingURI(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_ConferencingURI) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsConferencingURIPresent ) &&  ( TelcoVoiceMgrDmlSetConferencingURI(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_ConferencingURI) == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->SIPObj.ConferencingURI, sizeof(pVoiceProfile->SIPObj.ConferencingURI), "%s", pServiceCfg->X_RDK_Central_COM_ConferencingURI);
         }
 
-        if(TelcoVoiceMgrDmlSetDigitMap(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_DigitMap, "X_RDK-Central_COM_DigitMap") == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsDigitMapPresent ) &&  ( TelcoVoiceMgrDmlSetDigitMap(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_DigitMap, "X_RDK-Central_COM_DigitMap") == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->DigitMap, sizeof(pVoiceProfile->DigitMap), "%s", pServiceCfg->X_RDK_Central_COM_DigitMap);
         }
 
-        if(TelcoVoiceMgrDmlSetDigitMap(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_EmergencyDigitMap, "X_RDK-Central_COM_EmergencyDigitMap") == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsEmergencyDigitMapPresent ) &&  ( TelcoVoiceMgrDmlSetDigitMap(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_EmergencyDigitMap, "X_RDK-Central_COM_EmergencyDigitMap") == ANSC_STATUS_SUCCESS) )
         {
             snprintf(pVoiceProfile->EmergencyDigitMap, sizeof(pVoiceProfile->EmergencyDigitMap), "%s", pServiceCfg->X_RDK_Central_COM_EmergencyDigitMap);
         }
 
-        if(TelcoVoiceMgrDmlSetOutboundProxyPort(uVsIndex, uVpIndex, pServiceCfg->OutboundProxyPort) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsOutboundProxyPortPresent ) &&  ( TelcoVoiceMgrDmlSetOutboundProxyPort(uVsIndex, uVpIndex, pServiceCfg->OutboundProxyPort) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SIPObj.OutboundProxyPort = pServiceCfg->OutboundProxyPort;
         }
 
-        if(TelcoVoiceMgrDmlSetProxyServerPort(uVsIndex, uVpIndex, pServiceCfg->ProxyServerPort) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsProxyServerPortPresent ) &&  ( TelcoVoiceMgrDmlSetProxyServerPort(uVsIndex, uVpIndex, pServiceCfg->ProxyServerPort) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SIPObj.ProxyServerPort = pServiceCfg->ProxyServerPort;
         }
 
-        if(TelcoVoiceMgrDmlSetRegistrarServerPort(uVsIndex, uVpIndex, pServiceCfg->RegistrarServerPort) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsRegistrarServerPortPresent ) &&  ( TelcoVoiceMgrDmlSetRegistrarServerPort(uVsIndex, uVpIndex, pServiceCfg->RegistrarServerPort) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SIPObj.RegistrarServerPort = pServiceCfg->RegistrarServerPort;
         }
 
-        if(TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uVsIndex, uVpIndex, pServiceCfg->SIPEthernetPriorityMark) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsSIPEthernetPriorityMarkPresent ) &&  ( TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uVsIndex, uVpIndex, pServiceCfg->SIPEthernetPriorityMark) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SIPObj.EthernetPriorityMark = pServiceCfg->SIPEthernetPriorityMark;
         }
 
-        pVoiceProfile->SIPObj.DSCPMark  =  pServiceCfg->SIPDSCPMark;
-        (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->SIPObj.DSCPMark);
-        
-        pVoiceProfile->RTPObj.DSCPMark  =  pServiceCfg->RTPDSCPMark;
-        (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->RTPObj.DSCPMark);
+        if( TRUE == pServiceCfg->IsSIPDSCPMarkPresent )
+        {
+            pVoiceProfile->SIPObj.DSCPMark  =  pServiceCfg->SIPDSCPMark;
+            (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->SIPObj.DSCPMark);
+        }
 
-        if(TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uVsIndex, uVpIndex, pServiceCfg->RTPEthernetPriorityMark) == ANSC_STATUS_SUCCESS)
+        if( TRUE == pServiceCfg->IsRTPDSCPMarkPresent ) 
+        {
+            pVoiceProfile->RTPObj.DSCPMark  =  pServiceCfg->RTPDSCPMark;
+            (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->RTPObj.DSCPMark);
+        }
+
+        if( ( TRUE == pServiceCfg->IsRTPEthernetPriorityMarkPresent ) &&  ( TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uVsIndex, uVpIndex, pServiceCfg->RTPEthernetPriorityMark) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->RTPObj.EthernetPriorityMark = pServiceCfg->RTPEthernetPriorityMark;
         }
 
-        if(TelcoVoiceMgrDmlSetSDigitTimer(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_SDigitTimer) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsSDigitTimerPresent ) &&  ( TelcoVoiceMgrDmlSetSDigitTimer(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_SDigitTimer) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SDigitTimer = pServiceCfg->X_RDK_Central_COM_SDigitTimer;
         }
 
-        if(TelcoVoiceMgrDmlSetZDigitTimer(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_ZDigitTimer) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsZDigitTimerPresent ) &&  ( TelcoVoiceMgrDmlSetZDigitTimer(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_ZDigitTimer) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->ZDigitTimer = pServiceCfg->X_RDK_Central_COM_ZDigitTimer;
         }
 
-        if(TelcoVoiceMgrDmlSetNetworkDisconnect(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_NetworkDisconnect) == ANSC_STATUS_SUCCESS)
+        if( ( TRUE == pServiceCfg->IsNetworkDisconnectPresent ) &&  ( TelcoVoiceMgrDmlSetNetworkDisconnect(uVsIndex, uVpIndex, pServiceCfg->X_RDK_Central_COM_NetworkDisconnect) == ANSC_STATUS_SUCCESS) )
         {
             pVoiceProfile->SIPObj.NetworkDisconnect = pServiceCfg->X_RDK_Central_COM_NetworkDisconnect;
         }
@@ -244,36 +250,36 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
             //DML Resource Locked
             pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
 
-            if(TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CALL_WAITING, pstLineCfg->CallWaitingEnable) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsCallWaitingEnablePresent ) &&  ( TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CALL_WAITING, pstLineCfg->CallWaitingEnable) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineCallingFeaturesObj.CallWaitingEnable = pstLineCfg->CallWaitingEnable;
             }
 
-            if(TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_MSG_WAIT_INDICATOR, pstLineCfg->MWIEnable) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsMWIEnablePresent ) &&  ( TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_MSG_WAIT_INDICATOR, pstLineCfg->MWIEnable) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineCallingFeaturesObj.MessageWaiting = pstLineCfg->MWIEnable;
             }
 
-            if(TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CONF_CALL, pstLineCfg->X_RDK_Central_COM_ConferenceCallingEnable) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsConferenceCallingEnablePresent ) &&  ( TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CONF_CALL, pstLineCfg->X_RDK_Central_COM_ConferenceCallingEnable) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineCallingFeaturesObj.ConferenceCallingEnable = pstLineCfg->X_RDK_Central_COM_ConferenceCallingEnable;
             }
 
-            if(TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_HOLD, pstLineCfg->X_RDK_Central_COM_HoldEnable) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsHoldEnablePresent ) &&  ( TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_HOLD, pstLineCfg->X_RDK_Central_COM_HoldEnable) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineCallingFeaturesObj.HoldEnable = pstLineCfg->X_RDK_Central_COM_HoldEnable;
             }
 
-            if(TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CALLER_ID, pstLineCfg->X_RDK_Central_COM_PhoneCallerIDEnable) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsPhoneCallerIDEnablePresent ) &&  ( TelcoVoiceMgrDmlSetLineCallingFeatures(uVsIndex, uVpIndex, uVlIndex, VOICE_CALLING_FEATURE_CALLER_ID, pstLineCfg->X_RDK_Central_COM_PhoneCallerIDEnable) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineCallingFeaturesObj.CallerIDEnable = pstLineCfg->X_RDK_Central_COM_PhoneCallerIDEnable;
             }
 
-            if(TelcoVoiceMgrDmlSetDirectoryNumber(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->DirectoryNumber) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsDirectoryNumberPresent ) &&  ( TelcoVoiceMgrDmlSetDirectoryNumber(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->DirectoryNumber) == ANSC_STATUS_SUCCESS) )
             {
                 snprintf(pDMLLine->DirectoryNumber, sizeof(pDMLLine->DirectoryNumber), "%s", pstLineCfg->DirectoryNumber);
             }
-
+            if( TRUE == pstLineCfg->IsLineEnablePresent )
             {
                 TELCOVOICEMGR_ENABLE_ENUM enVoiceEnable;
                 unsigned char        bValidVoiceEnableParam = TRUE;
@@ -302,27 +308,27 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
                 }
             }
 
-            if(TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex, uVpIndex, uVlIndex, VOICE_HAL_AUTH_UNAME, pstLineCfg->SIPAuthUserName) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsSIPAuthUserNamePresent ) &&  ( TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex, uVpIndex, uVlIndex, VOICE_HAL_AUTH_UNAME, pstLineCfg->SIPAuthUserName) == ANSC_STATUS_SUCCESS) )
             {
                 snprintf(pDMLLine->LineSipObj.AuthUserName, sizeof(pDMLLine->LineSipObj.AuthUserName), "%s", pstLineCfg->SIPAuthUserName);
             }
 
-            if(TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex, uVpIndex, uVlIndex, VOICE_HAL_AUTH_PWD, pstLineCfg->SIPAuthPassword) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsSIPAuthPasswordPresent ) &&  ( TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex, uVpIndex, uVlIndex, VOICE_HAL_AUTH_PWD, pstLineCfg->SIPAuthPassword) == ANSC_STATUS_SUCCESS) )
             {
                 snprintf(pDMLLine->LineSipObj.AuthPassword, sizeof(pDMLLine->LineSipObj.AuthPassword), "%s", pstLineCfg->SIPAuthPassword);
             }
 
-            if(TelcoVoiceMgrDmlSetLineSipURI(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->SIPURI) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsSIPURIPresent ) &&  ( TelcoVoiceMgrDmlSetLineSipURI(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->SIPURI) == ANSC_STATUS_SUCCESS) )
             {
                 snprintf(pDMLLine->LineSipObj.URI, sizeof(pDMLLine->LineSipObj.URI), "%s", pstLineCfg->SIPURI);
             }
 
-            if(TelcoVoiceMgrDmlSetReceiveGain(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->ReceiveGain) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsReceiveGainPresent ) &&  ( TelcoVoiceMgrDmlSetReceiveGain(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->ReceiveGain) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineVoiceProcessingObj.ReceiveGain = pstLineCfg->ReceiveGain;
             }
 
-            if(TelcoVoiceMgrDmlSetTransmitGain(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->TransmitGain) == ANSC_STATUS_SUCCESS)
+            if( ( TRUE == pstLineCfg->IsTransmitGainPresent ) &&  ( TelcoVoiceMgrDmlSetTransmitGain(uVsIndex, uVpIndex, uVlIndex, pstLineCfg->TransmitGain) == ANSC_STATUS_SUCCESS) )
             {
                 pDMLLine->LineVoiceProcessingObj.TransmitGain = pstLineCfg->TransmitGain;
             }
