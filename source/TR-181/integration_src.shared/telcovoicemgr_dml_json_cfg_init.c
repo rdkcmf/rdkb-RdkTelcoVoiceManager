@@ -99,7 +99,7 @@ int32_t TelcoVoiceJsonCfgSetDmDefaults(void)
         /* Copy telcovoip_config_default.json to telcovoice_config_current.json */
 
         char filename[MAX_FILENAME_LENGTH] = {0};
-#ifdef SKY_HUB_COMMON_REQ
+#ifdef _SKY_HUB_COMMON_PRODUCT_REQ_
         char region[MAX_REGION_LENGTH] = {0};
         if(platform_hal_GetRouterRegion(region) == RETURN_OK)
         {
