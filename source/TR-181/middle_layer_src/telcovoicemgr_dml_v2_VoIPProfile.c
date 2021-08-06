@@ -476,6 +476,12 @@ ULONG TelcoVoiceMgrDml_VoipProfileList_GetParamStringValue(ANSC_HANDLE hInsConte
         else
         {
           CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+          //X_RDK-Central_COM_EmergencyDigitMap suppors maximum 2048 characters
+          // But by default, the DML library will allocate 1023 buffer size only
+          // If we need more size just put the new size and return 1
+          // If return value is 1 ,the library will allocate required buffer space for us if new size is specified
+          *pulSize = MAXLENGTH_DIGITMAP;
+          ret = 1;
         }
     }
     else if( AnscEqualString(ParamName, "X_RDK-Central_COM_DigitMap", TRUE) )
@@ -488,6 +494,12 @@ ULONG TelcoVoiceMgrDml_VoipProfileList_GetParamStringValue(ANSC_HANDLE hInsConte
         else
         {
           CcspTraceWarning(("%s: Buffer length insufficient, ParamName:%s\n", __FUNCTION__, ParamName));
+          //X_RDK-Central_COM_DigitMap supports maximum 2048 characters
+          // But by default,  the DML library will allocate 1023 buffer size only
+          // If we need more size just put the new size and return 1
+          // If return value is 1 ,the library will allocate required buffer space for us if new size is specified
+          *pulSize = MAXLENGTH_DIGITMAP;
+          ret = 1;
         }
     }
     else if( AnscEqualString(ParamName, "QIModelUsed", TRUE) )
