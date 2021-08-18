@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 static char *bTrueStr = "true", *bFalseStr = "false";
 /**********************************************************************
@@ -355,10 +356,11 @@ ANSC_HANDLE TelcoVoiceMgrDml_CallControl_LineList_GetEntry(ANSC_HANDLE hInsConte
 BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uCCLineIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
  
     TELCOVOICEMGR_LINE_STATUS_ENUM lineStatus = VOICE_LINE_STATE_DISABLED;
-
-    PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -372,16 +374,29 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsCo
 
     PDML_CALLCONTROL_LINE pHEAD = &(pCallCtrlLineCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uCCLineIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        pVoiceService = pHEAD->pParentVoiceService;
 
-        if(pVoiceService == NULL)
-        {
-            CcspTraceWarning(("%s: Invalid pVoiceService[NULL]\n", __func__));
-        }
-        else if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineStatus(pVoiceService->InstanceNumber, TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE,
-                                             pHEAD->uInstanceNumber, &lineStatus))
+        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineStatus(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE,
+                                             uCCLineIndex, &lineStatus))
         {
             pHEAD->Status = lineStatus;
             *puLong = pHEAD->Status;
@@ -395,8 +410,20 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsCo
     }
     else if( AnscEqualString(ParamName, "CallStatus", TRUE) )
     {
-        *puLong = pHEAD->CallStatus;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_LINE_PARAM_NAME"%s", uVsIndex, uCCLineIndex, "CallStatus");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else
     {
@@ -1326,6 +1353,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_CallControl_ExtensionList_GetEntry(ANSC_HANDLE hIns
 BOOL TelcoVoiceMgrDml_CallControl_ExtensionList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uCCExtIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1339,10 +1369,41 @@ BOOL TelcoVoiceMgrDml_CallControl_ExtensionList_GetParamUlongValue(ANSC_HANDLE h
 
     PDML_CALLCONTROL_EXTENSION pHEAD = &(pCallCtrlExtCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uCCExtIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME"%s", uVsIndex, uCCExtIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = CALLCTRL_CALLSTATUS_DISABLED;
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "Origin", TRUE) )
     {
@@ -1351,8 +1412,21 @@ BOOL TelcoVoiceMgrDml_CallControl_ExtensionList_GetParamUlongValue(ANSC_HANDLE h
     }
     else if( AnscEqualString(ParamName, "ConferenceCallingStatus", TRUE) )
     {
-        *puLong = pHEAD->ConferenceCallingStatus;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME"%s", uVsIndex, 
+                  uCCExtIndex, "ConferenceCallingStatus");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "ConferenceCallingSessionCount", TRUE) )
     {
@@ -1361,13 +1435,37 @@ BOOL TelcoVoiceMgrDml_CallControl_ExtensionList_GetParamUlongValue(ANSC_HANDLE h
     }
     else if( AnscEqualString(ParamName, "CallWaitingStatus", TRUE) )
     {
-        *puLong = pHEAD->CallWaitingStatus;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME"%s", uVsIndex, uCCExtIndex, "CallWaitingStatus");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "CallStatus", TRUE) )
     {
-        *puLong = pHEAD->CallStatus;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME"%s", uVsIndex, uCCExtIndex, "CallStatus");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else
     {

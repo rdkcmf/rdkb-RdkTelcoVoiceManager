@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 /**********************************************************************
 
@@ -193,6 +194,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_ISDN_BRIList_GetEntry(ANSC_HANDLE hInsContext, ULON
 BOOL TelcoVoiceMgrDml_ISDN_BRIList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uISDNBriIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -206,6 +211,24 @@ BOOL TelcoVoiceMgrDml_ISDN_BRIList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
 
     PDML_ISDN_BRI pHEAD = &(pIsdnBriCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uISDNBriIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "TEINegotiation", TRUE) )
     {
         *puLong = pHEAD->TEINegotiation;
@@ -213,8 +236,21 @@ BOOL TelcoVoiceMgrDml_ISDN_BRIList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
     }
     else if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_ISDN_BRI_PARAM_NAME"%s", uVsIndex, uISDNBriIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = STATUS_DISABLED;
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "StaticTEI", TRUE) )
     {
@@ -1143,6 +1179,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_ISDN_PRIList_GetEntry(ANSC_HANDLE hInsContext, ULON
 BOOL TelcoVoiceMgrDml_ISDN_PRIList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uISDNPriIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1156,10 +1196,41 @@ BOOL TelcoVoiceMgrDml_ISDN_PRIList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
 
     PDML_ISDN_PRI pHEAD = &(pIsdnPriCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uISDNPriIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_ISDN_PRI_PARAM_NAME"%s", uVsIndex, uISDNPriIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = STATUS_DISABLED;
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "ProtocolEmulation", TRUE) )
     {

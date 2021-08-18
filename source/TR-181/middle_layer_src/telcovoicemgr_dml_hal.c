@@ -782,7 +782,7 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
         if (strstr(event_name, FIREWALL_RULE_DATA_EVENT))
         {
-            if(ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(event_name, DML_VOICESERVICE, &uVsIndex))
+            if(ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(event_name, DML_VOICESERVICE_PARAM_NAME, &uVsIndex))
             {
                 return ANSC_STATUS_FAILURE;
             }
@@ -811,8 +811,8 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
 
                 if( strstr(event_name, "SIP"))
                 {
-                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(event_name, DML_VOICESERVICE_SIP_NETWORK, &uIndex)) ||
-                        ( uIndex <= 0 ))
+                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(event_name,
+                                                  DML_VOICESERVICE_SIP_NETWORK_PARAM_NAME, &uIndex)) || ( uIndex <= 0 ))
                     {
                         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, event_name));
                         TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
@@ -838,7 +838,7 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                 }
                 else if(strstr(event_name, "RTP"))
                 {
-                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_VoIPProfile_index(event_name, DML_VOICESERVICE_VOIPPROF, &uVpIndex))
+                    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_VoIPProfile_index(event_name, DML_VOICESERVICE_VOIPPROF_PARAM_NAME, &uVpIndex))
                         || (uVpIndex <= 0) )
                     {
                         TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);

@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 static char *bTrueStr = "true", *bFalseStr = "false";
 /**********************************************************************
@@ -193,6 +194,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_ClientList_GetEntry(ANSC_HANDLE hInsContext, UL
 BOOL TelcoVoiceMgrDml_SIP_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPClientIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -206,10 +211,41 @@ BOOL TelcoVoiceMgrDml_SIP_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext,
 
     PDML_SIP_CLIENT pHEAD = &(pSipClientCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSIPClientIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_CLIENT_PARAM_NAME"%s", uVsIndex, uSIPClientIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = CLIENT_STATUS_DISABLED;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "RegisterMode", TRUE) )
     {
@@ -1039,6 +1075,11 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_ClientList_ContactList_GetEntry(ANSC_HANDLE hIn
 BOOL TelcoVoiceMgrDml_SIP_ClientList_ContactList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPClientIndex = 0;
+    ULONG uSIPClientContactIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    PDML_SIP_CLIENT pDmlSipClient = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1052,10 +1093,45 @@ BOOL TelcoVoiceMgrDml_SIP_ClientList_ContactList_GetParamUlongValue(ANSC_HANDLE 
 
     PDML_SIP_CLIENT_CONTACT pHEAD = &(pSipClientContactCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+        pDmlSipClient    = (PDML_SIP_CLIENT)pHEAD->pParentSipClient;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL || pDmlSipClient == NULL )
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex               = pDmlVoiceService->InstanceNumber;
+
+    uSIPClientIndex        = pDmlSipClient->uInstanceNumber;
+
+    uSIPClientContactIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_CLIENT_CONTACT_PARAM_NAME"%s", uVsIndex, uSIPClientIndex,
+                 uSIPClientContactIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = SIP_STATUS_ERROR;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "Port", TRUE) )
     {
@@ -2378,6 +2454,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_NetworkList_GetEntry(ANSC_HANDLE hInsContext, U
 BOOL TelcoVoiceMgrDml_SIP_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPNetworkIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -2390,6 +2469,24 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContext
     PDML_SIP_NETWORK_CTRL_T pSipNetworkCtrl = (PDML_SIP_NETWORK_CTRL_T)hInsContext;
 
     PDML_SIP_NETWORK pHEAD = &(pSipNetworkCtrl->dml);
+
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSIPNetworkIndex = pHEAD->uInstanceNumber;
 
     if( AnscEqualString(ParamName, "X_RDK_SKBMark", TRUE) )
     {
@@ -2498,8 +2595,21 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContext
     }
     else if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_NETWORK_PARAM_NAME"%s", uVsIndex, uSIPNetworkIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = NETWORK_STATUS_ERROR_OTHER;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "ReInviteExpires", TRUE) )
     {
@@ -3823,8 +3933,9 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "EthernetPriorityMark", iValue);
-            
+            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
+                                      uNetworkIndex, "EthernetPriorityMark", iValue);
+
             ret = TRUE;
         }
     }
@@ -6617,6 +6728,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_ProxyList_GetEntry(ANSC_HANDLE hInsContext, ULO
 BOOL TelcoVoiceMgrDml_SIP_ProxyList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPProxyIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -6630,10 +6744,42 @@ BOOL TelcoVoiceMgrDml_SIP_ProxyList_GetParamUlongValue(ANSC_HANDLE hInsContext, 
 
     PDML_SIP_PROXY pHEAD = &(pSipProxyCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSIPProxyIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_PROXY_PARAM_NAME"%s", uVsIndex, uSIPProxyIndex, "Status");
+
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = NETWORK_STATUS_ERROR_OTHER;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "ProxyPort", TRUE) )
     {
@@ -7324,7 +7470,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_RegistrarList_GetEntry(ANSC_HANDLE hInsContext,
 
 BOOL TelcoVoiceMgrDml_SIP_RegistrarList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
-    BOOL ret = TRUE;
+    BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPRegIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -7338,10 +7487,41 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_GetParamUlongValue(ANSC_HANDLE hInsConte
 
     PDML_SIP_REGISTRAR pHEAD = &(pSipRegistrarCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSIPRegIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_REGISTRAR_PARAM_NAME"%s", uVsIndex, uSIPRegIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = SIP_STATUS_DISABLED;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "RegistrarPort", TRUE) )
     {
@@ -8134,6 +8314,11 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_GetEntry(ANSC_HANDLE 
 BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSIPRegIndex = 0;
+    ULONG uSIPRegAccIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    PDML_SIP_REGISTRAR pDmlSipRegistrar = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -8147,10 +8332,46 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_GetParamUlongValue(ANSC_HAND
 
     PDML_SIP_REGISTRAR_ACCOUNT pHEAD = &(pSipRegistrarAccCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+        pDmlSipRegistrar = (PDML_SIP_REGISTRAR)pHEAD->pParentSipRegistrar;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSIPRegIndex = pDmlSipRegistrar->uInstanceNumber;
+
+    uSIPRegAccIndex = pHEAD->uInstanceNumber;
+
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT_PARAM_NAME"%s",
+                  uVsIndex, uSIPRegIndex, uSIPRegAccIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = STATUS_DISABLED;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "RegistrationStatus", TRUE) )
     {
@@ -8962,6 +9183,13 @@ ANSC_HANDLE TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_GetEntry(
 BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uSipRegIndex = 0;
+    ULONG uSipRegAccIndex = 0;
+    ULONG uSipRegAccContactIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    PDML_SIP_REGISTRAR         pDmlSipReg    = NULL;
+    PDML_SIP_REGISTRAR_ACCOUNT pDmlSipRegAcc = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -8975,10 +9203,48 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_GetParamUlongVal
 
     PDML_SIP_REGISTRAR_ACCOUNT_CONTACT pHEAD = &(pSipRegistrarAccContactCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+        pDmlSipReg       = (PDML_SIP_REGISTRAR)pHEAD->pParentSipRegistrar;
+        pDmlSipRegAcc    = (PDML_SIP_REGISTRAR_ACCOUNT)pHEAD->pParentSipRegistrarAccount;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL || pDmlSipReg == NULL || pDmlSipRegAcc == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uSipRegIndex = pDmlSipReg->uInstanceNumber;
+
+    uSipRegAccIndex = pDmlSipRegAcc->uInstanceNumber;
+
+    uSipRegAccContactIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT_CONTACT_PARAM_NAME"%s", uVsIndex,
+                  uSipRegIndex, uSipRegAccIndex, uSipRegAccContactIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = SIP_STATUS_ERROR;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "Port", TRUE) )
     {
@@ -9167,7 +9433,7 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_SetParamStringVa
 
     uSipRegAccIndex = pDmlSipRegAcc->uInstanceNumber;
 
-    uSipRegAccContactIndex = pHEAD->uInstanceNumber;    
+    uSipRegAccContactIndex = pHEAD->uInstanceNumber;
 
     TELCOVOICEMGR_UNLOCK()
 
@@ -9372,7 +9638,7 @@ BOOL TelcoVoiceMgrDml_SIP_RegistrarList_AccountList_ContactList_SetParamBoolValu
 
     uSipRegAccIndex = pDmlSipRegAcc->uInstanceNumber;
 
-    uSipRegAccContactIndex = pHEAD->uInstanceNumber;    
+    uSipRegAccContactIndex = pHEAD->uInstanceNumber;
 
     TELCOVOICEMGR_UNLOCK()
 

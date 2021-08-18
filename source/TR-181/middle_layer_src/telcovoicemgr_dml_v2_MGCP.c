@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 /**********************************************************************
 
@@ -193,6 +194,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_MGCP_ClientList_GetEntry(ANSC_HANDLE hInsContext, U
 BOOL TelcoVoiceMgrDml_MGCP_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uMGCPClientIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -206,10 +210,40 @@ BOOL TelcoVoiceMgrDml_MGCP_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext
 
     PDML_MGCP_CLIENT pHEAD = &(pMGCPClientCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uMGCPClientIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_MGCP_CLIENT_PARAM_NAME"%s", uVsIndex, uMGCPClientIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "RegisterMode", TRUE) )
     {
@@ -978,6 +1012,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_MGCP_NetworkList_GetEntry(ANSC_HANDLE hInsContext, 
 BOOL TelcoVoiceMgrDml_MGCP_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uMGCPNetworkIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -991,10 +1028,40 @@ BOOL TelcoVoiceMgrDml_MGCP_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContex
 
     PDML_MGCP_NETWORK pHEAD = &(pMGCPNetworkCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uMGCPNetworkIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_MGCP_NETWORK_PARAM_NAME"%s", uVsIndex, uMGCPNetworkIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "RetranIntervalTimer", TRUE) )
     {

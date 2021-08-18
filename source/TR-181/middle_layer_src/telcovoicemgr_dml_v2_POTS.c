@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 #define HAL_DML_VOICESERVICE_POTS_FXO                          "Device.Services.VoiceService.%d.POTS.FXO.%d."
 #define HAL_DML_VOICESERVICE_POTS_FXS                          "Device.Services.VoiceService.%d.POTS.FXS.%d."
@@ -344,6 +345,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_POTS_FXOList_GetEntry(ANSC_HANDLE hInsContext, ULON
 BOOL TelcoVoiceMgrDml_POTS_FXOList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uPotsFxoIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -357,6 +361,24 @@ BOOL TelcoVoiceMgrDml_POTS_FXOList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
 
     PDML_POTS_FXO pHEAD = &(pPotsFxoCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uPotsFxoIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "TimeoutBeforeDialing", TRUE) )
     {
         *puLong = pHEAD->TimeoutBeforeDialing;
@@ -364,8 +386,20 @@ BOOL TelcoVoiceMgrDml_POTS_FXOList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
     }
     else if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_POTS_FXO_PARAM_NAME"%s", uVsIndex, uPotsFxoIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "SignalingMode", TRUE) )
     {
@@ -1367,6 +1401,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_POTS_FXSList_GetEntry(ANSC_HANDLE hInsContext, ULON
 BOOL TelcoVoiceMgrDml_POTS_FXSList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uPotsFxsIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1380,6 +1417,24 @@ BOOL TelcoVoiceMgrDml_POTS_FXSList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
 
     PDML_POTS_FXS pHEAD = &(pPotsFxsCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uPotsFxsIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "TerminalType", TRUE) )
     {
         *puLong = pHEAD->TerminalType;
@@ -1387,8 +1442,20 @@ BOOL TelcoVoiceMgrDml_POTS_FXSList_GetParamUlongValue(ANSC_HANDLE hInsContext, c
     }
     else if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_POTS_FXS_PARAM_NAME"%s", uVsIndex, uPotsFxsIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "ModemPassThrough", TRUE) )
     {

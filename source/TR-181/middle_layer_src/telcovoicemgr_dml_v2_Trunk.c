@@ -22,7 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
-
+#include "telcovoicemgr_dml_hal_param_v2.h"
 /**********************************************************************
 
     caller:     owner of this object
@@ -194,6 +194,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_TrunkList_GetEntry(ANSC_HANDLE hInsContext, ULONG n
 BOOL TelcoVoiceMgrDml_TrunkList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uTrunkIndex = 0;
+
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -207,14 +211,45 @@ BOOL TelcoVoiceMgrDml_TrunkList_GetParamUlongValue(ANSC_HANDLE hInsContext, char
 
     PDML_TRUNK pHEAD = &(pTrunk->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uTrunkIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_TRUNK_PARAM_NAME"%s", uVsIndex, uTrunkIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = TRUNK_STATUS_DISABLED;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "Origin", TRUE) )
     {
-        *puLong = pHEAD->Status;
+        *puLong = pHEAD->Origin;
         ret = TRUE;
     }
     else if( AnscEqualString(ParamName, "MaxChannels", TRUE) )

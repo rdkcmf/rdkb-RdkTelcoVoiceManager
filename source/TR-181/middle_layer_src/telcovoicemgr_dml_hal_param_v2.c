@@ -117,7 +117,7 @@ PTELCOVOICEMGR_DML_VOICESERVICE getVoiceService(PDML_VOICE_SERVICE_LIST_T pVoice
     int hal_index = 0;
 
     //VoiceService.{i}.
-    if( (ParamName == NULL) || (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(ParamName, DML_VOICESERVICE, &hal_index)) ||
+    if( (ParamName == NULL) || (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(ParamName, DML_VOICESERVICE_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -170,7 +170,7 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     }
 
     //VoiceService.{i}.
-    if( ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(ParamName, DML_VOICESERVICE, &hal_index))
+    if( ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_index(ParamName, DML_VOICESERVICE_PARAM_NAME, &hal_index))
     {
         return ANSC_STATUS_FAILURE;
     }
@@ -425,20 +425,20 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"Terminal"))
+    else if(strstr(ParamName,"Tone"))
     {
-        //VoiceService.{i}.Terminal{i}.
-        retStatus = Map_hal_dml_Terminal(pVoiceServiceList, ParamName, pValue);
+        //VoiceService.{i}.Tone{i}.
+        retStatus = Map_hal_dml_Tone(pVoiceServiceList, ParamName, pValue);
         if(retStatus != ANSC_STATUS_SUCCESS)
         {
             AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"Tone"))
+    else if(strstr(ParamName,"Terminal"))
     {
-        //VoiceService.{i}.Tone{i}.
-        retStatus = Map_hal_dml_Tone(pVoiceServiceList, ParamName, pValue);
+        //VoiceService.{i}.Terminal{i}.
+        retStatus = Map_hal_dml_Terminal(pVoiceServiceList, ParamName, pValue);
         if(retStatus != ANSC_STATUS_SUCCESS)
         {
             AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
@@ -486,47 +486,47 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
 
     PDML_VOICESERVICE_CAPABILITIES pCapabilities = &(pVoiceService->Capabilities);
 
-    if( strstr(ParamName, "Capabilities.MaxLineCount") )
+    if( strstr(ParamName, "MaxLineCount") )
     {
         //VoiceService.{i}.Capabilities.MaxLineCount
         pCapabilities->MaxLineCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.MaxExtensionCount") )
+    else if( strstr(ParamName, "MaxExtensionCount") )
     {
         //VoiceService.{i}.Capabilities.MaxExtensionCount
         pCapabilities->MaxExtensionCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.MaxCallLogCount") )
+    else if( strstr(ParamName, "MaxCallLogCount") )
     {
         //VoiceService.{i}.Capabilities.MaxCallLogCount
         pCapabilities->MaxCallLogCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.MaxSessionsPerLine") )
+    else if( strstr(ParamName, "MaxSessionsPerLine") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionsPerLine
         pCapabilities->MaxSessionsPerLine = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.MaxSessionsPerExtension") )
+    else if( strstr(ParamName, "MaxSessionsPerExtension") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionsPerExtension
         pCapabilities->MaxSessionsPerExtension = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.MaxSessionCount") )
+    else if( strstr(ParamName, "MaxSessionCount") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionCount
         pCapabilities->MaxSessionCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Capabilities.NetworkConnectionModes") )
+    else if( strstr(ParamName, "NetworkConnectionModes") )
     {
         //VoiceService.{i}.Capabilities.NetworkConnectionModes
         strncpy(pCapabilities->NetworkConnectionModes, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "Capabilities.UserConnectionModes") )
+    else if( strstr(ParamName, "UserConnectionModes") )
     {
         //VoiceService.{i}.Capabilities.UserConnectionModes
         strncpy(pCapabilities->UserConnectionModes, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "Capabilities.ToneFileFormats") )
+    else if( strstr(ParamName, "ToneFileFormats") )
     {
         //VoiceService.{i}.Capabilities.ToneFileFormats
         if (strcmp(pValue,"G.711MuLaw") == 0)
@@ -558,7 +558,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "Capabilities.RingFileFormats") )
+    else if( strstr(ParamName, "RingFileFormats") )
     {
         //VoiceService.{i}.Capabilities.RingFileFormats
         if (strcmp(pValue,"MIDI") == 0)
@@ -590,7 +590,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "Capabilities.FacilityActions") )
+    else if( strstr(ParamName, "FacilityActions") )
     {
         //VoiceService.{i}.Capabilities.FacilityActions
         if (strcmp(pValue,"AA_REGISTER") == 0)
@@ -822,7 +822,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "Capabilities.SIP") )
+    else if( strstr(ParamName, "SIP") )
     {
         //VoiceService.{i}.Capabilities.SIP.
         if( strstr(ParamName, "Client") )
@@ -1089,7 +1089,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             }
         }
     }
-    else if( strstr(ParamName, "Capabilities.MGCP") )
+    else if( strstr(ParamName, "MGCP") )
     {
         PDML_VOICESERVICE_CAPABILITIES_MGCP pCapabilitiesMgcp = &(pCapabilities->MGCP);
         //VoiceService.{i}.Capabilities.MGCP.
@@ -1104,7 +1104,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Capabilities.H323") )
+    else if( strstr(ParamName, "H323") )
     {
         PDML_VOICESERVICE_CAPABILITIES_H323 pCapabilitiesH323 = &(pCapabilities->H323);
         //VoiceService.{i}.Capabilities.H323.
@@ -1158,7 +1158,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Capabilities.ISDN") )
+    else if( strstr(ParamName, "ISDN") )
     {
         PDML_VOICESERVICE_CAPABILITIES_ISDN pCapabilitiesIsdn = &(pCapabilities->ISDN);
         //VoiceService.{i}.Capabilities.ISDN.
@@ -1240,7 +1240,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Capabilities.POTS") )
+    else if( strstr(ParamName, "POTS") )
     {
         PDML_VOICESERVICE_CAPABILITIES_POTS pCapabilitiesPots = &(pCapabilities->POTS);
         //VoiceService.{i}.Capabilities.POTS.
@@ -1294,12 +1294,12 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Capabilities.Codec") )
+    else if( strstr(ParamName, "Codec") )
     {
         int hal_index = 0;
         int codec_index = 0;
         //VoiceService.{i}.Capabilities.Codec.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Capabilities_Codec_index(ParamName,DML_VOICESERVICE_CAPABILITIES_CODEC,&hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Capabilities_Codec_index(ParamName,DML_VOICESERVICE_CAPABILITIES_CODEC_PARAM_NAME,&hal_index)) ||
         ( hal_index <= 0 ))
         {
             return ANSC_STATUS_FAILURE;
@@ -1462,7 +1462,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Capabilities.QualityIndicator") )
+    else if( strstr(ParamName, "QualityIndicator") )
     {
         PDML_VOICESERVICE_CAPABILITIES_QUALITYINDICATOR pCapabilitiesQualityInd = &(pCapabilities->QualityIndicator);
         //VoiceService.{i}.Capabilities.QualityIndicator.
@@ -1515,12 +1515,12 @@ ANSC_STATUS Map_hal_dml_reservePorts(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
 
     PDML_RESERVEDPORTS pReservedPorts = &(pVoiceService->ReservedPorts);
 
-    if( strstr(ParamName, "ReservedPorts.WANPortRange") )
+    if( strstr(ParamName, "WANPortRange") )
     {
         //VoiceService.{i}.ReservedPorts.WANPortRange
         strncpy(pReservedPorts->WANPortRange, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "ReservedPorts.LANPortRange") )
+    else if( strstr(ParamName, "LANPortRange") )
     {
         //VoiceService.{i}.ReservedPorts.LANPortRange
         strncpy(pReservedPorts->LANPortRange, pValue,strlen(pValue)+1);
@@ -1555,9 +1555,9 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_ISDN pIsdn = &(pVoiceService->ISDN_obj);
 
-    if( strstr(ParamName, "ISDN.BRI") )
+    if( strstr(ParamName, "BRI") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_BRI_index(ParamName, DML_VOICESERVICE_ISDN_BRI, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_BRI_index(ParamName, DML_VOICESERVICE_ISDN_BRI_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -1821,9 +1821,9 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "ISDN.PRI") )
+    else if( strstr(ParamName, "PRI") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_PRI_index(ParamName, DML_VOICESERVICE_ISDN_PRI, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_PRI_index(ParamName, DML_VOICESERVICE_ISDN_PRI_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -2131,14 +2131,14 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_POTS pPots = &(pVoiceService->POTS_obj);
 
-    if( strstr(ParamName, "POTS.Region") )
+    if( strstr(ParamName, "Region") )
     {
         //VoiceService.{i}.POTS.Region
         strncpy(pPots->Region, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "POTS.FXO") )
+    else if( strstr(ParamName, "FXO") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXO_index(ParamName, DML_VOICESERVICE_POTS_FXO, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXO_index(ParamName, DML_VOICESERVICE_POTS_FXO_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -2373,9 +2373,9 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
                return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "POTS.FXS") )
+    else if( strstr(ParamName, "FXS") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXS_index(ParamName, DML_VOICESERVICE_POTS_FXS, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXS_index(ParamName, DML_VOICESERVICE_POTS_FXS_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -2710,13 +2710,13 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "POTS.Ringer") )
+    else if( strstr(ParamName, "Ringer") )
     {
         PDML_POTS_RINGER pPotsRinger = &(pPots->Ringer_Obj);
         //VoiceService.{i}.POTS.Ringer.
         if( strstr(ParamName, "Event") )
         {
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_Ringer_Event_index(ParamName, DML_VOICESERVICE_POTS_RINGER_EVT, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_Ringer_Event_index(ParamName, DML_VOICESERVICE_POTS_RINGER_EVT_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -2828,9 +2828,9 @@ ANSC_STATUS Map_hal_dml_DECT(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_DECT pDect = &(pVoiceService->DECT_obj);
 
-    if( strstr(ParamName, "DECT.Base") )
+    if( strstr(ParamName, "Base") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Base_index(ParamName, DML_VOICESERVICE_DECT_BASE, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Base_index(ParamName, DML_VOICESERVICE_DECT_BASE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -3098,9 +3098,9 @@ ANSC_STATUS Map_hal_dml_DECT(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "DECT.Portable") )
+    else if( strstr(ParamName, "Portable") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Portable_index(ParamName, DML_VOICESERVICE_DECT_PORTABLE, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Portable_index(ParamName, DML_VOICESERVICE_DECT_PORTABLE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -3336,9 +3336,9 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
     PDML_SIP pSip = &(pVoiceService->SIP_obj);
 
-    if( strstr(ParamName, "SIP.Client") )
+    if( strstr(ParamName, "Client") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_index(ParamName, DML_VOICESERVICE_SIP_CLIENT, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -3532,7 +3532,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         }
         else if( strstr(ParamName, "Contact") )
         {
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_Contact_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_CONTACT, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_Contact_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_CONTACT_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -3656,7 +3656,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         else if( strstr(ParamName, "EventSubscribe") )
         {
             //VoiceService.{i}.SIP.Client.{i}.EventSubscribe.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_EventSubscribe_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_EVTSUBSCRIBE, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_EventSubscribe_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_EVTSUBSCRIBE_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -3731,9 +3731,9 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "SIP.Network") )
+    else if( strstr(ParamName, "Network") )
     {
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(ParamName, DML_VOICESERVICE_SIP_NETWORK, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4256,7 +4256,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         else if( strstr(ParamName, "FQDNServer") )
         {
             //VoiceService.{i}.SIP.Network.{i}.FQDNServer.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_FQDNServer_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_FQDNSERVER, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_FQDNServer_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_FQDNSERVER_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4354,7 +4354,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         else if( strstr(ParamName, "EventSubscribe") )
         {
             //VoiceService.{i}.SIP.Network.{i}.EventSubscribe.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_EventSubscribe_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_EVTSUBSCRIBE, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_EventSubscribe_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_EVTSUBSCRIBE_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4455,7 +4455,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         else if( strstr(ParamName, "ResponseMap") )
         {
             //VoiceService.{i}.SIP.Network.{i}.ResponseMap.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_ResponseMap_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_RESPMAP, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_ResponseMap_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_RESPMAP_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4529,10 +4529,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "SIP.Proxy") )
+    else if( strstr(ParamName, "Proxy") )
     {
         //VoiceService.{i}.SIP.Proxy.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Proxy_index(ParamName, DML_VOICESERVICE_SIP_PROXY, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Proxy_index(ParamName, DML_VOICESERVICE_SIP_PROXY_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4640,10 +4640,10 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "SIP.Registrar") )
+    else if( strstr(ParamName, "Registrar") )
     {
         //VoiceService.{i}.SIP.Registrar.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4780,7 +4780,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         else if( strstr(ParamName, "Account") )
         {
             //VoiceService.{i}.SIP.Registrar.{i}.Account.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_Account_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_Account_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -4990,7 +4990,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             else if( strstr(ParamName, "Contact") )
             {
                 //VoiceService.{i}.SIP.Registrar.{i}.Account.{i}.Contact.{i}.
-                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_Account_Contact_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT_CONTACT, &hal_index)) ||
+                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_Account_Contact_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_ACCOUNT_CONTACT_PARAM_NAME, &hal_index)) ||
                     ( hal_index <= 0 ))
                 {
                      AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -5150,7 +5150,7 @@ ANSC_STATUS Map_hal_dml_MGCP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
     if( strstr(ParamName, "Client") )
     {
         //VoiceService.{i}.MGCP.Client.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_MGCP_Client_index(ParamName, DML_VOICESERVICE_MGCP_CLIENT, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_MGCP_Client_index(ParamName, DML_VOICESERVICE_MGCP_CLIENT_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -5302,7 +5302,7 @@ ANSC_STATUS Map_hal_dml_MGCP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
     else if( strstr(ParamName, "Network") )
     {
         //VoiceService.{i}.MGCP.Network.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_MGCP_Network_index(ParamName, DML_VOICESERVICE_MGCP_NETWORK, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_MGCP_Network_index(ParamName, DML_VOICESERVICE_MGCP_NETWORK_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -5537,7 +5537,7 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
     if( strstr(ParamName, "Client") )
     {
         //VoiceService.{i}.H323.Client.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_H323_Client_index(ParamName, DML_VOICESERVICE_H323_CLIENT, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_H323_Client_index(ParamName, DML_VOICESERVICE_H323_CLIENT_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -5686,7 +5686,7 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
     else if( strstr(ParamName, "Network") )
     {
         //VoiceService.{i}.H323.Network.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_H323_Network_index(ParamName, DML_VOICESERVICE_H323_NETWORK, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_H323_Network_index(ParamName, DML_VOICESERVICE_H323_NETWORK_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -5882,7 +5882,7 @@ ANSC_STATUS Map_hal_dml_Trunk(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char*
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Trunk_index(ParamName, DML_VOICESERVICE_TRUNK, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Trunk_index(ParamName, DML_VOICESERVICE_TRUNK_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -6078,20 +6078,20 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
     PDML_CALLCONTROL pCallCtrl = &(pVoiceService->CallControl_obj);
 
-    if( strstr(ParamName, "CallControl.MaxNumberOfLines") )
+    if( strstr(ParamName, "MaxNumberOfLines") )
     {
         //VoiceService.{i}.CallControl.MaxNumberOfLines
         pCallCtrl->MaxNumberOfLines = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "CallControl.MaxNumberOfExtensions") )
+    else if( strstr(ParamName, "MaxNumberOfExtensions") )
     {
         //VoiceService.{i}.CallControl.MaxNumberOfExtensions
         pCallCtrl->MaxNumberOfExtensions = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "CallControl.Line") )
+    else if( strstr(ParamName, "Line") )
     {
         //VoiceService.{i}.CallControl.Line.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Line_index(ParamName, DML_VOICESERVICE_CALLCONTROL_LINE, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Line_index(ParamName, DML_VOICESERVICE_CALLCONTROL_LINE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -6381,10 +6381,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.Extension") )
+    else if( strstr(ParamName, "Extension") )
     {
         //VoiceService.{i}.CallControl.Extension.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Extension_index(ParamName, DML_VOICESERVICE_CALLCONTROL_EXTENSION, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Extension_index(ParamName, DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -6759,10 +6759,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.Group") )
+    else if( strstr(ParamName, "Group") )
     {
         //VoiceService.{i}.CallControl.Group.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Group_index(ParamName, DML_VOICESERVICE_CALLCONTROL_GROUP, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Group_index(ParamName, DML_VOICESERVICE_CALLCONTROL_GROUP_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -6832,10 +6832,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.Mailbox") )
+    else if( strstr(ParamName, "Mailbox") )
     {
         //VoiceService.{i}.CallControl.Mailbox.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Mailbox_index(ParamName, DML_VOICESERVICE_CALLCONTROL_MAILBOX, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Mailbox_index(ParamName, DML_VOICESERVICE_CALLCONTROL_MAILBOX_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -6951,10 +6951,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.IncomingMap") )
+    else if( strstr(ParamName, "IncomingMap") )
     {
         //VoiceService.{i}.CallControl.IncomingMap.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_IncomingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_INCOMMINGMAP, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_IncomingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_INCOMMINGMAP_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7026,10 +7026,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.OutgoingMap") )
+    else if( strstr(ParamName, "OutgoingMap") )
     {
         //VoiceService.{i}.CallControl.OutgoingMap.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_OutgoingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_OUTGOINGMAP, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_OutgoingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_OUTGOINGMAP_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7101,10 +7101,10 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.NumberingPlan") )
+    else if( strstr(ParamName, "NumberingPlan") )
     {
         //VoiceService.{i}.CallControl.NumberingPlan.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_NumberingPlan_index(ParamName, DML_VOICESERVICE_CALLCONTROL_NUMPLAN, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_NumberingPlan_index(ParamName, DML_VOICESERVICE_CALLCONTROL_NUMPLAN_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7176,7 +7176,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         else if( strstr(ParamName, "PrefixInfo") )
         {
             //VoiceService.{i}.CallControl.NumberingPlan.{i}.PrefixInfo.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_NumberingPlan_PrefixInfo_index(ParamName, DML_VOICESERVICE_CALLCONTROL_NUMPLAN_PREFIXINFO, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_NumberingPlan_PrefixInfo_index(ParamName, DML_VOICESERVICE_CALLCONTROL_NUMPLAN_PREFIXINFO_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7276,14 +7276,14 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallControl.CallingFeatures") )
+    else if( strstr(ParamName, "CallingFeatures") )
     {
         PDML_CALLCONTROL_CALLINGFEATURES pCallCtrlCF = &(pCallCtrl->CallingFeatures);
         //VoiceService.{i}.CallControl.CallingFeatures.
         if( strstr(ParamName, "Set") )
         {
             //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7626,7 +7626,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             else if( strstr(ParamName, "CFT") )
             {
                 //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.CFT.{i}.
-                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_CFT_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_CFT, &hal_index)) ||
+                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_CFT_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_CFT_PARAM_NAME, &hal_index)) ||
                     ( hal_index <= 0 ))
                 {
                      AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7738,7 +7738,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             else if( strstr(ParamName, "SCF") )
             {
                 //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.SCF.{i}.
-                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_SCF_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_SCF, &hal_index)) ||
+                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_SCF_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_SCF_PARAM_NAME, &hal_index)) ||
                     ( hal_index <= 0 ))
                 {
                      AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7805,7 +7805,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             else if( strstr(ParamName, "SCREJ") )
             {
                 //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.SCREJ.{i}.
-                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_SCREJ_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_SCREJ, &hal_index)) ||
+                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_SCREJ_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_SCREJ_PARAM_NAME, &hal_index)) ||
                     ( hal_index <= 0 ))
                 {
                      AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -7867,7 +7867,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             else if( strstr(ParamName, "FollowMe") )
             {
                 //VoiceService.{i}.CallControl.CallingFeatures.Set.{i}.FollowMe.{i}.
-                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_FollowMe_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_FOLLOWME, &hal_index)) ||
+                if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_CallingFeatures_Set_FollowMe_index(ParamName, DML_VOICESERVICE_CALLCONTROL_SET_FOLLOWME_PARAM_NAME, &hal_index)) ||
                     ( hal_index <= 0 ))
                 {
                      AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8030,7 +8030,7 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_index(ParamName, DML_VOICESERVICE_INTERWORK, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_index(ParamName, DML_VOICESERVICE_INTERWORK_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8272,7 +8272,7 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
     else if( strstr(ParamName, "UserInterface") )
     {
         //VoiceService.{i}.Interwork.{i}.UserInterface.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_UserInterface_index(ParamName, DML_VOICESERVICE_INTERWORK_USERINTERFACE, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_UserInterface_index(ParamName, DML_VOICESERVICE_INTERWORK_USERINTERFACE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8339,7 +8339,7 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
     else if( strstr(ParamName, "Map") )
     {
         //VoiceService.{i}.Interwork.{i}.Map.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_Map_index(ParamName, DML_VOICESERVICE_INTERWORK_MAP, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Interwork_Map_index(ParamName, DML_VOICESERVICE_INTERWORK_MAP_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8494,7 +8494,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_index(ParamName, DML_VOICESERVICE_CALLLOG, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_index(ParamName, DML_VOICESERVICE_CALLLOG_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8706,7 +8706,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
     else if( strstr(ParamName, "SignalingPerformance") )
     {
         //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_SignalingPerformance_index(ParamName, DML_VOICESERVICE_CALLLOG_SIGNALINGPERFORMANCE, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_SignalingPerformance_index(ParamName, DML_VOICESERVICE_CALLLOG_SIGNALINGPERFORMANCE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -8782,7 +8782,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
     else if( strstr(ParamName, "Session") )
     {
         //VoiceService.{i}.CallLog.{i}.Session.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_Session_index(ParamName, DML_VOICESERVICE_CALLLOG_SESSION, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_Session_index(ParamName, DML_VOICESERVICE_CALLLOG_SESSION_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -9388,7 +9388,7 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_VoIPProfile_index(ParamName, DML_VOICESERVICE_VOIPPROF, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_VoIPProfile_index(ParamName, DML_VOICESERVICE_VOIPPROF_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -9822,7 +9822,7 @@ ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CodecProfile_index(ParamName, DML_VOICESERVICE_CODECPROF, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CodecProfile_index(ParamName, DML_VOICESERVICE_CODECPROF_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -9915,15 +9915,15 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_TONE pTone = &(pVoiceService->Tone_obj);
 
-    if( strstr(ParamName, "Tone.DefautEventProfile") )
+    if( strstr(ParamName, "DefautEventProfile") )
     {
         //VoiceService.{i}.Tone.DefautEventProfile
         strncpy(pTone->DefautEventProfile, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "Tone.Description") )
+    else if( strstr(ParamName, "Description") )
     {
         //VoiceService.{i}.Tone.Description.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Description_index(ParamName, DML_VOICESERVICE_TONE_DESC, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Description_index(ParamName, DML_VOICESERVICE_TONE_DESC_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10000,10 +10000,10 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Tone.Pattern") )
+    else if( strstr(ParamName, "Pattern") )
     {
         //VoiceService.{i}.Tone.Pattern.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Pattern_index(ParamName, DML_VOICESERVICE_TONE_PATTERN, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Pattern_index(ParamName, DML_VOICESERVICE_TONE_PATTERN_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10127,10 +10127,10 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Tone.EventProfile") )
+    else if( strstr(ParamName, "EventProfile") )
     {
         //VoiceService.{i}.Tone.EventProfile.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_EventProfile_index(ParamName, DML_VOICESERVICE_TONE_EVTPROF, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_EventProfile_index(ParamName, DML_VOICESERVICE_TONE_EVTPROF_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10167,7 +10167,7 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         if( strstr(ParamName, "Event") )
         {
             //VoiceService.{i}.Tone.EventProfile.{i}.Event.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_EventProfile_Event_index(ParamName, DML_VOICESERVICE_TONE_EVTPROF_EVT, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_EventProfile_Event_index(ParamName, DML_VOICESERVICE_TONE_EVTPROF_EVT_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10337,7 +10337,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
         return ANSC_STATUS_FAILURE;
     }
 
-    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_index(ParamName, DML_VOICESERVICE_TERMINAL, &hal_index)) ||
+    if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_index(ParamName, DML_VOICESERVICE_TERMINAL_PARAM_NAME, &hal_index)) ||
         ( hal_index <= 0 ))
     {
          AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10442,7 +10442,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
     else if( strstr(ParamName, "Audio") )
     {
         //VoiceService.{i}.Terminal.{i}.Audio.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Audio_index(ParamName, DML_VOICESERVICE_TERMINAL_AUDIO, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Audio_index(ParamName, DML_VOICESERVICE_TERMINAL_AUDIO_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10545,7 +10545,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
         if( strstr(ParamName,"ButtonMap.Button") )
         {
             //VoiceService.{i}.Terminal.{i}.ButtonMap.Button.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_ButtonMap_Button_index(ParamName, DML_VOICESERVICE_TERMINAL_BUTTONMAP_BUTTON, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_ButtonMap_Button_index(ParamName, DML_VOICESERVICE_TERMINAL_BUTTONMAP_BUTTON_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10637,7 +10637,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
         if( strstr(ParamName, "Description") )
         {
             //VoiceService.{i}.Terminal.{i}.Ringer.Description.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Ringer_Description_index(ParamName, DML_VOICESERVICE_TERMINAL_RINGER_DESC, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Ringer_Description_index(ParamName, DML_VOICESERVICE_TERMINAL_RINGER_DESC_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10703,7 +10703,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
         else if( strstr(ParamName, "Pattern") )
         {
             //VoiceService.{i}.Terminal.{i}.Ringer.Pattern.{i}.
-            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Ringer_Pattern_index(ParamName, DML_VOICESERVICE_TERMINAL_RINGER_PATTERN, &hal_index)) ||
+            if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Terminal_Ringer_Pattern_index(ParamName, DML_VOICESERVICE_TERMINAL_RINGER_PATTERN_PARAM_NAME, &hal_index)) ||
                 ( hal_index <= 0 ))
             {
                  AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
@@ -10927,7 +10927,7 @@ ANSC_STATUS Map_hal_dml_clockSync(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
     else if( strstr(ParamName, "ClockSource") )
     {
         //VoiceService.{i}.ClockSynchronization.ClockSource.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ClockSynchronization_ClockSource_index(ParamName, DML_VOICESERVICE_CLKSRC, &hal_index)) ||
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ClockSynchronization_ClockSource_index(ParamName, DML_VOICESERVICE_CLKSRC_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
         {
              AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));

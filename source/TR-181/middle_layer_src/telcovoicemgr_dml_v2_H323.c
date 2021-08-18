@@ -22,6 +22,7 @@
 #include "telcovoicemgr_dml_v2.h"
 #include "ccsp_trace.h"
 #include "ccsp_syslog.h"
+#include "telcovoicemgr_dml_hal_param_v2.h"
 
 /**********************************************************************
 
@@ -194,6 +195,10 @@ ANSC_HANDLE TelcoVoiceMgrDml_H323_ClientList_GetEntry(ANSC_HANDLE hInsContext, U
 BOOL TelcoVoiceMgrDml_H323_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uH323ClientIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -207,10 +212,42 @@ BOOL TelcoVoiceMgrDml_H323_ClientList_GetParamUlongValue(ANSC_HANDLE hInsContext
 
     PDML_H323_CLIENT pHEAD = &(pH323ClientCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uH323ClientIndex = pHEAD->uInstanceNumber;
+
+
     if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_H323_CLIENT_PARAM_NAME"%s", uVsIndex, uH323ClientIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = CLIENT_STATUS_DISABLED;
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "MaxSessions", TRUE) )
     {
@@ -974,6 +1011,9 @@ ANSC_HANDLE TelcoVoiceMgrDml_H323_NetworkList_GetEntry(ANSC_HANDLE hInsContext, 
 BOOL TelcoVoiceMgrDml_H323_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    ULONG uH323NetworkIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -987,6 +1027,24 @@ BOOL TelcoVoiceMgrDml_H323_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContex
 
     PDML_H323_NETWORK pHEAD = &(pH323NetworkCtrl->dml);
 
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uH323NetworkIndex = pHEAD->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "TimeToLive", TRUE) )
     {
         *puLong = pHEAD->TimeToLive;
@@ -994,8 +1052,21 @@ BOOL TelcoVoiceMgrDml_H323_NetworkList_GetParamUlongValue(ANSC_HANDLE hInsContex
     }
     else if( AnscEqualString(ParamName, "Status", TRUE) )
     {
-        *puLong = pHEAD->Status;
-        ret = TRUE;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_H323_NETWORK_PARAM_NAME"%s", uVsIndex, uH323NetworkIndex, "Status");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Status:get failed \n", __FUNCTION__, __LINE__));
+            *puLong = CLIENT_STATUS_DISABLED;
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "NonVoiceBandwidthReservedUpstream", TRUE) )
     {
