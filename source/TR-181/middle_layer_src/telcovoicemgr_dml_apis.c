@@ -200,3 +200,135 @@ ANSC_STATUS TelcoVoiceMgrServicesRemove(ANSC_HANDLE hThisObject)
 
     return returnStatus;
 }
+
+/**********************************************************************
+
+    caller:     owner of the object
+
+    prototype:
+
+        ANSC_HANDLE
+        TelcoVoiceMgrTelcoVoiceCreate
+            (
+                VOID
+            );
+
+    description:
+
+        This function constructs cosa Services object and return handle.
+
+    argument:
+
+    return:     newly created Services object.
+
+**********************************************************************/
+
+ANSC_HANDLE
+TelcoVoiceMgrTelcoVoiceCreate
+    (
+        VOID
+    )
+{
+    ANSC_STATUS                              returnStatus = ANSC_STATUS_SUCCESS;
+    PTELCOVOICEMGR_DATAMODEL_TELCOVOICE      pMyObject    = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)NULL;
+
+    /*
+     * We create object by first allocating memory for holding the variables and member functions.
+     */
+
+    pMyObject = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)AnscAllocateMemory(sizeof(TELCOVOICEMGR_DATAMODEL_TELCOVOICE));
+
+    if ( !pMyObject )
+    {
+        return  (ANSC_HANDLE)NULL;
+    }
+
+    /*
+     * Initialize the common variables and functions for a container object.
+     */
+    pMyObject->Create            = TelcoVoiceMgrTelcoVoiceCreate;
+    pMyObject->Remove            = TelcoVoiceMgrTelcoVoiceRemove;
+    pMyObject->Initialize        = TelcoVoiceMgrTelcoVoiceInitialize;
+
+    pMyObject->Initialize   ((ANSC_HANDLE)pMyObject);
+
+    return  (ANSC_HANDLE)pMyObject;
+}
+
+/**********************************************************************
+
+    caller:     self
+
+    prototype:
+
+        ANSC_STATUS
+        TelcoVoiceMgrTelcoVoiceInitialize
+            (
+                ANSC_HANDLE                 hThisObject
+            );
+
+    description:
+
+        This function initiate  cosa device info object and return handle.
+
+    argument:   ANSC_HANDLE                 hThisObject
+            This handle is actually the pointer of this object
+            itself.
+
+    return:     operation status.
+
+**********************************************************************/
+
+ANSC_STATUS
+TelcoVoiceMgrTelcoVoiceInitialize
+    (
+        ANSC_HANDLE                 hThisObject
+    )
+{
+    ANSC_STATUS                           returnStatus        = ANSC_STATUS_SUCCESS;
+    PTELCOVOICEMGR_DATAMODEL_TELCOVOICE   pMyObject           = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)hThisObject;
+ 
+    /* Initialize WebConfig */
+    TelcoVoiceMgrDmlTelcoVoiceWebConfigInit( );
+
+    return returnStatus;
+}
+
+/**********************************************************************
+
+    caller:     self
+
+    prototype:
+
+        ANSC_STATUS
+        TelcoVoiceMgrTelcoVoiceRemove
+            (
+                ANSC_HANDLE                 hThisObject
+            );
+
+    description:
+
+        This function initiate  cosa device info object and return handle.
+
+    argument:   ANSC_HANDLE                 hThisObject
+            This handle is actually the pointer of this object
+            itself.
+
+    return:     operation status.
+
+**********************************************************************/
+
+ANSC_STATUS
+TelcoVoiceMgrTelcoVoiceRemove
+    (
+        ANSC_HANDLE                 hThisObject
+    )
+{
+    ANSC_STATUS                           returnStatus        = ANSC_STATUS_SUCCESS;
+    PTELCOVOICEMGR_DATAMODEL_TELCOVOICE   pMyObject           = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)hThisObject;
+ 
+    /* Remove self */
+    AnscFreeMemory((ANSC_HANDLE)pMyObject);
+
+    return returnStatus;
+}

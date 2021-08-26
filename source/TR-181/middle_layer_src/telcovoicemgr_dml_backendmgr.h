@@ -103,6 +103,7 @@ extern COSARegisterCallBackAfterInitDmlProc  g_RegisterCallBackAfterInitDml;
     /* duplication of the base object class content */                                      \
     TELCOVOICEMGR_BASE_CONTENT                                                              \
     ANSC_HANDLE                  hServices;                                                 \
+    ANSC_HANDLE                  hTelcoVoice;                                               \
     PCOSA_PLUGIN_INFO            hCosaPluginInfo;
 
 typedef  struct

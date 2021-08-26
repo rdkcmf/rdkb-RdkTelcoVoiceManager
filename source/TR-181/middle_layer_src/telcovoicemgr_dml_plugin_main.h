@@ -69,6 +69,9 @@ extern "C"{
 #include "telcovoicemgr_dml_numberingplan_v1.h"
 #include "telcovoicemgr_dml_tone_v1.h"
 #endif
+
+#include "telcovoicemgr_dml_telcovoice.h"
+
 /***************************************************************************
  *
  *  COSA stands for "Cisco Open Service Architecture"
