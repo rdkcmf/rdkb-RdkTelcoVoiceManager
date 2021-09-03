@@ -219,7 +219,6 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
             WebConfig_LineTable_t *pstLineCfg = &(pServiceCfg->pstLineInfo[j]);
             DML_LINE_CTRL_T       *pTelcoVoiceLineCtrl  = NULL;
             TELCOVOICEMGR_DML_LINE *pDMLLine            = NULL;
-            unsigned char           bLineEnable         = FALSE;
 
             uVlIndex = pstLineCfg->uiLineInstanceNumber;
 
@@ -275,10 +274,32 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
                 snprintf(pDMLLine->DirectoryNumber, sizeof(pDMLLine->DirectoryNumber), "%s", pstLineCfg->DirectoryNumber);
             }
 
-            bLineEnable = (0 == strcmp(pstLineCfg->LineEnable, "Enabled")) ? TRUE : FALSE;
-            if(TelcoVoiceMgrDmlSetLineEnable(uVsIndex, uVpIndex, uVlIndex, bLineEnable) == ANSC_STATUS_SUCCESS)
             {
-                pDMLLine->Enable = bLineEnable;
+                TELCOVOICEMGR_ENABLE_ENUM enVoiceEnable;
+                unsigned char        bValidVoiceEnableParam = TRUE;
+                 
+                if ( 0 == strcmp(pstLineCfg->LineEnable, "Enabled" ) )
+                {
+                    enVoiceEnable = ENABLED;
+                }
+                else if( 0 == strcmp(pstLineCfg->LineEnable, "Disabled" ) )
+                {
+                    enVoiceEnable = DISABLED;
+                }
+                else if( 0 == strcmp(pstLineCfg->LineEnable, "Quiescent" ) )
+                {
+                    enVoiceEnable = QUIESCENT;
+                }
+                else
+                {
+                    //No need to configure Line Enable
+                    bValidVoiceEnableParam = FALSE;
+                }
+
+                if( ( TRUE == bValidVoiceEnableParam ) && (TelcoVoiceMgrDmlSetLineEnable(uVsIndex, uVpIndex, uVlIndex, enVoiceEnable) == ANSC_STATUS_SUCCESS) )
+                {
+                    pDMLLine->Enable = enVoiceEnable;
+                }
             }
 
             if(TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex, uVpIndex, uVlIndex, VOICE_HAL_AUTH_UNAME, pstLineCfg->SIPAuthUserName) == ANSC_STATUS_SUCCESS)
