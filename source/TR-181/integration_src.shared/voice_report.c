@@ -2176,8 +2176,8 @@ void macToLower(char macValue[])
     int i = 0;
     int j;
     char *token[32];
-    char tmp[32];
-    strncpy(tmp, macValue, sizeof(tmp));
+    char tmp[32] = {0};
+    strncpy(tmp, macValue, (sizeof(tmp)-1));
     token[i] = strtok(tmp, ":");
     if (token[i] != NULL)
     {

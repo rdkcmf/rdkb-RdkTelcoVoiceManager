@@ -971,7 +971,8 @@ ANSC_STATUS TelcoVoiceMgrDmlGetWanSKBMarks(char *pIpStateParamName, uint32_t *pS
 
     uSkbMarks.bSipMarkRead = FALSE;
     uSkbMarks.bRtpMarkRead = FALSE;
-    strncpy(uSkbMarks.aIpStateParamName, pIpStateParamName, sizeof(uSkbMarks.aIpStateParamName));
+    memset(uSkbMarks.aIpStateParamName,0,sizeof(uSkbMarks.aIpStateParamName));
+    strncpy(uSkbMarks.aIpStateParamName, pIpStateParamName, (sizeof(uSkbMarks.aIpStateParamName)-1));
     if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlIterateEnabledInterfaces(
                                                TelcoVoiceMgrDmlGetEnabledWanSKBMarks, (void *)&uSkbMarks))
     {

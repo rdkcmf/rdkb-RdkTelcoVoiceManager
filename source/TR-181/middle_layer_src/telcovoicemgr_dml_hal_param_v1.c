@@ -42,7 +42,7 @@ ANSC_STATUS telcovoicemgr_hal_get_first_index(char* ParamName, char* Pattern, in
         return ANSC_STATUS_FAILURE;
     }
 
-    if( hal_index <= 0 )
+    if( *hal_index <= 0 )
     {
         AnscTraceError(("\n%s:%d:: \nInvalid index ParamName[%s]\nPattern[%s]\n", __FUNCTION__, __LINE__, ParamName,Pattern));
         return ANSC_STATUS_FAILURE;

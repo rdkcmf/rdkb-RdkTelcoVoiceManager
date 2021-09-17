@@ -243,7 +243,7 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
     CcspTraceWarning(("voice_event_handler => Evt Name : %s , Value : %s , IfName : %s, Family : %s\n", pEvtName, pEvtValue, boundIfName, ipAddrFamily));
     if (!strcmp(pEvtName, SYSEVENT_UPDATE_IFNAME))
     {
-        strcpy(boundIfName, pEvtValue);
+        strncpy(boundIfName, pEvtValue,(sizeof(boundIfName)-1));
         if (!strcmp(boundIfName, LAN_IF))
         {
             if(!strcmp(ipAddrFamily, STR_IPV4))
@@ -264,7 +264,7 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
     }
     else if (!strcmp(pEvtName, SYSEVENT_UPDATE_IPFAMILY))
     {
-        strcpy(ipAddrFamily, pEvtValue);
+        strncpy(ipAddrFamily, pEvtValue,(sizeof(ipAddrFamily)-1));
         if (!strcmp(boundIfName, WAN_IF))
         {
             event_set_wan_status();
@@ -434,7 +434,7 @@ static void event_set_wan_status (void)
                     ipv6_addr = strchr(ipAddr, '/');
                     if(ipv6_addr != NULL)
                     {
-                        strcpy(ipv6_addr, "1");
+                        strncpy(ipv6_addr, "1",2);
                         CcspTraceInfo(("%s:: WAN IPv6 Address updated! { %s }\n", __FUNCTION__, ipAddr));
                         CcspTraceNotice(("CCSPTELCOVOIP_IPV6_WANUP :: Voice Manager: IPV6 WAN up\n"));
                         //update the SKBmark reading from Wan Manager

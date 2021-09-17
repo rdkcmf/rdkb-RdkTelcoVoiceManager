@@ -554,7 +554,7 @@ int storeOneVoiceService(char *pParse, char *pNickName, int entry, cJSON *jsonOb
     /* Could be LEAF or TEXT */
     if (LEAF_OBJ == objType)
     {
-        replaceLeafValue(jsonObj, pParse, pParam);
+        (void)replaceLeafValue(jsonObj, pParse, pParam);
         return 0;
     }
 

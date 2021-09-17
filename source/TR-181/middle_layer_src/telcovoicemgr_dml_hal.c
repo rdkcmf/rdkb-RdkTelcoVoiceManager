@@ -742,7 +742,7 @@ ANSC_STATUS get_event_param(const char* msg, const int len, char* event_name, ch
 
         if (json_object_object_get_ex(jsubs_param_array, JSON_RPC_FIELD_NAME, &msg_param_val))
         {
-            strcpy(event_name, json_object_get_string(msg_param_val));
+            strncpy(event_name, json_object_get_string(msg_param_val),255);
             CcspTraceInfo(("Event name = %s \n", event_name));
         }
         else
@@ -753,7 +753,7 @@ ANSC_STATUS get_event_param(const char* msg, const int len, char* event_name, ch
         }
         if (json_object_object_get_ex(jsubs_param_array, JSON_RPC_FIELD_VALUE, &msg_param_val))
         {
-            strcpy(event_val, json_object_get_string(msg_param_val));
+            strncpy(event_val, json_object_get_string(msg_param_val),255);
             CcspTraceInfo(("Event value = %s \n", event_val));
         }
         else

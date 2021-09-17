@@ -216,7 +216,7 @@ int32_t verifyChecksumFile(const uint8_t *pcbuf, uint32_t confSize)
         CcspTraceInfo(("Could not open checksum file %s\n", VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CHECKSUM_NAME));
         return -1;
     }
-    fscanf(fpChksum, "%u", &prevCrc);
+    (void)fscanf(fpChksum, "%u", &prevCrc);
     newCrc = checksum(pcbuf, confSize);
     fclose(fpChksum);
     if (newCrc == prevCrc)
@@ -1746,7 +1746,7 @@ static int32_t jsonCfgSetLineEnable(uint32_t service, uint32_t profile, uint32_t
 int32_t voice_process_factory_default()
 {
     ANSC_STATUS returnStatus = ANSC_STATUS_SUCCESS;
-    remove(VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
+    (void)remove(VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);
     CcspTraceInfo(("%s %d - sending default configuration to Hal. \n", __FUNCTION__, __LINE__ ));
     returnStatus = TelcoVoiceJsonCfgSetDmDefaults();
     if(returnStatus != ANSC_STATUS_SUCCESS)

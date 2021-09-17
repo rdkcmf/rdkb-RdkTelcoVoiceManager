@@ -152,6 +152,7 @@ static void *handle_parodus()
 
     CcspTraceInfo(("VOIP REPORT %s : LINE %d client_instance = %p\n", __FUNCTION__, __LINE__, client_instance));
     get_parodus_url(&parodus_url);
+    /* coverity[dead_error_condition] */
     if (parodus_url != NULL)
     {
         libpd_cfg_t cfg1 = {.service_name = "voip",
@@ -183,6 +184,7 @@ static void *handle_parodus()
             else
             {
                 CcspTraceWarning((" Init for parodus (url %s) failed: '%s'\n", parodus_url, libparodus_strerror(ret)));
+		/* coverity[dead_error_condition] */
                 if (NULL == parodus_url)
                 {
                     get_parodus_url(&parodus_url);
