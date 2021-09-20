@@ -3086,6 +3086,7 @@ typedef  struct _TELCOVOICEMGR_DML_DATA
     pthread_mutex_t            mDataMutex;  //Mutex
 } TELCOVOICEMGR_DML_DATA;
 
+ANSC_STATUS TelcoVoiceMgrSetSyseventData(char *eventName, char *eventValue);
 TELCOVOICEMGR_DML_DATA* TelcoVoiceMgrDmlGetDataLocked(void);
 void TelcoVoiceMgrDmlGetDataRelease(TELCOVOICEMGR_DML_DATA* pDmlData);
 TELCOVOICEMGR_DML_DATA* TelcoVoiceMgrDmlGetData(void);

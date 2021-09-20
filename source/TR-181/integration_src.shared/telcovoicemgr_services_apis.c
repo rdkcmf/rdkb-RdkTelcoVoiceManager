@@ -33,38 +33,6 @@
 #include "telcovoicemgr_services_apis_v1.h"
 #endif //FEATURE_RDKB_VOICE_DM_TR104_V2
 
-#define   VOICE_SERVICE_TABLE_NAME            "Device.Services.VoiceService.%d."
-#define   VOICE_SERVICE_STATUS                "Device.Services.VoiceService.%d.X_RDK_Status"
-#define   X_RDK_DEBUG_TABLE_NAME              "Device.Services.VoiceService.%d.X_RDK_Debug."
-
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-/*  TR104 V2 DML Tables */
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.Diagtests."
-#define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoIPProfile.%d."
-#define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.SIP.Network.%d."
-#define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP."
-#define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.CallControl.Line.%d."
-#define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.SIP.Client.%d."
-#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.Terminal.%d.Audio.%d.VoiceProcessing."
-#define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.CallControl.CallingFeatures.Set.%d."
-#define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
-#define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
-#define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats."
-#else
-/* TR104 V1 DML Tables*/
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d.Tests."
-#define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoiceProfile.%d."
-#define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP."
-#define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.RTP."
-#define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d."
-#define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.SIP."
-#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.VoiceProcessing."
-#define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Stats."
-#define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallingFeatures."
-#define   LINE_STATUS                         "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Status"
-#define   CALL_STATE                          "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallState"
-#endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
-
 #define  VOICE_STATUS_STOPPED         "Stopped"
 #define  VOICE_STATUS_STARTING        "Starting"
 #define  VOICE_STATUS_STARTED         "Started"
@@ -313,6 +281,32 @@ static ANSC_STATUS set_iptable_rules_for_rtp(char *inputBuffer, UINT rtpDscpValu
         pToken = strtok(NULL, ",");
     }
 
+    return ANSC_STATUS_SUCCESS;
+}
+
+/* TelcoVoiceMgrSetSyseventData: */
+/**
+* @description Helper function to set sysevent with corresponding value for ipAddressFamily and BoundIfname
+*
+* @param char* eventName
+* @param char* eventValue
+* @param char* pTableName - Table name
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+ANSC_STATUS TelcoVoiceMgrSetSyseventData(char *eventName, char *eventValue)
+{
+    if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, eventName, eventValue, 0))
+    {
+        CcspTraceWarning(("%s :: sysevent_set failed for %s\n", __FUNCTION__, eventName));
+        return ANSC_STATUS_FAILURE;
+    }
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1070,9 +1064,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetBoundIfname(uint32_t uiService, char *BoundIfname
        return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-BoundIfName", BoundIfname);
-    if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IFNAME, BoundIfname, 0))
+    if(TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IFNAME, BoundIfname) != ANSC_STATUS_SUCCESS)
     {
-        CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
     }
     return ANSC_STATUS_SUCCESS;
 }
@@ -1112,6 +1106,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetIpAddressFamily(uint32_t uiService, char *IpAddre
     if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily, 0))
     {
         CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
+    }
+    if(TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily) != ANSC_STATUS_SUCCESS)
+    {
+        return ANSC_STATUS_FAILURE;
     }
     return ANSC_STATUS_SUCCESS;
 }

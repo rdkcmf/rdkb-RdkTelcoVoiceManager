@@ -444,6 +444,65 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
     return ANSC_STATUS_SUCCESS;
 }
 
+/* TelcoVoiceMgrHal_SendJsonRequest: */
+/**
+* @description Function to send json hal set request.
+* Prepare the json message and pass it here as a function parameter.
+*
+* json_object *jmsg - Json set request message.
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg)
+{
+    ANSC_STATUS rc = ANSC_STATUS_SUCCESS;
+    json_object *jreply_msg = NULL;
+    json_bool status = FALSE;
+
+    //CcspTraceInfo(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
+    CcspTraceError(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
+
+    if( json_hal_client_send_and_get_reply(jmsg, &jreply_msg) != RETURN_OK)
+    {
+        CcspTraceError(("[%s][%d] RPC message failed \n", __FUNCTION__, __LINE__));
+        FREE_JSON_OBJECT(jmsg);
+        FREE_JSON_OBJECT(jreply_msg);
+        return RETURN_ERR;
+    }
+    CHECK(jreply_msg);
+    
+    if (json_hal_get_result_status(jreply_msg, &status) == RETURN_OK)
+    {
+        if (status)
+        {
+            CcspTraceInfo(("%s - %d Set request is successful ", __FUNCTION__, __LINE__));
+            rc = RETURN_OK;
+        }
+        else
+        {
+            CcspTraceError(("%s - %d - Set request is failed \n", __FUNCTION__, __LINE__));
+            rc = RETURN_ERR;
+        }
+    }
+    else
+    {
+        CcspTraceError(("%s - %d Failed to get result status from json response, something wrong happened!!! \n", __FUNCTION__, __LINE__));
+        rc = RETURN_ERR;
+    }
+    
+    // Free json objects.
+    FREE_JSON_OBJECT(jmsg);
+    FREE_JSON_OBJECT(jreply_msg);
+    
+    return rc;
+}
+
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList)
 {
     if (pVoiceServiceList == NULL)
@@ -649,41 +708,12 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
 ANSC_STATUS TelcoVoiceMgrHal_SetParam(char *pName, eParamType pType, char *pValue)
 {
 
-    json_object *jreply_msg;
     json_object *jrequest;
     int rc = ANSC_STATUS_FAILURE;
-    json_bool status = FALSE;
     jrequest = create_json_request_message(SET_REQUEST_MESSAGE, pName, pType, pValue);
     CHECK(jrequest != NULL);
 
-    if (json_hal_client_send_and_get_reply(jrequest, &jreply_msg) != RETURN_OK)
-    {
-        fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
-        // Free json objects.
-        FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
-        return rc;
-    }
-
-    if (json_hal_get_result_status(jreply_msg, &status) == RETURN_OK)
-    {
-        if (status)
-        {
-            rc = ANSC_STATUS_SUCCESS;
-        }
-        else
-        {
-            fprintf(stderr,"%s - %d Set request for [%s] is failed\n", __FUNCTION__, __LINE__, pName);
-        }
-    }
-    else
-    {
-        fprintf(stderr,"%s - %d Failed to get result status from json response, something wrong happened!!! \n", __FUNCTION__, __LINE__);
-    }
-
-    // Free json objects.
-    FREE_JSON_OBJECT(jrequest);
-    FREE_JSON_OBJECT(jreply_msg);
+    rc = TelcoVoiceMgrHal_SendJsonRequest(jrequest);
 
     return rc;
 }

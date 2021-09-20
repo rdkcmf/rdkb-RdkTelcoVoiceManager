@@ -105,6 +105,7 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(char* HalName, BOOL bValue);
 ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(char* HalName, INT iValue);
 ANSC_STATUS TelcoVoiceMgrHal_SetParamULong(char* HalName, ULONG uValue);
 ANSC_STATUS TelcoVoiceMgrHal_SetParamString(char* HalName, char* sValue);
+ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg);
 #ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities);
 ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, int vsIndex);

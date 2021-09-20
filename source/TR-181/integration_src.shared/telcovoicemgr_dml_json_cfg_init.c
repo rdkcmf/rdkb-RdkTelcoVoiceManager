@@ -71,6 +71,10 @@ static void jsonCfgDoVoiceProcessing(uint32_t service, uint32_t profile, uint32_
 static void fcopy(char *src, char *dst);
 
 static int32_t voiceHalInitDmDefaults(void);
+static ANSC_STATUS initialise_line_calling_features(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, TELCOVOICEMGR_VOICE_CALL_FEATURE_TYPE_ENUM eFeature, BOOL bStatus);
+
+static json_object *jInitMsg = NULL;
+static hal_param_t initParam;
 
 /* TelcoVoiceJsonCfgSetDmDefaults: */
 /**
@@ -301,6 +305,7 @@ static int32_t voiceHalInitDmDefaults()
      * Inhibit writes to the JSON file while we are reading it.
      */
     startJsonRead();
+    jInitMsg = json_hal_client_get_request_header(SET_PARAMETER_METHOD);
     /*
      * Parse the JSON file for the current configuration
      * If an item can't be found, just carry on regardless. It isn't necessarily an error.
@@ -349,6 +354,15 @@ static int32_t voiceHalInitDmDefaults()
     stopJsonRead();
     cJSON_Delete(config);
     CcspTraceInfo(("%s: JSON parsed successfully!\n", __FUNCTION__));
+    if(TelcoVoiceMgrHal_SendJsonRequest(jInitMsg) == ANSC_STATUS_SUCCESS)
+    {
+       CcspTraceInfo(("%s: VOICE HAL Initialised successfully with Json defaults !!\n", __FUNCTION__));
+    }
+    else
+    {
+       CcspTraceInfo(("%s: VOICE HAL Initialisation failed !!\n", __FUNCTION__));
+    }
+
     return 0;
 }
 
@@ -358,79 +372,105 @@ static int32_t voiceHalInitDmDefaults()
 static int32_t jsonCfgSetDigitMap(uint32_t service, uint32_t profile, char * map_type, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], map_type [%s], value[%s]", __func__, __LINE__,service,profile,map_type,value);
-    TelcoVoiceMgrDmlSetDigitMap(service, profile, value, map_type);
+    memset(&initParam, 0, sizeof(initParam));
+    if(!strcmp(map_type, "X_RDK-Central_COM_DigitMap"))
+    {
+       snprintf(initParam.name, sizeof(initParam), PROFILE_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_DigitMap");
+    }
+    else if(!strcmp(map_type, "X_RDK-Central_COM_EmergencyDigitMap"))
+    {
+       snprintf(initParam.name, sizeof(initParam), PROFILE_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_EmergencyDigitMap");  
+    }
+    else if(!strcmp(map_type, "DigitMap"))
+    {
+       snprintf(initParam.name, sizeof(initParam), PROFILE_TABLE_NAME"%s", service, profile, "DigitMap");
+    }
+    else
+    {
+        return -1;
+    }
+
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetSDigitTimer(uint32_t service, uint32_t profile, uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d],value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetSDigitTimer(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), PROFILE_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_SDigitTimer");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetZDigitTimer(uint32_t service, uint32_t profile,  uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetZDigitTimer(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), PROFILE_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_ZDigitTimer");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetTestState(uint32_t service, uint32_t phy_interface, char *value)
 {
-    TELCOVOICEMGR_PHYINTERFACE_TESTSTATE_ENUM  uState = PHYINTERFACE_TESTSTATE_NONE;
     fprintf(stderr,"\n%s(%d) - service[%d], phy_interface[%d], value[%s]", __func__, __LINE__,service,phy_interface,value);
-    if(!strcmp(value, "None"))
-       uState = PHYINTERFACE_TESTSTATE_NONE;
-    else if(!strcmp(value, "Requested"))
-       uState = PHYINTERFACE_TESTSTATE_REQUESTED;
-    else if(!strcmp(value, "Complete"))
-       uState = PHYINTERFACE_TESTSTATE_COMPLETE;
+    memset(&initParam, 0, sizeof(initParam));
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-    else if(!strcmp(value,"Error_Internal"))
-       uState = PHYINTERFACE_TESTSTATE_ERROR_INTERNAL;
-    else if(!strcmp(value,"Error_Other"))
-       uState = PHYINTERFACE_TESTSTATE_ERROR_OTHER;
+#define FIELD_NAME "DiagnosticsState"
 #else
-    else if(!strcmp(value, "Error_TestNotSupported"))
-       uState = PHYINTERFACE_TESTSTATE_ERROR_TESTNOTSUPPORTED;
+#define FIELD_NAME "TestState"
 #endif
-    TelcoVoiceMgrDmlSetTestState(service, phy_interface, uState);
+    snprintf(initParam.name, sizeof(initParam), PHYINTERFACE_TABLE_NAME"%s", service, phy_interface, FIELD_NAME);
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetTestSelector(uint32_t service, uint32_t phy_interface, char *value)
 {
-    TELCOVOICEMGR_PHYINTERFACE_TESTSELECTOR_ENUM uState;
     fprintf(stderr,"\n%s(%d) - service[%d], phy_interface[%d], value[%s]", __func__, __LINE__,service,phy_interface,value);
-    if(!strcmp(value, "PhoneConnectivityTest"))
-        uState = PHYINTERFACE_TESTSELECTOR_PHONE_CONNECTIVITY_TEST;
-    else if(!strcmp(value, "Hazard Potential"))
-        uState = PHYINTERFACE_TESTSELECTOR_HAZARD_POTENTIAL;
-    else if(!strcmp(value, "Foreign Voltage"))
-        uState = PHYINTERFACE_TESTSELECTOR_FOREIGN_VOLTAGE;
-    else if(!strcmp(value, "Resistive Faults"))
-        uState = PHYINTERFACE_TESTSELECTOR_RESISTIVE_FAULTS;
-    else if(!strcmp(value, "Off-hook"))
-        uState = PHYINTERFACE_TESTSELECTOR_OFF_HOOK;
-    else if(!strcmp(value, "REN"))
-        uState = PHYINTERFACE_TESTSELECTOR_REN;
-    TelcoVoiceMgrDmlSetTestSelector(service, phy_interface, uState);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), PHYINTERFACE_TABLE_NAME"%s", service, phy_interface, "TestSelector");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetBoundIfName(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetBoundIfname(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), VOICE_SERVICE_TABLE_NAME"%s", service, "X_RDK_BoundIfName");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
+    TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IFNAME, value);
     return 0;
 }
 static int32_t jsonCfgSetIpAddressFamily(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetIpAddressFamily(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), VOICE_SERVICE_TABLE_NAME"%s", service, "X_RDK_IpAddressFamily");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
+    TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IPFAMILY, value);
     return 0;
 }
 
 static int32_t jsonCfgDoDisableLoopCurrent(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d],  value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetLoopCurrentDisabled(service, ((0 == strcmp("true", value)) ? true : false));
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), VOICE_SERVICE_TABLE_NAME"%s", service, "X_RDK_DisableLoopCurrentUntilRegistered");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_BOOLEAN;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -519,31 +559,51 @@ static void jsonParseVoiceService(uint32_t index, cJSON *voiceService)
 static int32_t jsonCfgSetCCTKTraceGroup(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetCCTKTraceGroup(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), X_RDK_DEBUG_TABLE_NAME"%s", service, "CCTKTraceGroup");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetCCTKTraceLevel(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d],  value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetCCTKTraceLevel(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), X_RDK_DEBUG_TABLE_NAME"%s", service, "CCTKTraceLevel");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetModuleLogLevels(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d],  value[%s]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetModuleLogLevel(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), X_RDK_DEBUG_TABLE_NAME"%s", service, "ModuleLogLevels");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetLogServer(uint32_t service, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d],value[%s]", __func__, __LINE__,service, value);
-    TelcoVoiceMgrDmlSetLogServer(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), X_RDK_DEBUG_TABLE_NAME"%s", service, "LogServer");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetLogServerPort(uint32_t service, uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d],value[%lu]", __func__, __LINE__,service,value);
-    TelcoVoiceMgrDmlSetLogServerPort(service, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), X_RDK_DEBUG_TABLE_NAME"%s", service, "LogServerPort");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -877,7 +937,15 @@ static int32_t jsonParseAllLines(uint32_t service, uint32_t profile, cJSON *line
 static int32_t jsonCfgSetDirectoryNumber(uint32_t service, uint32_t profile, uint32_t line, char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetDirectoryNumber(service, profile, line, value);
+    memset(&initParam, 0, sizeof(initParam));
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(initParam.name, sizeof(initParam), LINE_TABLE_NAME"%s", service, line, "DirectoryNumber");
+#else
+    snprintf(initParam.name, sizeof(initParam), LINE_TABLE_NAME"%s", service, profile, line, "DirectoryNumber");
+#endif
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -971,7 +1039,29 @@ static int32_t jsonCfgSetAuthCredentials
     )
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], Line[%d] value[%s]", __func__, __LINE__,service,profile,line,value);
-    TelcoVoiceMgrDmlSetLineSIPAuthCredentials(service, profile, line, eAuthCredential, value);
+    if(eAuthCredential == VOICE_HAL_AUTH_UNAME)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(initParam.name, JSON_MAX_STR_ARR_SIZE, LINE_SIP_TABLE_NAME"%s", service, line, "AuthUserName");
+#else
+    snprintf(initParam.name, JSON_MAX_STR_ARR_SIZE, LINE_SIP_TABLE_NAME"%s", service, profile, line, "AuthUserName");
+#endif
+    }
+    else if(eAuthCredential == VOICE_HAL_AUTH_PWD)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(initParam.name, JSON_MAX_STR_ARR_SIZE, LINE_SIP_TABLE_NAME"%s", service, line, "AuthPassword");
+#else
+    snprintf(initParam.name, JSON_MAX_STR_ARR_SIZE, LINE_SIP_TABLE_NAME"%s", service, profile, line, "AuthPassword");
+#endif
+    }
+    else
+    {
+        return ANSC_STATUS_FAILURE;
+    }
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -1013,7 +1103,15 @@ int32_t jsonParseUserName(uint32_t service, uint32_t profile, uint32_t line, cha
  static int32_t jsonCfgSetSipUri(uint32_t service, uint32_t profile, uint32_t line, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetLineSipURI(service, profile, line, value);
+    memset(&initParam, 0, sizeof(initParam));
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(initParam.name, sizeof(initParam), LINE_SIP_TABLE_NAME"%s", service, line, "RegisterURI");
+#else
+    snprintf(initParam.name, sizeof(initParam), LINE_SIP_TABLE_NAME"%s", service, profile, line, "URI");
+#endif
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -1087,62 +1185,116 @@ static int32_t jsonCfgSetSipEthernetPriorityMark(uint32_t service, uint32_t prof
 static int32_t jsonCfgSetOutboundProxy(uint32_t service, uint32_t profile, const char * value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetOutboundProxy(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "OutboundProxy");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
 
     return 0;
 }
 static int32_t jsonCfgSetOutboundProxyPort(uint32_t service, uint32_t profile, const uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetOutboundProxyPort(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "OutboundProxyPort");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetProxyServer(uint32_t service, uint32_t profile, const char * value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetProxyServer(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "ProxyServer");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetProxyServerPort(uint32_t service, uint32_t profile, const uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetProxyServerPort(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "ProxyServerPort");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetRegistrarServer(uint32_t service, uint32_t profile, const char * value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetRegistrarServer(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "RegistrarServer");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetRegistrarServerPort(uint32_t service, uint32_t profile, const uint32_t value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetRegistrarServerPort(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "RegistrarServerPort");
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetUserAgentDomain(uint32_t service, uint32_t profile, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetUserAgentDomain(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "UserAgentDomain");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetConferencingUri(uint32_t service, uint32_t profile, const char *value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%s]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetConferencingURI(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_ConferencingURI");
+    snprintf(initParam.value, sizeof(initParam.value), "%s", value);
+    initParam.type = PARAM_STRING;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetEnablePrackRequired(uint32_t service, uint32_t profile, bool value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetPrackRequired(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "X_RDK_PRACKRequired");
+    if(value)
+    {
+       snprintf(initParam.value, sizeof(initParam.value), "%s", "true");
+    }
+    else
+    {
+       snprintf(initParam.value, sizeof(initParam.value), "%s", "false");
+    }
+    initParam.type = PARAM_BOOLEAN;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetEnableNetworkDisconnect(uint32_t service, uint32_t profile, bool value)
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
-    TelcoVoiceMgrDmlSetNetworkDisconnect(service, profile, value);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, "X_RDK-Central_COM_NetworkDisconnect");
+    if(value)
+    {
+       snprintf(initParam.value, sizeof(initParam.value), "%s", "true");
+    }
+    else
+    {
+       snprintf(initParam.value, sizeof(initParam.value), "%s", "false");
+    }
+    initParam.type = PARAM_BOOLEAN;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -1432,7 +1584,11 @@ static void jsonCfgDoVoiceProcessing(uint32_t service, uint32_t profile, uint32_
     {
         if (cJSON_IsNumber(procItem))
         {
-            (void)TelcoVoiceMgrDmlSetReceiveGain(service+1, profile+1, line+1, procItem->valueint);
+            memset(&initParam, 0, sizeof(initParam));
+            snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, profile+1, line+1, "ReceiveGain");
+            snprintf(initParam.value, sizeof(initParam.value), "%d", procItem->valueint);
+            initParam.type = PARAM_INTEGER;
+            json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
         }
         else
         {
@@ -1444,7 +1600,11 @@ static void jsonCfgDoVoiceProcessing(uint32_t service, uint32_t profile, uint32_
     {
         if (cJSON_IsNumber(procItem))
         {
-            (void)TelcoVoiceMgrDmlSetTransmitGain(service+1, profile+1, line+1, procItem->valueint);
+            memset(&initParam, 0, sizeof(initParam));
+            snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, profile+1, line+1, "TransmitGain");
+            snprintf(initParam.value, sizeof(initParam.value), "%d", procItem->valueint);
+            initParam.type = PARAM_INTEGER;
+            json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
         }
         else
         {
@@ -1516,8 +1676,7 @@ void jsonCfgDoCallingFeature(uint32_t service, uint32_t profile, uint32_t line, 
                 {
                     if (checkBool(&cfValue, cfItem->valuestring))
                     {
-                        (void)TelcoVoiceMgrDmlSetLineCallingFeatures(service + 1, profile + 1, line + 1,
-                            cfFuncs[i].e, cfValue);
+                        initialise_line_calling_features(service + 1, profile + 1, line + 1, cfFuncs[i].e, cfValue);
                         CcspTraceInfo(("jsonCfgDoCallingFeature found a bool value %s \n", cfItem->valuestring));
                     }
                             else
@@ -1542,34 +1701,45 @@ static int32_t jsonCfgSetLineEnable(uint32_t service, uint32_t profile, uint32_t
         CcspTraceInfo(("Invalid buffer \n"));
         return -1;
     }
+    memset(&initParam, 0, sizeof(initParam));
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_TABLE_NAME"%s", service,line,"Enable");
+    initParam.type = PARAM_BOOLEAN;
+#else
+    snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_TABLE_NAME"%s", service,profile,line,"Enable");
+    initParam.type = PARAM_STRING;
+#endif
+
     if (!strcmp(buffer, "Enabled"))
     {
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, TRUE);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "true");
 #else
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, ENABLED);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "Enabled");
 #endif
     }
     else if (!strcmp(buffer, "Disabled"))
     {
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, FALSE);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "false");
 #else
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, DISABLED);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "Disabled");
 #endif
     }
     else if (!strcmp(buffer, "Quiescent"))
     {
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, FALSE);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "false");
 #else
-        TelcoVoiceMgrDmlSetLineEnable(service, profile, line, QUIESCENT);
+        snprintf(initParam.value, sizeof(initParam.value), "%s", "Quiescent");
 #endif
     }
     else
     {
         return -1;
     }
+
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 
@@ -1590,4 +1760,67 @@ int32_t voice_process_factory_default()
         return returnStatus;
     }
     return returnStatus;
+}
+
+static ANSC_STATUS initialise_line_calling_features(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine, TELCOVOICEMGR_VOICE_CALL_FEATURE_TYPE_ENUM eFeature, BOOL bStatus)
+{
+    memset(&initParam, 0, sizeof(initParam));
+
+    if(eFeature == VOICE_CALLING_FEATURE_CALL_WAITING)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,"CallWaitingEnable");
+#else
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,uiLine,"CallWaitingEnable");
+#endif
+    }
+    else if(eFeature == VOICE_CALLING_FEATURE_MSG_WAIT_INDICATOR)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,"MWIEnable");
+#else
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,uiLine,"MWIEnable");
+#endif
+    }
+    else if(eFeature == VOICE_CALLING_FEATURE_CONF_CALL)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,"X_RDK-Central_COM_ConferenceCallingEnable");
+#else
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,uiLine,"X_RDK-Central_COM_ConferenceCallingEnable");
+#endif
+    }
+    else if(eFeature == VOICE_CALLING_FEATURE_HOLD)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,"X_RDK-Central_COM_HoldEnable");
+#else
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,uiLine,"X_RDK-Central_COM_HoldEnable");
+#endif
+    }
+    else if(eFeature == VOICE_CALLING_FEATURE_CALLER_ID)
+    {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,"X_RDK-Central_COM_PhoneCallerIDEnable");
+#else
+       snprintf(initParam.name,JSON_MAX_STR_ARR_SIZE, LINE_CALING_FEATURE_TABLE_NAME"%s", uiService,uiProfile,uiLine,"X_RDK-Central_COM_PhoneCallerIDEnable");
+#endif
+    }
+    else
+    {
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if(bStatus)
+    {
+       snprintf(initParam.value, sizeof(initParam.value),"%s","true");
+    }
+    else
+    {
+       snprintf(initParam.value, sizeof(initParam.value),"%s","false");
+    }
+    
+    initParam.type = PARAM_BOOLEAN;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
+    return ANSC_STATUS_SUCCESS;
 }

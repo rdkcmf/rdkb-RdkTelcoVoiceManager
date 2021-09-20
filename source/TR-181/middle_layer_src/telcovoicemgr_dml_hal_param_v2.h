@@ -28,6 +28,7 @@
 #define MAX_STR_LEN 256
 
 #define DML_VOICESERVICE_PARAM_NAME                                   "Device.Services.VoiceService.%d."
+#define DML_VOICESERVICE_DEBUG_PARAM_NAME                             DML_VOICESERVICE_PARAM_NAME"X_RDK_Debug."
 #define DML_VOICESERVICE_CAPABILITIES_CODEC_PARAM_NAME                DML_VOICESERVICE_PARAM_NAME"Capabilities.Codec.%d."
 #define DML_VOICESERVICE_ISDN_BRI_PARAM_NAME                          DML_VOICESERVICE_PARAM_NAME"ISDN.BRI.%d."
 #define DML_VOICESERVICE_ISDN_PRI_PARAM_NAME                          DML_VOICESERVICE_PARAM_NAME"ISDN.PRI.%d."
@@ -83,6 +84,7 @@
 #define DML_VOICESERVICE_TERMINAL_RINGER_DESC_PARAM_NAME              DML_VOICESERVICE_PARAM_NAME"Terminal.%d.Ringer.Description.%d."
 #define DML_VOICESERVICE_TERMINAL_RINGER_PATTERN_PARAM_NAME           DML_VOICESERVICE_PARAM_NAME"Terminal.%d.Ringer.Pattern.%d."
 #define DML_VOICESERVICE_CLKSRC_PARAM_NAME                            DML_VOICESERVICE_PARAM_NAME"ClockSynchronization.ClockSource.%d."
+#define DML_VOICESERVICE_VOICE_PROCESSING_PARAM_NAME                  DML_VOICESERVICE_TERMINAL_AUDIO_PARAM_NAME"VoiceProcessing."
 
 #define telcovoicemgr_hal_get_VoiceService_index                                                     telcovoicemgr_hal_get_first_index
 #define telcovoicemgr_hal_get_VoiceService_Capabilities_Codec_index                                  telcovoicemgr_hal_get_second_index
