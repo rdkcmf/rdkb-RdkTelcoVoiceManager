@@ -465,9 +465,7 @@ ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg)
     json_object *jreply_msg = NULL;
     json_bool status = FALSE;
 
-    //CcspTraceInfo(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
-    CcspTraceError(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
-
+    CcspTraceInfo(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
     if( json_hal_client_send_and_get_reply(jmsg, &jreply_msg) != RETURN_OK)
     {
         CcspTraceError(("[%s][%d] RPC message failed \n", __FUNCTION__, __LINE__));
@@ -500,6 +498,51 @@ ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg)
     FREE_JSON_OBJECT(jmsg);
     FREE_JSON_OBJECT(jreply_msg);
     
+    return rc;
+}
+
+ANSC_STATUS TelcoVoiceMgrHal_SetLinkUp(ULONG uVsIndex, char *dns_server_address, char *ipAddrFamily, char *wanIpAddress)
+{
+    ANSC_STATUS rc = ANSC_STATUS_SUCCESS;
+    json_object *jmsg = NULL;
+    hal_param_t param;
+
+    if((dns_server_address == NULL) || (ipAddrFamily == NULL) || (wanIpAddress == NULL))
+    {
+        CcspTraceError(("Error: Invalid arguement \n"));
+        return ANSC_STATUS_FAILURE;      
+    }
+    jmsg = json_hal_client_get_request_header(SET_PARAMETER_METHOD);
+    CHECK(jmsg);
+
+    memset(&param, 0, sizeof(param));
+    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_Enable");
+    snprintf(param.value, sizeof(param.value), "%lu", VOICE_SERVICE_ENABLE);
+    param.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
+
+    memset(&param, 0, sizeof(param));
+    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_DnsServers");
+    snprintf(param.value, sizeof(param.value), "%s", dns_server_address);
+    param.type = PARAM_STRING;
+    json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
+
+    memset(&param, 0, sizeof(param));
+    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_BoundIpAddr");
+    snprintf(param.value, sizeof(param.value), "%s", wanIpAddress);
+    param.type = PARAM_STRING;
+    json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
+
+    memset(&param, 0, sizeof(param));
+    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_IpAddressFamily ");
+    snprintf(param.value, sizeof(param.value), "%s", ipAddrFamily);
+    param.type = PARAM_STRING;
+    json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
+
+    CcspTraceInfo(("JSON Request message = %s \n", json_object_to_json_string_ext(jmsg, JSON_C_TO_STRING_PRETTY)));
+
+    rc = TelcoVoiceMgrHal_SendJsonRequest(jmsg);
+
     return rc;
 }
 

@@ -334,7 +334,7 @@ static void event_set_lan_status (void)
                     CcspTraceNotice(("CCSPTELCOVOIP_LANUP :: Voice Manager: LAN up\n"));
                     fflush(stdout);
                     TelcoVoiceMgrDmlSetBoundIpAddress(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, ipAddr);
-                    TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP);
+                    TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP, ipAddrFamily, ipAddr);
                 }
                 else
                 {
@@ -348,7 +348,7 @@ static void event_set_lan_status (void)
             CcspTraceNotice(("CCSPTELCOVOIP_LANDOWN :: Voice Manager: LAN down\n"));
             printf("Voice Manager: LAN down !\n");
             fflush(stdout);
-            TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN);
+            TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);
         }
     }
 }
@@ -399,7 +399,7 @@ static void event_set_wan_status (void)
                         }
 
                         TelcoVoiceMgrDmlSetBoundIpAddress(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, ipAddr);
-                        TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP);
+                        TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP, ipAddrFamily, ipAddr);
                     }
                     else
                     {
@@ -413,7 +413,7 @@ static void event_set_wan_status (void)
                 CcspTraceNotice(("CCSPTELCOVOIP_IPV4_WANDOWN :: Voice Manager: IPV4 WAN down\n"));
                 printf("Voice Manager: WAN down !\n");
                 fflush(stdout);
-                TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN);
+                TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);
             }
         }
     }
@@ -455,7 +455,7 @@ static void event_set_wan_status (void)
                         }
 
                         TelcoVoiceMgrDmlSetBoundIpAddress(1, ipAddr);
-                        TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP);
+                        TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP, ipAddrFamily, ipAddr);
                     }
                 }
                 else
@@ -469,7 +469,7 @@ static void event_set_wan_status (void)
                 CcspTraceNotice(("CCSPTELCOVOIP_IPV6_WANDOWN :: Voice Manager: IPV6 WAN down\n"));
                 printf("Voice Manager: WAN down !\n");
                 fflush(stdout);
-                TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN);
+                TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);
             }
         }
     }

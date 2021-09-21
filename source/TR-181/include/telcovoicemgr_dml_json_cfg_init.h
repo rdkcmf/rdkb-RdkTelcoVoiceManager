@@ -36,38 +36,6 @@
 #define MAX_REGION_LENGTH   16
 #define MAX_FILENAME_LENGTH 128
 
-#define   VOICE_SERVICE_TABLE_NAME            "Device.Services.VoiceService.%d."
-#define   VOICE_SERVICE_STATUS                "Device.Services.VoiceService.%d.X_RDK_Status"
-#define   X_RDK_DEBUG_TABLE_NAME              "Device.Services.VoiceService.%d.X_RDK_Debug."
-
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-/*  TR104 V2 DML Tables */
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.Diagtests."
-#define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoIPProfile.%d."
-#define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.SIP.Network.%d."
-#define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP."
-#define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.CallControl.Line.%d."
-#define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.SIP.Client.%d."
-#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.Terminal.%d.Audio.%d.VoiceProcessing."
-#define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.CallControl.CallingFeatures.Set.%d."
-#define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
-#define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
-#define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats."
-#else
-/* TR104 V1 DML Tables*/
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d.Tests."
-#define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoiceProfile.%d."
-#define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP."
-#define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoiceProfile.%d.RTP."
-#define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d."
-#define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.SIP."
-#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.VoiceProcessing."
-#define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Stats."
-#define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallingFeatures."
-#define   LINE_STATUS                         "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Status"
-#define   CALL_STATE                          "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallState"
-#endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
-
 #include <stdbool.h>
 #include "cJSON.h"
 

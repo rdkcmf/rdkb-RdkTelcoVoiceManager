@@ -1197,7 +1197,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetCCTKTraceGroup(UINT uiService, char *CCTKTraceGro
 ANSC_STATUS TelcoVoiceMgrDmlSetCCTKTraceLevel(UINT uiService, char *CCTKTraceLevel);
 ANSC_STATUS TelcoVoiceMgrDmlSetModuleLogLevel(UINT uiService, char *logLevels);
 ANSC_STATUS TelcoVoiceMgrDmlSetVoiceProcessState(UINT uiService, TELCOVOICEMGR_VOICE_ENABLE_ENUM uState);
-ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkState);
+ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkState, char *ipAddrFamily, char *wanIpAddress);
 
 ANSC_STATUS TelcoVoiceMgrDmlSetDirectoryNumber(UINT uiService, UINT uiProfile, UINT uiLine, char* pDirName);
 ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(UINT uiService, UINT uiProfile, UINT uiLine, ULONG LineEnable);

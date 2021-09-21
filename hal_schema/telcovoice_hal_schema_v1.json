@@ -392,6 +392,7 @@
         { "$ref": "#/definitions/voiceServiceX_RDK_IpAddressFamily" },
         { "$ref": "#/definitions/voiceServiceX_RDK_Enable" },
         { "$ref": "#/definitions/voiceServiceX_RDK_FactoryReset" },
+        { "$ref": "#/definitions/voiceServiceX_RDK_DnsServers" },
         { "$ref": "#/definitions/voiceServiceX_RDK_Debug" },
         { "$ref": "#/definitions/voiceServiceX_RDK_DebugCCTKTraceGroup" },
         { "$ref": "#/definitions/voiceServiceX_RDK_DebugCCTKTraceLevel" },
@@ -576,6 +577,7 @@
         { "$ref": "#/definitions/voiceServiceX_RDK_Enable" },
         { "$ref": "#/definitions/voiceServiceX_RDK_Status" },
         { "$ref": "#/definitions/voiceServiceX_RDK_FactoryReset" },
+        { "$ref": "#/definitions/voiceServiceX_RDK_DnsServers" },
         { "$ref": "#/definitions/voiceServiceX_RDK_Debug" },
         { "$ref": "#/definitions/voiceServiceX_RDK_DebugCCTKTraceGroup" },
         { "$ref": "#/definitions/voiceServiceX_RDK_DebugCCTKTraceLevel" },
@@ -1089,6 +1091,24 @@
         },
         "value": {
           "type": "boolean"
+        }
+      }
+    },
+    "voiceServiceX_RDK_DnsServers": {
+      "description": " Send Dns Server Address to voice process.(Access = Read-Write)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.X_RDK_DnsServers$"
+        },
+        "type": {
+          "type": "string",
+          "const": "string"
+        },
+        "value": {
+          "type": "string"
         }
       }
     },

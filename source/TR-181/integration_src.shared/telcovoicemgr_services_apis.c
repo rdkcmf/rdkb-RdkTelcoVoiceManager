@@ -75,6 +75,11 @@
 #define SYSEVENT_VOICE_IPV6_RTPLIST "voice_ipv6_rtp_pinholes"
 #define SYSEVENT_VOICE_IPV6_ETHERNETPRIORITY "voice_ipv6_ethernetpriority"
 #define SYSEVENT_VOICE_IPV6_DSCP "voice_ipv6_dscp"
+#define SYSEVENT_FIELD_IPV6_DNS_PRIMARY   "ipv6_dns_0"
+#define SYSEVENT_CURRENT_WAN_IFNAME "current_wan_ifname"
+#define SYSEVENT_IPV4_DNS_PRIMARY "ipv4_%s_dns_0"
+#define SYSEVENT_IPV4_DNS_SECONDARY "ipv4_%s_dns_1"
+#define SYSEVENT_FIELD_IPV6_DNS_SECONDARY "ipv6_dns_1"
 #define UTOPIA_FIREWALL_RESTART_TIMEOUT_MS  3000 /* ms */
 
 #define ADD_RULE     "Add_Rule"
@@ -85,6 +90,9 @@ extern int sysevent_voice_fd;
 extern token_t sysevent_voice_token;
 extern ANSC_HANDLE bus_handle;
 static char *bTrueStr = "true", *bFalseStr = "false";
+static TELCOVOICEMGR_VOICE_IP_LINK_STATE gLinkState = VOICE_HAL_IP_LINK_STATE_DOWN;
+
+static ANSC_STATUS TelcoVoiceMgrDmlGetDnsServers(char *dns_server_address);
 
 /* generate_outboundproxy_sysevent_string : */
 /**
@@ -1326,6 +1334,8 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
 * @description set Wan Link State Up/Down
 * Used only from telcovoicemgr_nw_monitor.c to notify wan up/down to voice
 * @param VOICE_HAL_IP_LINK_STATE_UP/VOICE_HAL_IP_LINK_STATE_DOWN
+* @param Ip Address Family (IPv4/IPv6)
+* @param IpAddress
 *
 * @return The status of the operation.
 * @retval ANSC_STATUS_SUCCESS if successful.
@@ -1336,18 +1346,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
 *
 */
 
-ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkState)
+ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkState, char *ipAddrFamily, char *wanIpAddress)
 {
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    char dns_server_address[BUF_LEN_256]={0};
+    ULONG uVsIndex = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
-
-    snprintf(strName,JSON_MAX_STR_ARR_SIZE, "%s","WanLinkStatus");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",linkState);
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
-    }
+    gLinkState = linkState;
 
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
     if(pTelcoVoiceMgrDmlData == NULL)
@@ -1364,8 +1370,121 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLinkState(TELCOVOICEMGR_VOICE_IP_LINK_STATE linkS
         TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
         return ANSC_STATUS_RESOURCES;
     }
-    pDmlVoiceService->X_RDK_Enable = VOICE_SERVICE_ENABLE;
+    pDmlVoiceService->X_RDK_Enable = linkState;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+
+    if(linkState == VOICE_HAL_IP_LINK_STATE_UP)
+    {
+        //Send Dns Server Address to voice stack
+        TelcoVoiceMgrDmlGetDnsServers(&dns_server_address);
+        if (TelcoVoiceMgrHal_SetLinkUp(uVsIndex, dns_server_address, ipAddrFamily, wanIpAddress) != ANSC_STATUS_SUCCESS)
+        {
+            CcspTraceError(("%s:%d::  Failed\n", __FUNCTION__, __LINE__));
+            return ANSC_STATUS_FAILURE;
+        }
+    }
+    else
+    {
+        if(TelcoVoiceMgrDmlSetVoiceProcessState(uVsIndex, linkState) != ANSC_STATUS_SUCCESS)
+        {
+           CcspTraceError(("%s:%d::  Failed\n", __FUNCTION__, __LINE__));
+           return ANSC_STATUS_FAILURE;
+        }
+    }
+
+    return ANSC_STATUS_SUCCESS;
+}
+
+/* TelcoVoiceMgrDmlGetDnsServers: */
+/**
+* @description send DnsServer Address to voice stack
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+static ANSC_STATUS TelcoVoiceMgrDmlGetDnsServers(char *dns_server_address)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    char ipAddrFamily[IP_ADDR_FAMILY_LENGTH] = {0};
+    char dns_server_prim[48] = {0};
+    char dns_server_sec[48] = {0};
+
+    if(dns_server_address == NULL)
+    {
+        return ANSC_STATUS_FAILURE;
+    }
+    if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IPFAMILY, ipAddrFamily, sizeof(ipAddrFamily)) != 0)
+    {
+        CcspTraceError(("%s : Failed to get ipAddressFamily from sysevent \n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if( !strcmp(ipAddrFamily, STR_IPV4) )
+    {
+        char ifName[32] = {0};
+        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_CURRENT_WAN_IFNAME, ifName, sizeof(ifName)) == 0)
+        {
+            char sysevent_param_name[32] = {0};
+            snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_PRIMARY, ifName);
+            if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_prim, sizeof(dns_server_prim)) != 0)
+            {
+                //set default
+                snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
+            }
+            else if(strlen(dns_server_prim) == 0)
+            {
+            snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
+            }
+
+            memset(sysevent_param_name, 0, sizeof(sysevent_param_name));
+            snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_SECONDARY, ifName);
+
+            if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_sec, sizeof(dns_server_sec)) != 0)
+            {
+                //set default
+                snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
+            }
+            else if(strlen(dns_server_sec) == 0)
+            {
+            snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
+            }
+        }
+    }
+    else if( !strcmp(ipAddrFamily, STR_IPV6) )
+    {
+        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_PRIMARY, dns_server_prim, sizeof(dns_server_prim)) != 0)
+        {
+           //set default
+           snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
+        }
+        else if(strlen(dns_server_prim) == 0)
+        {
+           snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
+        }
+        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_SECONDARY, dns_server_sec, sizeof(dns_server_sec)) != 0)
+        {
+           //set default
+           snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
+        }
+        else if(strlen(dns_server_sec) == 0)
+        {
+           snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
+        }
+    }
+    else
+    {
+       CcspTraceError(("[%s]::[%d] Invalid IpAddress Family !!!! \n", __FUNCTION__,__LINE__));
+       return ANSC_STATUS_FAILURE;
+    }
+    snprintf(dns_server_address,JSON_MAX_VAL_ARR_SIZE,"%s,%s", dns_server_prim, dns_server_sec);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1432,6 +1551,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetVoiceProcessState(uint32_t uiService, uint32_t uS
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,VOICE_SERVICE_TABLE_NAME"%s",uiService,"X_RDK_Enable");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uState);
+    if(uState == VOICE_SERVICE_ENABLE)
+    {
+        if(gLinkState == VOICE_HAL_IP_LINK_STATE_DOWN)
+        {
+            CcspTraceError(("%s:%d:: LinkStatus down. Cannot start voice application \n", __FUNCTION__, __LINE__));
+            return ANSC_STATUS_SUCCESS;
+        }
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
