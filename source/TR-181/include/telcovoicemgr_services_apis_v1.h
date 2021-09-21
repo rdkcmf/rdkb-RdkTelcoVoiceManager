@@ -63,6 +63,7 @@
 #define BUF_LEN_16                          16
 #define BUF_LEN_512                         512
 #define BUF_LEN_256                         256
+#define BUF_LEN_1024                        1024
 #define MAXLENGTH_DIGITMAP                  2048
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES      1
@@ -404,7 +405,6 @@ typedef struct _TELCOVOICEMGR_DML_SIP
     CHAR        ConferencingURI[BUF_LEN_256];
     BOOL        NetworkDisconnect;
     BOOL        X_RDK_PRACKRequired;
-    CHAR        X_RDK_Firewall_Rule_Data[BUF_LEN_256];
     DML_SIP_EVENTSUBSCRIBE_LIST_T   SipEventSubscribeList;
     DML_SIP_RESPONSEMAP_LIST_T     SipResponseMapList;
 } TELCOVOICEMGR_DML_SIP, *PTELCOVOICEMGR_DML_SIP;
@@ -477,7 +477,6 @@ typedef struct _TELCOVOICEMGR_DML_RTP
     INT                               EthernetPriorityMark;
     UINT                              TelephoneEventPayloadType;
     UINT                              X_RDK_SKBMark;
-    CHAR                              X_RDK_Firewall_Rule_Data[BUF_LEN_256];
     TELCOVOICEMGR_DML_RTP_RTCP        RTCPObj;
     TELCOVOICEMGR_DML_RTP_SRTP        SRTPObj;
     TELCOVOICEMGR_DML_RTP_REDUNDANCY  RedundancyObj;
@@ -936,15 +935,15 @@ typedef struct _TELCOVOICEMGR_DML_VOICEPROFILE
 {
     ULONG                                        InstanceNumber;
     void*                                        *pParentVoiceService;
-    TELCOVOICEMGR_ENABLE_ENUM                    Enable[64];
+    TELCOVOICEMGR_ENABLE_ENUM                    Enable;
     CHAR                                         Alias[64];
     BOOL                                         Reset;
     ULONG                                        NumberOfLines;
     CHAR                                         Name[64];
     CHAR                                         SignalingProtocol[128];
     UINT                                         MaxSessions;
-    TELCOVOICEMGR_PROFILE_DTMF_METHOD_ENUM       DTMFMethod[64];
-    TELCOVOICEMGR_PROFILE_DTMF_METHODG711_ENUM   DTMFMethodG711[64];
+    TELCOVOICEMGR_PROFILE_DTMF_METHOD_ENUM       DTMFMethod;
+    TELCOVOICEMGR_PROFILE_DTMF_METHODG711_ENUM   DTMFMethodG711;
     CHAR                                         Region[128];
     CHAR                                         DigitMap[BUF_LEN_256];
     BOOL                                         DigitMapEnable;
@@ -1124,6 +1123,7 @@ typedef struct _TELCOVOICEMGR_DML_VOICESERVICE
     CHAR                                       X_RDK_BoundIfName[BUF_LEN_256];
     CHAR                                       X_RDK_IpAddressFamily[BUF_LEN_256];
     CHAR                                       X_RDK_BoundIpAddr[BUF_LEN_256];
+    CHAR                                       X_RDK_Firewall_Rule_Data[BUF_LEN_1024];
     TELCOVOICEMGR_VOICE_ENABLE_ENUM            X_RDK_Enable;
     TELCOVOICEMGR_VOICE_STATUS_ENUM            X_RDK_Status;
     BOOL                                       X_RDK_FactoryReset;
@@ -1225,6 +1225,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(UINT uiService, UINT uiProfile, BOO
 ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iValue, PROTOCOL_TYPE protocol, char* paramName);
 ANSC_STATUS TelcoVoiceMgrDmlSetBoundIpAddress(uint32_t uiService, char *BoundIpAddress);
 ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, PROTOCOL_TYPE protocol, int* pValue);
-ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_SIP pvoiceProfileSip, PTELCOVOICEMGR_DML_RTP pvoiceProfileRtp, PROTOCOL_TYPE protocol );
 ANSC_STATUS TelcoVoiceMgrSetSyseventData(char *eventName, char *eventValue);
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService);
+
 #endif /* _TELCOVOICEMGR_SERVICES_APIS_H */

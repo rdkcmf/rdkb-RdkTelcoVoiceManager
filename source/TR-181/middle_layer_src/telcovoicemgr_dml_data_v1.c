@@ -158,6 +158,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                     }
                     pDmlVoiceProfile->InstanceNumber = uVpIndex + 1;
                     pDmlVoiceProfile->pParentVoiceService = pDmlVoiceService;
+                    pDmlVoiceProfile->Enable = ENABLED;
                     pDmlVoiceProfile->LineList.ulQuantity = TELCOVOICEMGR_DML_NUMBER_OF_LINE;
 
                     if (  pDmlVoiceProfile->LineList.ulQuantity != 0 )

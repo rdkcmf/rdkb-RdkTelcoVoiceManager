@@ -1269,34 +1269,7 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamUlongValue(ANSC_HANDLE hInsCon
 
 ULONG TelcoVoiceMgrDml_VoipProfileList_RTP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize)
 {
-    ULONG ret = 1;
-
-    if(ParamName == NULL || pValue == NULL || pulSize == NULL)
-    {
-        CcspTraceWarning(("%s: Invalid Input Parameter [NULL]\n", __func__));
-        return ret;
-    }
-
-    TELCOVOICEMGR_LOCK_OR_EXIT()
-
-    PDML_VOIPPROFILE_CTRL_T pVoipProfileCtrl = (PDML_VOIPPROFILE_CTRL_T)hInsContext;
-
-    PDML_VOIPPROFILE pDmlVoipProfile = &(pVoipProfileCtrl->dml);
-
-    PDML_VOIPPROFILE_RTP pHEAD = &(pDmlVoipProfile->RTP);
-
-    if( AnscEqualString(ParamName, "X_RDK_Firewall_Rule_Data", TRUE) )
-    {
-        AnscCopyString(pValue,pHEAD->X_RDK_Firewall_Rule_Data);
-        ret = 0;
-    }
-    else
-    {
-        CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
-    }
-
-    TELCOVOICEMGR_UNLOCK()
-
+    ULONG ret = 0;
     return ret;
 }
 

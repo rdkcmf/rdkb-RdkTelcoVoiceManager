@@ -231,6 +231,10 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     {
        strncpy(pVoiceService->X_RDK_BoundIpAddr, pValue,strlen(pValue)+1);
     }
+    else if( strstr(ParamName, "X_RDK_Firewall_Rule_Data") )
+    {
+        strncpy(pVoiceService->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
+    }
     else if( strstr(ParamName, "X_RDK_Enable"))
     {
         // Do nothing
@@ -3768,12 +3772,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
         pSipNetwork->pParentVoiceService = pVoiceService;
 
         //VoiceService.{i}.SIP.Network.{i}.
-        if( strstr(ParamName, "X_RDK_Firewall_Rule_Data") )
-        {
-            //VoiceService.{i}.SIP.X_RDK_Firewall_Rule_Data
-            strncpy(pSipNetwork->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
-        }
-        else if( strstr(ParamName, "Enable") )
+        if( strstr(ParamName, "Enable") )
         {
             //VoiceService.{i}.SIP.Network.{i}.Enable
             if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
@@ -9597,11 +9596,6 @@ ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
         {
             //VoiceService.{i}.VoIPProfile.{i}.RTP.JitterBufferActualSize
             pRTP->JitterBufferActualSize = strtoul(pValue,&err, 10);
-        }
-        else if( strstr(ParamName, "X_RDK_Firewall_Rule_Data"))
-        {
-            //VoiceService.{i}.VoIPProfile.{i}.RTP.X_RDK_Firewall_Rule_Data
-            strncpy(pRTP->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
         }
         else if( strstr(ParamName, "X_RDK_SKBMark"))
         {

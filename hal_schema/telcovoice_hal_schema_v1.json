@@ -162,8 +162,7 @@
     "subscribeEventSupportedList": {
       "description": "Supported data model parameter list for subscribeEvent and publishEvent actions",
       "anyOf": [
-        { "$ref": "#/definitions/voiceServiceVoiceProfileSIPX_RDK_Firewall_Rule_Data" },
-        { "$ref": "#/definitions/voiceServiceVoiceProfileRTPX_RDK_Firewall_Rule_Data" }
+        { "$ref": "#/definitions/voiceServiceX_RDK_Firewall_Rule_Data" }
       ]
     },
     "setParameterSupportedList": {
@@ -233,6 +232,7 @@
       "description": "Supported data model parameter list for getParameters action",
       "anyOf": [
         { "$ref": "#/definitions/voiceService" },
+        { "$ref": "#/definitions/voiceServiceX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceCapabilities" },
         { "$ref": "#/definitions/voiceServiceCapabilitiesMaxProfileCount" },
         { "$ref": "#/definitions/voiceServiceCapabilitiesMaxLineCount" },
@@ -287,7 +287,6 @@
         { "$ref": "#/definitions/voiceServiceVoiceProfileRTPLocalPortMax" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileRTPDSCPMark" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileRTPTelephoneEventPayloadType" },
-        { "$ref": "#/definitions/voiceServiceVoiceProfileRTPX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIP" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIPProxyServer" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIPProxyServerPort" },
@@ -304,7 +303,6 @@
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIPRegistrationPeriod" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIPRegisterExpires" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileSIPUseCodecPriorityInSDPResponse" },
-        { "$ref": "#/definitions/voiceServiceVoiceProfileSIPX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileMGCP" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileMGCPCallAgent1" },
         { "$ref": "#/definitions/voiceServiceVoiceProfileMGCPCallAgentPort1" },
@@ -939,6 +937,23 @@
           "type": "string",
           "maxLength": 256
         }
+      }
+    },
+    "voiceServiceX_RDK_Firewall_Rule_Data": {
+      "description": "Contains the comma seperated list of enable/disable,protocol,port,ip;  that are required to set firewall rules. (Ex: (1,sip,5060,192.168.0.11;1,rtp,50000,192.168.0.11;0,rtp,50001,192.168.0.11;) ) (Access = Read-Only)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.X_RDK_Firewall_Rule_Data$"
+        },
+        "type": {
+          "type": "string",
+          "const": "string"
+        },
+        "value": { "type": "string" },
+        "notificationType": { "$ref":"#/definitions/notificationType" }
       }
     },
     "voiceServiceX_RDK_Debug": {
@@ -3324,23 +3339,6 @@
         }
       }
     },
-    "voiceServiceVoiceProfileSIPX_RDK_Firewall_Rule_Data": {
-      "description": "Contains the comma seperated list of ip and port required to set SIP firewall rules. (eg:ip1,port1;ip2,port2;ip3,port3;) (Access = Read-Only)",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.VoiceProfile\\.\\d+\\.SIP\\.X_RDK_Firewall_Rule_Data$"
-        },
-        "type": {
-          "type": "string",
-          "const": "string"
-        },
-        "value": { "type": "string" },
-        "notificationType": { "$ref":"#/definitions/notificationType" }
-      }
-    },
     "voiceServiceVoiceProfileSIPDSCPMark": {
       "description": "Diffserv code point to be used for outgoing SIP signaling packets. (Access = Read-Write)",
       "type": "object",
@@ -4332,23 +4330,6 @@
           "minimum": 0,
           "maximum": 128
         }
-      }
-    },
-    "voiceServiceVoiceProfileRTPX_RDK_Firewall_Rule_Data": {
-      "description": "Contains the comma seperated list of ip and port required to set RTP firewall rules. (eg:ip1,port1;ip2,port2;ip3,port3;) (Access = Read-Only)",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.VoiceProfile\\.\\d+\\.RTP\\.X_RDK_Firewall_Rule_Data$"
-        },
-        "type": {
-          "type": "string",
-          "const": "string"
-        },
-        "value": { "type": "string" },
-        "notificationType": { "$ref":"#/definitions/notificationType" }
       }
     },
     "voiceServiceVoiceProfileRTPRTCP": {

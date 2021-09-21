@@ -204,6 +204,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                     }
                     pDmlVoipProfile->uInstanceNumber = uIndex + 1;
                     pDmlVoipProfile->pParentVoiceService = pDmlVoiceService;
+                    pDmlVoipProfile->Enable = 1;
                 }
             }
 

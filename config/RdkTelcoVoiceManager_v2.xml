@@ -167,6 +167,12 @@
               <syntax>string</syntax>
               <writable>false</writable>
             </parameter>
+            <parameter>
+                <name>X_RDK_Firewall_Rule_Data</name>
+                <type>string</type>
+                <syntax>string</syntax>
+                <writable>false</writable>
+            </parameter>
               <parameter>
                 <name>X_RDK_Enable</name>
               <type>string: Disable(0),Enable(1)</type>
@@ -1753,11 +1759,6 @@
                         <type>boolean</type>
                         <syntax>bool</syntax>
                         <writable>true</writable>
-                    </parameter>
-                    <parameter>
-                        <name>X_RDK_Firewall_Rule_Data</name>
-                        <type>string</type>
-                        <syntax>string</syntax>
                     </parameter>
                     <parameter>
                         <name>QuiescentMode</name>
@@ -5614,11 +5615,6 @@
                         <name>X_RDK_SKBMark</name>
                         <type>unsignedInt</type>
                         <syntax>uint32</syntax>
-                    </parameter>
-                    <parameter>
-                        <name>X_RDK_Firewall_Rule_Data</name>
-                        <type>string</type>
-                        <syntax>string</syntax>
                     </parameter>
                 </parameters>
                 <objects>

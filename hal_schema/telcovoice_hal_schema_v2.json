@@ -167,8 +167,7 @@
     "subscribeEventSupportedList": {
       "description": "Supported data model parameter list for subscribeEvent and publishEvent actions",
       "anyOf": [
-        { "$ref": "#/definitions/voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data" },
-        { "$ref": "#/definitions/voiceServiceVoIPProfileRTPX_RDK_Firewall_Rule_Data" }
+        { "$ref": "#/definitions/voiceServiceX_RDK_Firewall_Rule_Data" }
       ]
     },
     
@@ -630,6 +629,7 @@
         { "$ref": "#/definitions/voiceServiceDECTBase" },
         { "$ref": "#/definitions/voiceServiceDECTPortable" },
         { "$ref": "#/definitions/voiceService" },
+        { "$ref": "#/definitions/voiceServiceX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceVoIPProfileRTP" },
         { "$ref": "#/definitions/voiceServiceCapabilitiesSIPClient" },
         { "$ref": "#/definitions/voiceServiceSIP" },
@@ -704,7 +704,6 @@
         { "$ref": "#/definitions/voiceServiceVoIPProfileRTPJitterBufferMaxSize" },
         { "$ref": "#/definitions/voiceServiceVoIPProfileRTPJitterBufferMinSize" },
         { "$ref": "#/definitions/voiceServiceVoIPProfileRTPJitterBufferActualSize" },
-        { "$ref": "#/definitions/voiceServiceVoIPProfileRTPX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceSIPClientEnable" },
         { "$ref": "#/definitions/voiceServiceSIPClientRegisterMode" },
         { "$ref": "#/definitions/voiceServiceSIPClientAuthUserName" },
@@ -787,7 +786,6 @@
         { "$ref": "#/definitions/voiceServiceSIPProxyProxyIPAddress" },
         { "$ref": "#/definitions/voiceServiceSIPProxyProxyPort" },
         { "$ref": "#/definitions/voiceServiceSIPProxyVoIPProfile" },
-        { "$ref": "#/definitions/voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data" },
         { "$ref": "#/definitions/voiceServiceH323ClientEnable" },
         { "$ref": "#/definitions/voiceServiceH323ClientH235Authentication" },
         { "$ref": "#/definitions/voiceServiceH323ClientAuthPassword" },
@@ -1718,6 +1716,23 @@
           "type": "string",
           "maxLength": 256
         }
+      }
+    },
+    "voiceServiceX_RDK_Firewall_Rule_Data": {
+      "description": "Contains the comma seperated list of enable/disable,protocol,port,ip;  that are required to set firewall rules. (Ex: (1,sip,5060,192.168.0.11;1,rtp,50000,192.168.0.11;0,rtp,50001,192.168.0.11;) ) (Access = Read-Only)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.X_RDK_Firewall_Rule_Data$"
+        },
+        "type": {
+          "type": "string",
+          "const": "string"
+        },
+        "value": { "type": "string" },
+        "notificationType": { "$ref":"#/definitions/notificationType" }
       }
     },
     "voiceServiceX_RDK_Debug": {
@@ -8039,23 +8054,6 @@
           "type": "string",
           "maxLength": 64
         }
-      }
-    },
-    "voiceServiceSIPNetworkX_RDK_Firewall_Rule_Data": {
-      "description": "Contains the comma seperated list of ip and port required to set SIP firewall rules. (eg:ip1,port1;ip2,port2;ip3,port3;) (Access = Read-Only)",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.SIP\\.Network\\.\\d+\\.X_RDK_Firewall_Rule_Data$"
-        },
-        "type": {
-          "type": "string",
-          "const": "string"
-        },
-        "value": { "type": "string" },
-        "notificationType": { "$ref":"#/definitions/notificationType" }
       }
     },
     "voiceServiceMGCP": {
@@ -15449,23 +15447,6 @@
           "type": "integer",
           "minimum": 0
         }
-      }
-    },
-    "voiceServiceVoIPProfileRTPX_RDK_Firewall_Rule_Data": {
-      "description": "Contains the comma seperated list of ip and port required to set RTP firewall rules. (eg:ip1,port1;ip2,port2;ip3,port3;) (Access = Read-Only)",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "name": {
-          "type": "string",
-          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.VoIPProfile\\.\\d+\\.RTP\\.X_RDK_Firewall_Rule_Data$"
-        },
-        "type": {
-          "type": "string",
-          "const": "string"
-        },
-        "value": { "type": "string" },
-        "notificationType": { "$ref":"#/definitions/notificationType" }
       }
     },
     "voiceServiceVoIPProfileRTPRTCP": {

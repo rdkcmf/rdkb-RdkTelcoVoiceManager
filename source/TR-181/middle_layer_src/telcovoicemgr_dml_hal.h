@@ -99,15 +99,9 @@
 #define TELCOVOICE_QUERY_VOICEPROFILE   "Device.Services.VoiceService.%d.VoiceProfile."
 #define TELCOVOICE_QUERY_PHYINTERFACE   "Device.Services.VoiceService.%d.PhyInterface."
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-#define SIP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.SIP.Network.%d.X_RDK_Firewall_Rule_Data"
-#define RTP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP.X_RDK_Firewall_Rule_Data"
-#else
-#define SIP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoiceProfile.%d.SIP.X_RDK_Firewall_Rule_Data"
-#define RTP_FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.VoiceProfile.%d.RTP.X_RDK_Firewall_Rule_Data"
-#endif
+#define FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.X_RDK_Firewall_Rule_Data"
 
-#define FIREWALL_RULE_DATA_EVENT        "X_RDK_Firewall_Rule_Data"
+#define FIREWALL_RULE_DATA_EVENT    "X_RDK_Firewall_Rule_Data"
 
 #define CHECK(expr)                                                \
     if (!(expr))                                                   \

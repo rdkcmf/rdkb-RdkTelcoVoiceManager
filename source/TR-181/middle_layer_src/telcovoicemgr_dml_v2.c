@@ -528,6 +528,11 @@ ULONG VoiceService_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName,
         AnscCopyString(pValue,pHEAD->Alias);
         ret = 0;
     }
+    else if( AnscEqualString(ParamName, "X_RDK_Firewall_Rule_Data", TRUE) )
+    {
+        AnscCopyString(pValue,pHEAD->X_RDK_Firewall_Rule_Data);
+        ret = 0;
+    }
     else
     {
         CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));

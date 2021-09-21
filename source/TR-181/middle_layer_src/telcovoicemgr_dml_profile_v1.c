@@ -168,11 +168,6 @@ LONG VoiceProfile_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
                    ret = 1;
                 }
             }
-            else if( AnscEqualString(ParamName, "Enable", TRUE) )
-            {
-                AnscCopyString(pValue, pVoiceProfile->Enable);
-                ret = 0;
-            }
             else if( AnscEqualString(ParamName, "X_RDK-Central_COM_EmergencyDigitMap", TRUE) )
             {
                 if(strlen(pVoiceProfile->EmergencyDigitMap) < *pUlSize)
@@ -204,16 +199,6 @@ LONG VoiceProfile_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
             else if( AnscEqualString(ParamName, "SignalingProtocol", TRUE) )
             {
                 AnscCopyString(pValue, pVoiceProfile->SignalingProtocol);
-                ret = 0;
-            }
-            else if( AnscEqualString(ParamName, "DTMFMethod", TRUE) )
-            {
-                AnscCopyString(pValue, pVoiceProfile->DTMFMethod);
-                ret = 0;
-            }
-            else if( AnscEqualString(ParamName, "DTMFMethodG711", TRUE) )
-            {
-                AnscCopyString(pValue, pVoiceProfile->DTMFMethodG711);
                 ret = 0;
             }
             else if( AnscEqualString(ParamName, "Region", TRUE) )
@@ -406,6 +391,16 @@ BOOL VoiceProfile_GetParamUlongValue(ANSC_HANDLE hInsContext, char*  ParamName, 
                 *puValue = pVoiceProfile->Enable;
                 ret = TRUE;
             }
+            else if( AnscEqualString(ParamName, "DTMFMethod", TRUE) )
+            {
+                *puValue = pVoiceProfile->DTMFMethod;
+                ret = 0;
+            }
+            else if( AnscEqualString(ParamName, "DTMFMethodG711", TRUE) )
+            {
+                *puValue = pVoiceProfile->DTMFMethodG711;
+                ret = 0;
+            }
             else if( AnscEqualString(ParamName, "NumberOfLines", TRUE) )
             {
                 *puValue = pVoiceProfile->NumberOfLines;
@@ -525,6 +520,11 @@ BOOL VoiceProfile_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
                             return TRUE;
                         }
                     }
+                }
+                else if( AnscEqualString(ParamName, "Enable", TRUE) )
+                {
+                    pVoiceProfile->Enable = uValue;
+                    ret = TRUE;
                 }
             }
             else
@@ -892,11 +892,6 @@ LONG SIP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pVa
             else if( AnscEqualString(ParamName, "X_RDK-Central_COM_ConferencingURI", TRUE) )
             {
                 AnscCopyString(pValue, pVoiceProfile->SIPObj.ConferencingURI);
-                ret = 0;
-            }
-            else if( AnscEqualString(ParamName, "X_RDK_Firewall_Rule_Data", TRUE) )
-            {
-                AnscCopyString(pValue, pVoiceProfile->SIPObj.X_RDK_Firewall_Rule_Data);
                 ret = 0;
             }
             else if( AnscEqualString(ParamName, "UserAgentTransport", TRUE) )
@@ -2643,32 +2638,7 @@ BOOL RTCP_SetParamBoolValue(ANSC_HANDLE hInsContext, char* ParamName, BOOL bValu
 
 LONG RTP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pUlSize)
 {
-    ULONG ret = 1;
-    DML_PROFILE_CTRL_T* pTelcoVoiceMgrCtrl = (DML_PROFILE_CTRL_T*) hInsContext;
-
-    if(pTelcoVoiceMgrCtrl != NULL)
-    {
-        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
-        if(pTelcoVoiceMgrDmlData != NULL)
-        {
-          TELCOVOICEMGR_DML_VOICEPROFILE* pVoiceProfile = &(pTelcoVoiceMgrCtrl->dml);
-
-          if (pVoiceProfile != NULL)
-          {
-            if( AnscEqualString(ParamName, "X_RDK_Firewall_Rule_Data", TRUE) )
-            {
-                AnscCopyString(pValue, pVoiceProfile->RTPObj.X_RDK_Firewall_Rule_Data);
-                ret = 0;
-            }
-            else
-            {
-                CcspTraceWarning(("%s::Unknown ParamName :%s\n", __FUNCTION__, ParamName));
-            }
-          }
-          TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
-        }
-    }
-    return ret;
+    return TRUE;
 }
 
 /**********************************************************************

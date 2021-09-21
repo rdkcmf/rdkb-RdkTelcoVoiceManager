@@ -171,6 +171,10 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
     {
        strncpy(pVoiceService->X_RDK_BoundIpAddr, pValue,strlen(pValue)+1);
     }
+    else if( strstr(ParamName, "X_RDK_Firewall_Rule_Data") )
+    {
+        strncpy(pVoiceService->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
+    }
     else if( strstr(ParamName, "X_RDK_Status"))
     {
        if(strstr(pValue, "Stopped"))
@@ -2239,10 +2243,6 @@ ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char
             {
                 pVoiceProf_SIP->EthernetPriorityMark = strtoul(pValue,&err,10);
             }
-            else if( strstr(ParamName, "X_RDK_Firewall_Rule_Data"))
-            {
-                strncpy(pVoiceProf_SIP->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
-            }
             else if( strstr(ParamName, "X_RDK_SKBMark"))
             {
                 pVoiceProf_SIP->X_RDK_SKBMark = strtoul(pValue,&err,10);
@@ -2569,10 +2569,6 @@ ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char
             else if( strstr(ParamName, "TelephoneEventPayloadType"))
             {
                 pVoiceProfile_RTP->TelephoneEventPayloadType = strtoul(pValue,&err,10);
-            }
-            else if( strstr(ParamName, "X_RDK_Firewall_Rule_Data"))
-            {
-                strncpy(pVoiceProfile_RTP->X_RDK_Firewall_Rule_Data, pValue,strlen(pValue)+1);
             }
             else if( strstr(ParamName, "X_RDK_SKBMark"))
             {
@@ -3170,7 +3166,7 @@ ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char
         }
         else if( strstr(ParamName, "Enable"))
         {
-            strncpy(pVoiceProf->Enable, pValue,strlen(pValue)+1);
+            pVoiceProf->Enable = strtoul(pValue,&err,10);
         }
         else if( strstr(ParamName, "Reset"))
         {
@@ -3201,11 +3197,33 @@ ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char
         }
         else if( strstr(ParamName, "DTMFMethodG711"))
         {
-            strncpy(pVoiceProf->DTMFMethodG711, pValue,strlen(pValue)+1);
+            if (strcmp(pValue,"InBand") == 0)
+            {
+                pVoiceProf->DTMFMethodG711 = VOICE_PROFILE_DTMF_METHODG711_INBAND;
+            }
+            else if (strcmp(pValue,"RFC4733") == 0)
+            {
+                pVoiceProf->DTMFMethodG711 = VOICE_PROFILE_DTMF_METHODG711_RFC2833;
+            }
+            else if (strcmp(pValue,"SIPInfo") == 0)
+            {
+                pVoiceProf->DTMFMethodG711 = VOICE_PROFILE_DTMF_METHODG711_SIPINFO;
+            }
         }
         else if( strstr(ParamName, "DTMFMethod"))
         {
-            strncpy(pVoiceProf->DTMFMethod, pValue,strlen(pValue)+1);
+            if (strcmp(pValue,"InBand") == 0)
+            {
+                pVoiceProf->DTMFMethod = VOICE_PROFILE_DTMF_METHOD_INBAND;
+            }
+            else if (strcmp(pValue,"RFC4733") == 0)
+            {
+                pVoiceProf->DTMFMethod = VOICE_PROFILE_DTMF_METHOD_RFC2833;
+            }
+            else if (strcmp(pValue,"SIPInfo") == 0)
+            {
+                pVoiceProf->DTMFMethod = VOICE_PROFILE_DTMF_METHOD_SIPINFO;
+            }
         }
         else if( strstr(ParamName, "Region"))
         {

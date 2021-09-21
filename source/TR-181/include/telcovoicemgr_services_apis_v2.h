@@ -71,6 +71,7 @@
 #define  BUF_LEN_16                          16
 #define  BUF_LEN_512                         512
 #define  BUF_LEN_256                         256
+#define  BUF_LEN_1024                        1024
 #define MAXLENGTH_DIGITMAP                   2048
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES      1
@@ -1325,7 +1326,6 @@ typedef  struct _DML_SIP_NETWORK
     BOOL                                    QuiescentMode;
     NETWORK_STATUS_ENUM                     Status;
     CHAR                                    Alias[STR_LEN_64];
-    CHAR                                    X_RDK_Firewall_Rule_Data[STR_LEN_256];
     CHAR                                    ProxyServer[STR_LEN_256];
     UINT                                    ProxyServerPort;
     TRANSPORT_ENUM                          ProxyServerTransport;
@@ -2592,7 +2592,6 @@ typedef struct _DML_VOIPPROFILE_RTP
     UINT                            JitterBufferMinSize;
     UINT                            JitterBufferActualSize;
     UINT                            X_RDK_SKBMark;
-    CHAR                            X_RDK_Firewall_Rule_Data[STR_LEN_256];
     DML_VOIPPROFILE_RTP_RTCP        RTCP;
     DML_VOIPPROFILE_RTP_SRTP        SRTP;
     DML_VOIPPROFILE_RTP_REDUNDANCY  Redundancy;
@@ -3039,6 +3038,7 @@ typedef struct _TELCOVOICEMGR_DML_VOICESERVICE
     CHAR                                    X_RDK_BoundIfName[STR_LEN_256];
     CHAR                                    X_RDK_IpAddressFamily[STR_LEN_256];
     CHAR                                    X_RDK_BoundIpAddr[STR_LEN_256];
+    CHAR                                    X_RDK_Firewall_Rule_Data[BUF_LEN_1024];
     TELCOVOICEMGR_VOICE_ENABLE_ENUM         X_RDK_Enable;
     TELCOVOICEMGR_VOICE_STATUS_ENUM         X_RDK_Status;
     BOOL                                    X_RDK_FactoryReset;
@@ -3181,5 +3181,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTransmitGain(UINT uiService, UINT uiProfile,UINT 
 ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(UINT uiService, UINT uiProfile, UINT uiLine, char*pSipURI);
 ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(UINT uiService, UINT uiProfile, BOOL bValue);
 ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(UINT uiService, UINT uiProfile, UINT uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats);
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService);
 
 #endif /* _TELCOVOICEMGR_SERVICES_APIS_H */

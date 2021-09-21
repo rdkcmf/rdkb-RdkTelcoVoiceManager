@@ -428,6 +428,11 @@ LONG VoiceService_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, 
                 AnscCopyString(pValue, pVoiceService->X_RDK_BoundIpAddr);
                 ret = 0;
             }
+            else if( AnscEqualString(ParamName, "X_RDK_Firewall_Rule_Data", TRUE) )
+            {
+                AnscCopyString(pValue, pVoiceService->X_RDK_Firewall_Rule_Data);
+                ret = 0;
+            }
           }
 
           TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);

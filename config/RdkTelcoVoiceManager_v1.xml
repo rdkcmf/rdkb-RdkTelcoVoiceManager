@@ -161,6 +161,12 @@
                             <writable>false</writable>
                         </parameter>
                         <parameter>
+                            <name>X_RDK_Firewall_Rule_Data</name>
+                            <type>string</type>
+                            <syntax>string</syntax>
+                            <writable>false</writable>
+                        </parameter>
+                        <parameter>
                             <name>X_RDK_Enable</name>
                             <type>string:Disable(0),Enable(1)</type>
                             <syntax>uint32/mapped</syntax>
@@ -653,14 +659,14 @@
                                 </parameter>
                                 <parameter>
                                     <name>DTMFMethod</name>
-                                    <type>string(64)</type>
-                                    <syntax>string</syntax>
+                                    <type>string: InBand(0),RFC4733(1),SIPInfo(2)</type>
+                                    <syntax>uint32/mapped</syntax>
                                     <writable>true</writable>
                                 </parameter>
                                 <parameter>
                                     <name>DTMFMethodG711</name>
-                                    <type>string(64)</type>
-                                    <syntax>string</syntax>
+                                    <type>string: InBand(0),RFC4733(1),SIPInfo(2),NULL(3)</type>
+                                    <syntax>uint32/mapped</syntax>
                                     <writable>true</writable>
                                 </parameter>
                                 <parameter>
@@ -1054,11 +1060,6 @@
                                             <syntax>bool</syntax>
                                             <writable>true</writable>
                                         </parameter>
-                                        <parameter>
-                                            <name>X_RDK_Firewall_Rule_Data</name>
-                                            <type>string</type>
-                                            <syntax>string</syntax>
-                                        </parameter>
                                     </parameters>
                                     <objects>
                                         <object>
@@ -1386,11 +1387,6 @@
                                                 <name>X_RDK_SKBMark</name>
                                                 <type>unsignedInt</type>
                                                 <syntax>uint32</syntax>
-                                            </parameter>
-                                            <parameter>
-                                                <name>X_RDK_Firewall_Rule_Data</name>
-                                                <type>string</type>
-                                                <syntax>string</syntax>
                                             </parameter>
                                         </parameters>
                                         <objects>
