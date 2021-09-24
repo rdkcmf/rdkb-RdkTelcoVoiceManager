@@ -534,7 +534,7 @@ ANSC_STATUS TelcoVoiceMgrHal_SetLinkUp(ULONG uVsIndex, char *dns_server_address,
     json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
 
     memset(&param, 0, sizeof(param));
-    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_IpAddressFamily ");
+    snprintf(param.name, sizeof(param), VOICE_SERVICE_TABLE_NAME"%s", uVsIndex, "X_RDK_IpAddressFamily");
     snprintf(param.value, sizeof(param.value), "%s", ipAddrFamily);
     param.type = PARAM_STRING;
     json_hal_add_param(jmsg, SET_REQUEST_MESSAGE, &param);
