@@ -873,6 +873,86 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamString(char* HalName, char* sValue)
     return ANSC_STATUS_FAILURE;
 }
 
+/* remove_substring */
+/**
+* @description Function to remove the rule from firewall rule data buffer.
+* char *input_string :  Firewall rule data buffer
+* const char *to_remove  : Substring(rule) to be removed from buffer
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+static void remove_substring(char *input_string,const char *to_remove)
+{
+  if((input_string == NULL) || (to_remove == NULL))
+  {
+    CcspTraceError(("[%s: %d] Null Param Passed\n", __FUNCTION__, __LINE__));
+  }
+  while( input_string = strstr(input_string, to_remove) )
+    memmove(input_string, input_string+strlen(to_remove), 1+strlen(input_string+strlen(to_remove)));
+}
+
+/* parse_and_update_rule */
+/*
+* @description: Function to parse the new rule comming from voice application
+* and update the firewall rule buffer.
+* Single or List of rules to be added/removed.
+* Expected format of rule : enable/disable,protocol,port,ip;
+* Ex: 1,sip,5060,2a02:c69:fe02::4;
+*     1,sip,5060,2a02:c69:fe02::4;1,rtp,50000,2a02:c69:fe02::4;
+*     1,sip,5060,2a02:c69:fe02::4;0,rtp,50000,2a02:c69:fe02::4;1,rtp,50001,2a02:c69:fe02::4;
+* char *firewall_rule_data :  Firewall rule data buffer
+* char *new_event_val : New rule coming from voice application
+* size_t firewall_rule_data_size : Maximum size of bufffer that holds the firewall rule data
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+static void parse_and_update_rule(char *firewall_rule_data, char *new_event_val, size_t firewall_rule_data_size)
+{
+    char buffer[BUF_LEN_1024] = {0};
+    char firewallBuffer[BUF_LEN_1024] = {0};
+    char *pToken = NULL;
+    char *pTokenSub = NULL;
+    char *endStr;
+
+    if((firewall_rule_data ==  NULL) || (new_event_val == NULL))
+    {
+      CcspTraceError(("[%s: %d] Null Param Passed\n", __FUNCTION__, __LINE__));
+    }
+    snprintf(buffer, sizeof(buffer), "%s", new_event_val);
+    pToken = strtok_r(buffer, ";", &endStr);
+    while( pToken != NULL )
+    {
+        //copy the new rule to buffer
+        snprintf(firewallBuffer, sizeof(firewallBuffer), "%s;", pToken);
+        char *end_token;
+        pTokenSub = strtok_r(pToken, ",", &end_token);
+        //check for add/remove rule
+        if((pTokenSub != NULL) && (atoi(pTokenSub) == 0))
+        {
+            //Remove rule from firewall rule buffer
+            snprintf(firewallBuffer, sizeof(firewallBuffer), "1,%s;", end_token);
+            remove_substring(firewall_rule_data, firewallBuffer);
+        }
+        else if(strstr(firewall_rule_data, firewallBuffer) == NULL)
+        {
+            if((pTokenSub != NULL) && (atoi(pTokenSub) == 1))
+            {
+              //Append rule to firewall rule buffer
+              if((strlen(firewall_rule_data) + strlen(firewallBuffer)) < firewall_rule_data_size )
+              {
+                strncat( firewall_rule_data, firewallBuffer, strlen( firewallBuffer ) + 1 );
+              }
+            }
+        }
+        pToken = strtok_r(NULL, ";", &endStr);
+    }
+}
+
 void eventcb_FirewallRuleData(const char *msg, const int len)
 {
     ANSC_STATUS ret = ANSC_STATUS_FAILURE;
@@ -918,10 +998,11 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                         return ANSC_STATUS_FAILURE;
                     }
                 }
-                ret = Map_hal_dml_voiceService(&(pTelcoVoiceMgrData->Service.VoiceService), event_name, event_val);
+                parse_and_update_rule(pDmlVoiceService->X_RDK_Firewall_Rule_Data, event_val, sizeof(pDmlVoiceService->X_RDK_Firewall_Rule_Data));
+                ret =  TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(pDmlVoiceService);
                 if(ret == ANSC_STATUS_SUCCESS)
                 {
-                    TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(pDmlVoiceService);
+                    CcspTraceDebug(("[%s: %d] Sysevent set for firewall rules success\n", __FUNCTION__, __LINE__));
                 }
                 else
                 {

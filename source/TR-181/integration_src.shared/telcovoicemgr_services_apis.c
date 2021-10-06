@@ -1598,6 +1598,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetVoiceProcessState(uint32_t uiService, uint32_t uS
             return ANSC_STATUS_SUCCESS;
         }
     }
+    else
+    {
+        //reset sysevents
+        sysevent_set(sysevent_voice_fd, sysevent_voice_token, "voice_ipv6_outbound_proxy_addresses", "", 0);
+        sysevent_set(sysevent_voice_fd, sysevent_voice_token, "voice_ipv6_rtp_pinholes", "", 0);
+        sysevent_set(sysevent_voice_fd, sysevent_voice_token, "voice_ipv6_ethernetpriority", "", 0);
+        sysevent_set(sysevent_voice_fd, sysevent_voice_token, "voice_ipv6_dscp", "", 0);
+    }
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
