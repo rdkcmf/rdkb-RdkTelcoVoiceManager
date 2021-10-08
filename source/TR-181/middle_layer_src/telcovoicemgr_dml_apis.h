@@ -143,4 +143,6 @@ ANSC_STATUS DmlVoiceServiceReportInit(PANSC_HANDLE phContext);
 ANSC_STATUS CosaSListPushEntryByInsNum(PSLIST_HEADER pListHead, PTELCOVOICE_CONTEXT_LINK_OBJECT pCosaContext);
 PTELCOVOICE_CONTEXT_LINK_OBJECT CosaSListGetEntryByInsNum(PSLIST_HEADER pListHead, ULONG InstanceNumber);
 
+BOOL TelcoVoiceMgrAnscValidateInputString(char *pString);
+
 #endif

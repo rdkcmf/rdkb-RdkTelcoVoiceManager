@@ -832,6 +832,12 @@ BOOL X_RDK_Debug_SetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, c
             }
             else if( AnscEqualString(ParamName, "LogServer", TRUE) )
             {
+                //Security Vulnerability Check
+                if( TRUE != TelcoVoiceMgrAnscValidateInputString(pString) )
+                {
+                    return FALSE;
+                }
+
                 if(TelcoVoiceMgrDmlSetLogServer(pVoiceService->InstanceNumber, pString) == ANSC_STATUS_SUCCESS)
                 {
                     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();

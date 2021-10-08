@@ -396,3 +396,25 @@ TelcoVoiceMgrTelcoVoiceRemove
 
     return returnStatus;
 }
+
+BOOL TelcoVoiceMgrAnscValidateInputString(char *pString)
+{
+
+    char disallowed_chars[] = "<>%`|'";       /*To avoid command injection */
+    int i = 0;
+
+    /* check if pstring doesn't hold NULL or whitespaces */
+    if((pString == NULL) || (*pString =='\0')) {
+        return FALSE;
+    }
+
+    while(pString[i] != '\0')
+    {
+        if (!strchr(disallowed_chars,pString[i]))
+            i++;
+        else
+            return FALSE;
+    }
+
+    return TRUE;
+}
