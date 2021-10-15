@@ -425,20 +425,20 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"Tone"))
+    else if(strstr(ParamName,"Terminal"))
     {
-        //VoiceService.{i}.Tone{i}.
-        retStatus = Map_hal_dml_Tone(pVoiceServiceList, ParamName, pValue);
+        //VoiceService.{i}.Terminal{i}.
+        retStatus = Map_hal_dml_Terminal(pVoiceServiceList, ParamName, pValue);
         if(retStatus != ANSC_STATUS_SUCCESS)
         {
             AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"Terminal"))
+    else if(strstr(ParamName,"Tone"))
     {
-        //VoiceService.{i}.Terminal{i}.
-        retStatus = Map_hal_dml_Terminal(pVoiceServiceList, ParamName, pValue);
+        //VoiceService.{i}.Tone{i}.
+        retStatus = Map_hal_dml_Tone(pVoiceServiceList, ParamName, pValue);
         if(retStatus != ANSC_STATUS_SUCCESS)
         {
             AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
@@ -486,47 +486,47 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
 
     PDML_VOICESERVICE_CAPABILITIES pCapabilities = &(pVoiceService->Capabilities);
 
-    if( strstr(ParamName, "MaxLineCount") )
+    if( strstr(ParamName, "Capabilities.MaxLineCount") )
     {
         //VoiceService.{i}.Capabilities.MaxLineCount
         pCapabilities->MaxLineCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxExtensionCount") )
+    else if( strstr(ParamName, "Capabilities.MaxExtensionCount") )
     {
         //VoiceService.{i}.Capabilities.MaxExtensionCount
         pCapabilities->MaxExtensionCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxCallLogCount") )
+    else if( strstr(ParamName, "Capabilities.MaxCallLogCount") )
     {
         //VoiceService.{i}.Capabilities.MaxCallLogCount
         pCapabilities->MaxCallLogCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxSessionsPerLine") )
+    else if( strstr(ParamName, "Capabilities.MaxSessionsPerLine") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionsPerLine
         pCapabilities->MaxSessionsPerLine = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxSessionsPerExtension") )
+    else if( strstr(ParamName, "Capabilities.MaxSessionsPerExtension") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionsPerExtension
         pCapabilities->MaxSessionsPerExtension = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxSessionCount") )
+    else if( strstr(ParamName, "Capabilities.MaxSessionCount") )
     {
         //VoiceService.{i}.Capabilities.MaxSessionCount
         pCapabilities->MaxSessionCount = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "NetworkConnectionModes") )
+    else if( strstr(ParamName, "Capabilities.NetworkConnectionModes") )
     {
         //VoiceService.{i}.Capabilities.NetworkConnectionModes
         strncpy(pCapabilities->NetworkConnectionModes, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "UserConnectionModes") )
+    else if( strstr(ParamName, "Capabilities.UserConnectionModes") )
     {
         //VoiceService.{i}.Capabilities.UserConnectionModes
         strncpy(pCapabilities->UserConnectionModes, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "ToneFileFormats") )
+    else if( strstr(ParamName, "Capabilities.ToneFileFormats") )
     {
         //VoiceService.{i}.Capabilities.ToneFileFormats
         if (strcmp(pValue,"G.711MuLaw") == 0)
@@ -558,7 +558,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "RingFileFormats") )
+    else if( strstr(ParamName, "Capabilities.RingFileFormats") )
     {
         //VoiceService.{i}.Capabilities.RingFileFormats
         if (strcmp(pValue,"MIDI") == 0)
@@ -590,7 +590,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "FacilityActions") )
+    else if( strstr(ParamName, "Capabilities.FacilityActions") )
     {
         //VoiceService.{i}.Capabilities.FacilityActions
         if (strcmp(pValue,"AA_REGISTER") == 0)
@@ -822,7 +822,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
     }
-    else if( strstr(ParamName, "SIP") )
+    else if( strstr(ParamName, "Capabilities.SIP") )
     {
         //VoiceService.{i}.Capabilities.SIP.
         if( strstr(ParamName, "Client") )
@@ -1089,7 +1089,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             }
         }
     }
-    else if( strstr(ParamName, "MGCP") )
+    else if( strstr(ParamName, "Capabilities.MGCP") )
     {
         PDML_VOICESERVICE_CAPABILITIES_MGCP pCapabilitiesMgcp = &(pCapabilities->MGCP);
         //VoiceService.{i}.Capabilities.MGCP.
@@ -1104,7 +1104,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "H323") )
+    else if( strstr(ParamName, "Capabilities.H323") )
     {
         PDML_VOICESERVICE_CAPABILITIES_H323 pCapabilitiesH323 = &(pCapabilities->H323);
         //VoiceService.{i}.Capabilities.H323.
@@ -1158,7 +1158,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "ISDN") )
+    else if( strstr(ParamName, "Capabilities.ISDN") )
     {
         PDML_VOICESERVICE_CAPABILITIES_ISDN pCapabilitiesIsdn = &(pCapabilities->ISDN);
         //VoiceService.{i}.Capabilities.ISDN.
@@ -1240,7 +1240,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "POTS") )
+    else if( strstr(ParamName, "Capabilities.POTS") )
     {
         PDML_VOICESERVICE_CAPABILITIES_POTS pCapabilitiesPots = &(pCapabilities->POTS);
         //VoiceService.{i}.Capabilities.POTS.
@@ -1294,7 +1294,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Codec") )
+    else if( strstr(ParamName, "Capabilities.Codec") )
     {
         int hal_index = 0;
         int codec_index = 0;
@@ -1462,7 +1462,7 @@ ANSC_STATUS Map_hal_dml_capabilities(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "QualityIndicator") )
+    else if( strstr(ParamName, "Capabilities.QualityIndicator") )
     {
         PDML_VOICESERVICE_CAPABILITIES_QUALITYINDICATOR pCapabilitiesQualityInd = &(pCapabilities->QualityIndicator);
         //VoiceService.{i}.Capabilities.QualityIndicator.
@@ -1515,12 +1515,12 @@ ANSC_STATUS Map_hal_dml_reservePorts(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
 
     PDML_RESERVEDPORTS pReservedPorts = &(pVoiceService->ReservedPorts);
 
-    if( strstr(ParamName, "WANPortRange") )
+    if( strstr(ParamName, "ReservedPorts.WANPortRange") )
     {
         //VoiceService.{i}.ReservedPorts.WANPortRange
         strncpy(pReservedPorts->WANPortRange, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "LANPortRange") )
+    else if( strstr(ParamName, "ReservedPorts.LANPortRange") )
     {
         //VoiceService.{i}.ReservedPorts.LANPortRange
         strncpy(pReservedPorts->LANPortRange, pValue,strlen(pValue)+1);
@@ -1555,7 +1555,7 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_ISDN pIsdn = &(pVoiceService->ISDN_obj);
 
-    if( strstr(ParamName, "BRI") )
+    if( strstr(ParamName, "ISDN.BRI") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_BRI_index(ParamName, DML_VOICESERVICE_ISDN_BRI_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -1821,7 +1821,7 @@ ANSC_STATUS Map_hal_dml_ISDN(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "PRI") )
+    else if( strstr(ParamName, "ISDN.PRI") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_ISDN_PRI_index(ParamName, DML_VOICESERVICE_ISDN_PRI_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -2131,12 +2131,12 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_POTS pPots = &(pVoiceService->POTS_obj);
 
-    if( strstr(ParamName, "Region") )
+    if( strstr(ParamName, "POTS.Region") )
     {
         //VoiceService.{i}.POTS.Region
         strncpy(pPots->Region, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "FXO") )
+    else if( strstr(ParamName, "POTS.FXO") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXO_index(ParamName, DML_VOICESERVICE_POTS_FXO_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -2373,7 +2373,7 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
                return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "FXS") )
+    else if( strstr(ParamName, "POTS.FXS") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_POTS_FXS_index(ParamName, DML_VOICESERVICE_POTS_FXS_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -2710,7 +2710,7 @@ ANSC_STATUS Map_hal_dml_POTS(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Ringer") )
+    else if( strstr(ParamName, "POTS.Ringer") )
     {
         PDML_POTS_RINGER pPotsRinger = &(pPots->Ringer_Obj);
         //VoiceService.{i}.POTS.Ringer.
@@ -2828,7 +2828,7 @@ ANSC_STATUS Map_hal_dml_DECT(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_DECT pDect = &(pVoiceService->DECT_obj);
 
-    if( strstr(ParamName, "Base") )
+    if( strstr(ParamName, "DECT.Base") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Base_index(ParamName, DML_VOICESERVICE_DECT_BASE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -3098,7 +3098,7 @@ ANSC_STATUS Map_hal_dml_DECT(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Portable") )
+    else if( strstr(ParamName, "DECT.Portable") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_DECT_Portable_index(ParamName, DML_VOICESERVICE_DECT_PORTABLE_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -3336,7 +3336,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
 
     PDML_SIP pSip = &(pVoiceService->SIP_obj);
 
-    if( strstr(ParamName, "Client") )
+    if( strstr(ParamName, "SIP.Client") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Client_index(ParamName, DML_VOICESERVICE_SIP_CLIENT_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -3731,7 +3731,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Network") )
+    else if( strstr(ParamName, "SIP.Network") )
     {
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Network_index(ParamName, DML_VOICESERVICE_SIP_NETWORK_PARAM_NAME, &hal_index)) ||
             ( hal_index <= 0 ))
@@ -4529,7 +4529,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Proxy") )
+    else if( strstr(ParamName, "SIP.Proxy") )
     {
         //VoiceService.{i}.SIP.Proxy.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Proxy_index(ParamName, DML_VOICESERVICE_SIP_PROXY_PARAM_NAME, &hal_index)) ||
@@ -4640,7 +4640,7 @@ ANSC_STATUS Map_hal_dml_SIP(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* P
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Registrar") )
+    else if( strstr(ParamName, "SIP.Registrar") )
     {
         //VoiceService.{i}.SIP.Registrar.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_SIP_Registrar_index(ParamName, DML_VOICESERVICE_SIP_REGISTRAR_PARAM_NAME, &hal_index)) ||
@@ -6078,17 +6078,17 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
 
     PDML_CALLCONTROL pCallCtrl = &(pVoiceService->CallControl_obj);
 
-    if( strstr(ParamName, "MaxNumberOfLines") )
+    if( strstr(ParamName, "CallControl.MaxNumberOfLines") )
     {
         //VoiceService.{i}.CallControl.MaxNumberOfLines
         pCallCtrl->MaxNumberOfLines = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "MaxNumberOfExtensions") )
+    else if( strstr(ParamName, "CallControl.MaxNumberOfExtensions") )
     {
         //VoiceService.{i}.CallControl.MaxNumberOfExtensions
         pCallCtrl->MaxNumberOfExtensions = strtoul(pValue,&err, 10);
     }
-    else if( strstr(ParamName, "Line") )
+    else if( strstr(ParamName, "CallControl.Line") )
     {
         //VoiceService.{i}.CallControl.Line.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Line_index(ParamName, DML_VOICESERVICE_CALLCONTROL_LINE_PARAM_NAME, &hal_index)) ||
@@ -6381,7 +6381,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Extension") )
+    else if( strstr(ParamName, "CallControl.Extension") )
     {
         //VoiceService.{i}.CallControl.Extension.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Extension_index(ParamName, DML_VOICESERVICE_CALLCONTROL_EXTENSION_PARAM_NAME, &hal_index)) ||
@@ -6759,7 +6759,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Group") )
+    else if( strstr(ParamName, "CallControl.Group") )
     {
         //VoiceService.{i}.CallControl.Group.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Group_index(ParamName, DML_VOICESERVICE_CALLCONTROL_GROUP_PARAM_NAME, &hal_index)) ||
@@ -6832,7 +6832,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Mailbox") )
+    else if( strstr(ParamName, "CallControl.Mailbox") )
     {
         //VoiceService.{i}.CallControl.Mailbox.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_Mailbox_index(ParamName, DML_VOICESERVICE_CALLCONTROL_MAILBOX_PARAM_NAME, &hal_index)) ||
@@ -6951,7 +6951,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "IncomingMap") )
+    else if( strstr(ParamName, "CallControl.IncomingMap") )
     {
         //VoiceService.{i}.CallControl.IncomingMap.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_IncomingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_INCOMMINGMAP_PARAM_NAME, &hal_index)) ||
@@ -7026,7 +7026,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "OutgoingMap") )
+    else if( strstr(ParamName, "CallControl.OutgoingMap") )
     {
         //VoiceService.{i}.CallControl.OutgoingMap.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_OutgoingMap_index(ParamName, DML_VOICESERVICE_CALLCONTROL_OUTGOINGMAP_PARAM_NAME, &hal_index)) ||
@@ -7101,7 +7101,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "NumberingPlan") )
+    else if( strstr(ParamName, "CallControl.NumberingPlan") )
     {
         //VoiceService.{i}.CallControl.NumberingPlan.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallControl_NumberingPlan_index(ParamName, DML_VOICESERVICE_CALLCONTROL_NUMPLAN_PARAM_NAME, &hal_index)) ||
@@ -7276,7 +7276,7 @@ ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList,
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "CallingFeatures") )
+    else if( strstr(ParamName, "CallControl.CallingFeatures") )
     {
         PDML_CALLCONTROL_CALLINGFEATURES pCallCtrlCF = &(pCallCtrl->CallingFeatures);
         //VoiceService.{i}.CallControl.CallingFeatures.
@@ -9915,12 +9915,12 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 
     PDML_TONE pTone = &(pVoiceService->Tone_obj);
 
-    if( strstr(ParamName, "DefautEventProfile") )
+    if( strstr(ParamName, "Tone.DefautEventProfile") )
     {
         //VoiceService.{i}.Tone.DefautEventProfile
         strncpy(pTone->DefautEventProfile, pValue,strlen(pValue)+1);
     }
-    else if( strstr(ParamName, "Description") )
+    else if( strstr(ParamName, "Tone.Description") )
     {
         //VoiceService.{i}.Tone.Description.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Description_index(ParamName, DML_VOICESERVICE_TONE_DESC_PARAM_NAME, &hal_index)) ||
@@ -10000,7 +10000,7 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "Pattern") )
+    else if( strstr(ParamName, "Tone.Pattern") )
     {
         //VoiceService.{i}.Tone.Pattern.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_Pattern_index(ParamName, DML_VOICESERVICE_TONE_PATTERN_PARAM_NAME, &hal_index)) ||
@@ -10127,7 +10127,7 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if( strstr(ParamName, "EventProfile") )
+    else if( strstr(ParamName, "Tone.EventProfile") )
     {
         //VoiceService.{i}.Tone.EventProfile.{i}.
         if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_Tone_EventProfile_index(ParamName, DML_VOICESERVICE_TONE_EVTPROF_PARAM_NAME, &hal_index)) ||
