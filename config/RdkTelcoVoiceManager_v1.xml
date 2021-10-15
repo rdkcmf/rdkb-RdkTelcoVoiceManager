@@ -734,12 +734,14 @@
                                     <type>string(2048)</type>
                                     <syntax>string</syntax>
                                     <writable>true</writable>
+                                    <restrictedChars>&lt;&gt;%`'</restrictedChars>
                                 </parameter>
                                 <parameter>
                                     <name>X_RDK-Central_COM_EmergencyDigitMap</name>
                                     <type>string(2048)</type>
                                     <syntax>string</syntax>
                                     <writable>true</writable>
+                                    <restrictedChars>&lt;&gt;%`'</restrictedChars>
                                 </parameter>
                                 <parameter>
                                     <name>X_RDK-Central_COM_SDigitTimer</name>
@@ -825,6 +827,7 @@
                                             <type>string(256)</type>
                                             <syntax>string</syntax>
                                             <writable>true</writable>
+                                            <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                         </parameter>
                                         <parameter>
                                             <name>ProxyServerPort</name>
@@ -843,6 +846,7 @@
                                             <type>string(256)</type>
                                             <syntax>string</syntax>
                                             <writable>true</writable>
+                                            <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                         </parameter>
                                         <parameter>
                                             <name>RegistrarServerPort</name>
@@ -861,6 +865,7 @@
                                             <type>string(256)</type>
                                             <syntax>string</syntax>
                                             <writable>true</writable>
+                                            <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                         </parameter>
                                         <parameter>
                                             <name>UserAgentPort</name>
@@ -1994,6 +1999,7 @@
                                                 <type>string(32)</type>
                                                 <syntax>string</syntax>
                                                 <writable>true</writable>
+                                                <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                             </parameter>
                                             <parameter>
                                                 <name>Enable</name>
@@ -2105,6 +2111,7 @@
                                                         <type>string(128)</type>
                                                         <syntax>string</syntax>
                                                         <writable>true</writable>
+                                                        <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                                     </parameter>
                                                     <parameter>
                                                         <name>URI</name>
