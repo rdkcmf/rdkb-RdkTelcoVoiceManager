@@ -2132,6 +2132,7 @@
                         <type>string</type>
                         <syntax>string</syntax>
                         <writable>true</writable>
+                        <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                     </parameter>
                     <parameter>
                         <name>X_RDK-Central_COM_NetworkDisconnect</name>

@@ -884,6 +884,7 @@
                                             <type>string(256)</type>
                                             <syntax>string</syntax>
                                             <writable>true</writable>
+                                            <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                         </parameter>
                                         <parameter>
                                             <name>OutboundProxyPort</name>
@@ -1052,6 +1053,7 @@
                                             <type>string</type>
                                             <syntax>string</syntax>
                                             <writable>true</writable>
+                                            <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                         </parameter>
                                         <parameter>
                                             <name>X_RDK-Central_COM_NetworkDisconnect</name>
@@ -2118,6 +2120,7 @@
                                                         <type>string(389)</type>
                                                         <syntax>string</syntax>
                                                         <writable>true</writable>
+                                                        <restrictedChars>&lt;&gt;%`|'</restrictedChars>
                                                     </parameter>
                                                 </parameters>
                                                 <objects>
