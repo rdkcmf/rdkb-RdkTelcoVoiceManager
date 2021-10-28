@@ -745,7 +745,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
     avro_writer_t writer;
     uint8_t *b64buffer = NULL;
     char *serviceName = "VOICE";
-    char *dest = "event:raw.kestrel.reports.VoiceDiagnostics";
+    char *dest = "event:raw.kestrel.reports.VoipDiagnostics";
     char *contentType = "avro/binary"; // contentType "application/json", "avro/binary"
     size_t decodesize = 0;
     char trans_id[37];
