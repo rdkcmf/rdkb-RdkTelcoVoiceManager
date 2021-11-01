@@ -99,7 +99,7 @@ ULONG TelcoVoiceMgrDml_TrunkList_GetEntryCount(ANSC_HANDLE hInsContext)
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_TRUNK_LIST_T pTrunkList = &(pDmlVoiceService->Trunk);
+    PDML_TRUNK_LIST_T pTrunkList = pDmlVoiceService->Trunk;
 
     if(pTrunkList != NULL)
     {
@@ -146,7 +146,7 @@ ANSC_HANDLE TelcoVoiceMgrDml_TrunkList_GetEntry(ANSC_HANDLE hInsContext, ULONG n
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_TRUNK_LIST_T pTrunkList = &(pDmlVoiceService->Trunk);
+    PDML_TRUNK_LIST_T pTrunkList = pDmlVoiceService->Trunk;
 
     if(pTrunkList != NULL)
     {

@@ -768,7 +768,7 @@ static void jsonParseOnePhyInterface(uint32_t service, uint32_t index, cJSON *ph
             {
                 if (cJSON_IsString(vsItem) && (vsItem->valuestring != NULL))
                 {
-                    (void)(*phyDiagFuncs[i].func)(service+1, i+1, vsItem->valuestring);
+                    (void)(*phyDiagFuncs[i].func)(service+1, index+1, vsItem->valuestring);
                 }
             }
         }

@@ -100,7 +100,7 @@ ULONG TelcoVoiceMgrDml_InterworkList_GetEntryCount(ANSC_HANDLE hInsContext)
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_INTERWORK_LIST_T pInterworkList = &(pDmlVoiceService->Interwork);
+    PDML_INTERWORK_LIST_T pInterworkList = pDmlVoiceService->Interwork;
 
     if(pInterworkList != NULL)
     {
@@ -147,7 +147,7 @@ ANSC_HANDLE TelcoVoiceMgrDml_InterworkList_GetEntry(ANSC_HANDLE hInsContext, ULO
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_INTERWORK_LIST_T pInterworkList = &(pDmlVoiceService->Interwork);
+    PDML_INTERWORK_LIST_T pInterworkList = pDmlVoiceService->Interwork;
 
     if(pInterworkList != NULL)
     {

@@ -99,7 +99,7 @@ ULONG TelcoVoiceMgrDml_CodecProfileList_GetEntryCount(ANSC_HANDLE hInsContext)
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_CODECPROFILE_LIST_T pCodecProfileList = &(pDmlVoiceService->CodecProfile);
+    PDML_CODECPROFILE_LIST_T pCodecProfileList = pDmlVoiceService->CodecProfile;
 
     if(pCodecProfileList != NULL)
     {
@@ -146,7 +146,7 @@ ANSC_HANDLE TelcoVoiceMgrDml_CodecProfileList_GetEntry(ANSC_HANDLE hInsContext, 
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_CODECPROFILE_LIST_T pCodecProfileList = &(pDmlVoiceService->CodecProfile);
+    PDML_CODECPROFILE_LIST_T pCodecProfileList = pDmlVoiceService->CodecProfile;
 
     if(pCodecProfileList != NULL)
     {

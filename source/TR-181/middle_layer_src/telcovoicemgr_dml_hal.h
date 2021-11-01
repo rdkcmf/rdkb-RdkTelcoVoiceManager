@@ -59,7 +59,7 @@
 
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
 /*  TR104 V2 DML Tables */
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.Diagtests."
+#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.DiagTests."
 #define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoIPProfile.%d."
 #define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.SIP.Network.%d."
 #define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP."

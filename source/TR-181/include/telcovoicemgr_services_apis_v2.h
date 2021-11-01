@@ -39,6 +39,7 @@
 #define  TELCOVOICEMGR_DML_NUMBER_OF_SIP_NETWORK           1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_SIP_CLIENTS           1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_CALLCONTROL_LINES     1
+#define  TELCOVOICEMGR_DML_NUMBER_OF_TERMINALS             1
 #define  SYSEVENT_UPDATE_IFNAME             "telcovoicemgr_bound_ifname"
 #define  SYSEVENT_UPDATE_IPFAMILY           "telcovoicemgr_ipaddr_family"
 #define  MAX_INTERFACES                     10

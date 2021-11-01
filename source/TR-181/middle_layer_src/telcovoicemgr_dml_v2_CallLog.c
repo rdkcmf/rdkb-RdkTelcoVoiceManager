@@ -99,7 +99,7 @@ ULONG TelcoVoiceMgrDml_CallLogList_GetEntryCount(ANSC_HANDLE hInsContext)
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_CALLLOG_LIST_T  pCallLogList = &(pDmlVoiceService->CallLog);
+    PDML_CALLLOG_LIST_T  pCallLogList = pDmlVoiceService->CallLog;
 
     if(pCallLogList != NULL)
     {
@@ -144,7 +144,7 @@ ANSC_HANDLE TelcoVoiceMgrDml_CallLogList_GetEntry(ANSC_HANDLE hInsContext, ULONG
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_CALLLOG_LIST_T pCallLogList = &(pDmlVoiceService->CallLog);
+    PDML_CALLLOG_LIST_T pCallLogList = pDmlVoiceService->CallLog;
 
     if(pCallLogList != NULL)
     {

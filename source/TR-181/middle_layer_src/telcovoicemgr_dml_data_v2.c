@@ -122,6 +122,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
     PDML_SIP_CLIENT                   pDmlSipClient       = NULL;
     PDML_VOIPPROFILE                  pDmlVoipProfile     = NULL;
     PDML_CALLCONTROL_LINE             pDmlCallControlLine = NULL;
+    PDML_VOICESERVICE_TERMINAL        pDmlTerminal        = NULL;
 
     if(pTelcoVoiceMgrData != NULL)
     {
@@ -208,6 +209,35 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                 }
             }
 
+            pDmlVoiceService->Terminal = (DML_VOICESERVICE_TERMINAL_LIST_T*) AnscAllocateMemory(sizeof(DML_VOICESERVICE_TERMINAL_LIST_T));
+            pDmlVoiceService->Terminal->ulQuantity = TELCOVOICEMGR_DML_NUMBER_OF_TERMINALS;
+
+            if ( pDmlVoiceService->Terminal->ulQuantity != 0 )
+            {
+                for (uIndex = 0; uIndex < TELCOVOICEMGR_DML_NUMBER_OF_TERMINALS; uIndex++)
+                {
+                    pDmlVoiceService->Terminal->pdata[uIndex] = (DML_VOICESERVICE_TERMINAL_LIST_T*) AnscAllocateMemory(sizeof(DML_VOICESERVICE_TERMINAL_LIST_T));
+                    DML_VOICESERVICE_TERMINAL_CTRL_T* pTerminal = pDmlVoiceService->Terminal->pdata[uIndex];
+                    pDmlTerminal = &(pTerminal->dml);
+
+                    if ( !pDmlTerminal )
+                    {
+                        returnStatus = ANSC_STATUS_RESOURCES;
+                        CcspTraceError(("%s - Failed pDmlTerminal : NULL\n", __FUNCTION__));
+                        goto EXIT;
+                    }
+                    pDmlTerminal->uInstanceNumber = uIndex + 1;
+                    pDmlTerminal->pParentVoiceService = pDmlVoiceService;
+                    pDmlTerminal->Enable = 1;
+                    AnscCopyString(pDmlTerminal->Alias,"VoiceTerminal");
+                    pDmlTerminal->Audio.ulQuantity = 0;
+                    PDML_TERMINAL_BUTTONMAP pDmlButtonMap = &(pDmlTerminal->ButtonMap);
+                    pDmlButtonMap->Button.ulQuantity = 0;
+                    PDML_TERMINAL_RINGER pDmlRinger= &(pDmlTerminal->Ringer);
+                    pDmlRinger->Pattern.ulQuantity = 0;
+                    pDmlRinger->Description.ulQuantity = 0;
+                }
+            }
             pDmlCallControlObj = &(pDmlVoiceService->CallControl_obj);
             if(pDmlCallControlObj)
             {

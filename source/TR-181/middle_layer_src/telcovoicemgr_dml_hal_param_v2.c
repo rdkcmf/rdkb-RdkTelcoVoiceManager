@@ -5888,7 +5888,7 @@ ANSC_STATUS Map_hal_dml_Trunk(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char*
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_TRUNK_LIST_T    pTrunkList = &(pVoiceService->Trunk);
+    PDML_TRUNK_LIST_T    pTrunkList = pVoiceService->Trunk;
 
     PDML_TRUNK_CTRL_T    pTrunkData = pTrunkList->pdata[hal_index - 1];
 
@@ -8036,7 +8036,7 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_INTERWORK_LIST_T    pInterworkList = &(pVoiceService->Interwork);
+    PDML_INTERWORK_LIST_T    pInterworkList = pVoiceService->Interwork;
 
     PDML_INTERWORK_CTRL_T    pInterworkData = pInterworkList->pdata[hal_index - 1];
 
@@ -8500,7 +8500,7 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_CALLLOG_LIST_T    pCallLogList = &(pVoiceService->CallLog);
+    PDML_CALLLOG_LIST_T    pCallLogList = pVoiceService->CallLog;
 
     PDML_CALLLOG_CTRL_T    pCallLogData = pCallLogList->pdata[hal_index - 1];
 
@@ -9823,7 +9823,7 @@ ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_CODECPROFILE_LIST_T    pCodecProfileList = &(pVoiceService->CodecProfile);
+    PDML_CODECPROFILE_LIST_T    pCodecProfileList = pVoiceService->CodecProfile;
 
     PDML_CODECPROFILE_CTRL_T    pCodecProfileData = pCodecProfileList->pdata[hal_index - 1];
 
@@ -10338,7 +10338,7 @@ ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, ch
         return ANSC_STATUS_FAILURE;
     }
 
-    PDML_VOICESERVICE_TERMINAL_LIST_T    pTerminalList = &(pVoiceService->Terminal);
+    PDML_VOICESERVICE_TERMINAL_LIST_T    pTerminalList = pVoiceService->Terminal;
 
     PDML_VOICESERVICE_TERMINAL_CTRL_T    pTerminalData = pTerminalList->pdata[hal_index - 1];
 

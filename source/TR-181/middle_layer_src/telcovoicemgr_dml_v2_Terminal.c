@@ -100,7 +100,7 @@ ULONG TelcoVoiceMgrDml_TerminalList_GetEntryCount(ANSC_HANDLE hInsContext)
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_VOICESERVICE_TERMINAL_LIST_T  pTerminalList = &(pDmlVoiceService->Terminal);
+    PDML_VOICESERVICE_TERMINAL_LIST_T  pTerminalList = pDmlVoiceService->Terminal;
 
     if (pTerminalList != NULL)
     {
@@ -147,7 +147,7 @@ ANSC_HANDLE TelcoVoiceMgrDml_TerminalList_GetEntry(ANSC_HANDLE hInsContext, ULON
 
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = &(pVoiceService->dml);
 
-    PDML_VOICESERVICE_TERMINAL_LIST_T pTerminalList = &(pDmlVoiceService->Terminal);
+    PDML_VOICESERVICE_TERMINAL_LIST_T pTerminalList = pDmlVoiceService->Terminal;
 
     if(pTerminalList != NULL)
     {
@@ -302,22 +302,31 @@ ULONG TelcoVoiceMgrDml_TerminalList_GetParamStringValue(ANSC_HANDLE hInsContext,
     TELCOVOICEMGR_LOCK_OR_EXIT()
 
     PDML_VOICESERVICE_TERMINAL_CTRL_T pHEADCtrl = (PDML_VOICESERVICE_TERMINAL_CTRL_T)hInsContext;
+    if(pHEADCtrl)
+    {
+        PDML_VOICESERVICE_TERMINAL pHEAD = &(pHEADCtrl->dml);
+        if (pHEAD == NULL)
+        {
+            TELCOVOICEMGR_UNLOCK()
 
-    PDML_VOICESERVICE_TERMINAL pHEAD = &(pHEADCtrl->dml);
+            CcspTraceError(("%s:%d:: pHEAD NULL\n", __FUNCTION__, __LINE__));
 
-    if( AnscEqualString(ParamName, "ToneEventProfile", TRUE) )
-    {
-        AnscCopyString(pValue,pHEAD->ToneEventProfile);
-        ret = 0;
-    }
-    else if( AnscEqualString(ParamName, "Alias", TRUE) )
-    {
-        AnscCopyString(pValue,pHEAD->Alias);
-        ret = 0;
-    }
-    else
-    {
-        CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
+            return ret;
+        }
+        if( AnscEqualString(ParamName, "ToneEventProfile", TRUE) )
+        {
+            AnscCopyString(pValue,pHEAD->ToneEventProfile);
+            ret = 0;
+        }
+        else if( AnscEqualString(ParamName, "Alias", TRUE) )
+        {
+            AnscCopyString(pValue,pHEAD->Alias);
+            ret = 0;
+        }
+        else
+        {
+            CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
+        }
     }
 
     TELCOVOICEMGR_UNLOCK()
@@ -737,13 +746,18 @@ ULONG TelcoVoiceMgrDml_TerminalList_AudioList_GetEntryCount(ANSC_HANDLE hInsCont
 
     DML_VOICESERVICE_TERMINAL_CTRL_T* pTerminalCtrl = (DML_VOICESERVICE_TERMINAL_CTRL_T*) hInsContext;
 
-    PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
-
-    PDML_TERMINAL_AUDIO_LIST_T pTerminalAudioList = &(pDmlTerminal->Audio);
-
-    if(pTerminalAudioList != NULL)
+    if(pTerminalCtrl)
     {
-        ret = pTerminalAudioList->ulQuantity;
+        PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
+        if(pDmlTerminal)
+        {
+            PDML_TERMINAL_AUDIO_LIST_T pTerminalAudioList = &(pDmlTerminal->Audio);
+
+            if(pTerminalAudioList != NULL)
+            {
+                ret = pTerminalAudioList->ulQuantity;
+            }
+        }
     }
 
     TELCOVOICEMGR_UNLOCK()
@@ -1532,14 +1546,18 @@ ULONG TelcoVoiceMgrDml_TerminalList_ButtonMap_ButtonList_GetEntryCount(ANSC_HAND
     TELCOVOICEMGR_LOCK_OR_EXIT()
 
     DML_VOICESERVICE_TERMINAL_CTRL_T* pTerminalCtrl = (DML_VOICESERVICE_TERMINAL_CTRL_T*) hInsContext;
-
-    PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
-
-    PDML_TERMINAL_BUTTONMAP_BUTTON_LIST_T pTerminalButtonMapButtonList = &(pDmlTerminal->ButtonMap.Button);
-
-    if(pTerminalButtonMapButtonList != NULL)
+    if(pTerminalCtrl)
     {
-        ret = pTerminalButtonMapButtonList->ulQuantity;
+        PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
+        if(pDmlTerminal)
+        {
+            PDML_TERMINAL_BUTTONMAP_BUTTON_LIST_T pTerminalButtonMapButtonList = &(pDmlTerminal->ButtonMap.Button);
+
+            if(pTerminalButtonMapButtonList != NULL)
+            {
+                ret = pTerminalButtonMapButtonList->ulQuantity;
+            }
+        }
     }
 
     TELCOVOICEMGR_UNLOCK()
@@ -2147,13 +2165,18 @@ ULONG TelcoVoiceMgrDml_TerminalList_Ringer_DescList_GetEntryCount(ANSC_HANDLE hI
 
     DML_VOICESERVICE_TERMINAL_CTRL_T* pTerminalCtrl = (DML_VOICESERVICE_TERMINAL_CTRL_T*) hInsContext;
 
-    PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
-
-    PDML_TERMINAL_RINGER_DESCRIPTION_LIST_T  pTerminalRingerDescList = &(pDmlTerminal->Ringer.Description);
-
-    if(pTerminalRingerDescList != NULL)
+    if(pTerminalCtrl)
     {
-        ret = pTerminalRingerDescList->ulQuantity;
+        PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
+        if(pDmlTerminal)
+        {
+            PDML_TERMINAL_RINGER_DESCRIPTION_LIST_T  pTerminalRingerDescList = &(pDmlTerminal->Ringer.Description);
+
+            if(pTerminalRingerDescList != NULL)
+            {
+                ret = pTerminalRingerDescList->ulQuantity;
+            }
+        }
     }
     TELCOVOICEMGR_UNLOCK()
 
@@ -2733,15 +2756,19 @@ ULONG TelcoVoiceMgrDml_TerminalList_Ringer_PatternList_GetEntryCount(ANSC_HANDLE
 
     DML_VOICESERVICE_TERMINAL_CTRL_T* pTerminalCtrl = (DML_VOICESERVICE_TERMINAL_CTRL_T*) hInsContext;
 
-    PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
-
-    PDML_TERMINAL_RINGER_PATTERN_LIST_T pRingerPatternList = &(pDmlTerminal->Ringer.Pattern);
-
-    if(pRingerPatternList != NULL)
+    if(pTerminalCtrl)
     {
-        ret = pRingerPatternList->ulQuantity;
-    }
+        PDML_VOICESERVICE_TERMINAL pDmlTerminal = &(pTerminalCtrl->dml);
+        if(pDmlTerminal)
+        {
+            PDML_TERMINAL_RINGER_PATTERN_LIST_T pRingerPatternList = &(pDmlTerminal->Ringer.Pattern);
 
+            if(pRingerPatternList != NULL)
+            {
+                ret = pRingerPatternList->ulQuantity;
+            }
+        }
+    }
     TELCOVOICEMGR_UNLOCK()
 
     return ret;
@@ -3416,6 +3443,7 @@ BOOL TelcoVoiceMgrDml_TerminalList_Ringer_PatternList_Rollback(ANSC_HANDLE hInsC
 ULONG TelcoVoiceMgrDml_TerminalList_DiagTests_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize)
 {
     ULONG ret = 1;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || pValue == NULL || pulSize == NULL)
     {
@@ -3431,9 +3459,29 @@ ULONG TelcoVoiceMgrDml_TerminalList_DiagTests_GetParamStringValue(ANSC_HANDLE hI
 
     PDML_TERMINAL_DIAGTESTS pHEAD = &(pDmlTerminal->DiagTests);
 
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlTerminal->pParentVoiceService;
+
+    ULONG uVsIndex = pDmlVoiceService->InstanceNumber;
+    ULONG uTerminalIndex = pDmlTerminal->uInstanceNumber;
+
     if( AnscEqualString(ParamName, "X_RDK_TestResult", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->X_RDK_TestResult);
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_TERMINAL_PARAM_NAME"%s", uVsIndex, uTerminalIndex, "DiagTests.X_RDK_TestResult");
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            AnscCopyString(pValue,req_param.value);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Result:get failed \n", __FUNCTION__, __LINE__));
+            AnscCopyString(pValue,"Failure");
+            ret = TRUE;
+        }
+
         ret = 0;
     }
     else if( AnscEqualString(ParamName, "TestSelector", TRUE) )
@@ -3602,7 +3650,7 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamStringValue(ANSC_HANDLE hIn
 
         snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.Terminal.%d.DiagTests.TestSelector",uVsIndex,uTerminalIndex);
 
-        if (TelcoVoiceMgrHal_SetParamULong(HalName,uValue) == ANSC_STATUS_SUCCESS)
+        if (TelcoVoiceMgrHal_SetParamString(HalName,pString) == ANSC_STATUS_SUCCESS)
         {
             TELCOVOICEMGR_LOCK_OR_EXIT()
 
@@ -3818,7 +3866,7 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamUlongValue(ANSC_HANDLE hIns
         {
             TELCOVOICEMGR_LOCK_OR_EXIT()
 
-            pHEAD->DiagnosticsState = uValue;
+            pHEAD->DiagnosticsState = DIAG_STATE_COMPLETE;
 
             TELCOVOICEMGR_UNLOCK()
 

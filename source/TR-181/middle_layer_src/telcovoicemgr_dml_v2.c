@@ -67,14 +67,7 @@ BOOL VoiceService_IsUpdated(ANSC_HANDLE hInsContext)
 
 ULONG VoiceService_Synchronize(ANSC_HANDLE hInsContext)
 {
-    PTELCOVOICEMGR_DATAMODEL_SERVICES     pMyObject  = (PTELCOVOICEMGR_DATAMODEL_SERVICES)g_pTelcoVoiceBEManager->hServices;
-
-    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData  =  pMyObject->data;
-
-    if(pTelcoVoiceMgrDmlData != NULL)
-    {
-        TelcoVoiceMgrHal_GetVoiceServices(&(pTelcoVoiceMgrDmlData->Service.VoiceService));
-    }
+    /* No need to query all objects from voice hal for each dmcli get request */
     return 0;
 }
 
