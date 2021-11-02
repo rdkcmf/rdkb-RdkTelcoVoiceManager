@@ -470,14 +470,28 @@ LONG Line_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pV
                 }
                 else if( AnscEqualString(ParamName, "X_RDK_OutboundProxyAddresses", TRUE) )
                 {
-                    snprintf(buf, sizeof(buf), "%s", pLine->X_RDK_OutboundProxyAddresses);
-                    if ( AnscSizeOfString(buf) < *pUlSize)
+                    //Fetch status from voice stack
+                    hal_param_t req_param;
+                    memset(&req_param, 0, sizeof(req_param));
+                    snprintf(req_param.name, sizeof(req_param.name), TELCOVOICE_QUERY_VOICEPROFILE_LINE"%s",
+                              pVoiceService->InstanceNumber, pVoiceProfile->InstanceNumber, pLine->InstanceNumber,"X_RDK_OutboundProxyAddresses");
+                    if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
                     {
-                        AnscCopyString(pValue, buf);
-                        ret = 0;
+                        snprintf(buf, sizeof(buf), "%s",  req_param.value);
+                        if ( AnscSizeOfString(buf) < *pUlSize)
+                        {
+                            AnscCopyString(pValue, buf);
+                            ret = 0;
+                        }
+                        else
+                        {
+                            *pUlSize = AnscSizeOfString(pValue);
+                            ret = 1;
+                        }
                     }
                     else
                     {
+                        CcspTraceError(("%s:%d:: X_RDK_OutbandProxyAddresses:get failed \n", __FUNCTION__, __LINE__));
                         *pUlSize = AnscSizeOfString(pValue);
                         ret = 1;
                     }

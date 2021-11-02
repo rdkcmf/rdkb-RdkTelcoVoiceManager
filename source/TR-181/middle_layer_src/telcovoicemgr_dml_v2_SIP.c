@@ -3338,6 +3338,9 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamUlongValue(ANSC_HANDLE hInsContext
 ULONG TelcoVoiceMgrDml_SIP_NetworkList_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize)
 {
     ULONG ret = 1;
+    ULONG uVsIndex  = 0;
+    ULONG uNetworkIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || pValue == NULL || pulSize == NULL)
     {
@@ -3350,6 +3353,24 @@ ULONG TelcoVoiceMgrDml_SIP_NetworkList_GetParamStringValue(ANSC_HANDLE hInsConte
     PDML_SIP_NETWORK_CTRL_T pSipNetworkCtrl = (PDML_SIP_NETWORK_CTRL_T)hInsContext;
 
     PDML_SIP_NETWORK pHEAD = &(pSipNetworkCtrl->dml);
+
+    if(pHEAD != NULL)
+    {
+        pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    }
+
+    if (pHEAD == NULL  || pDmlVoiceService == NULL)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        CcspTraceError(("%s:%d:: pHEAD or pDmlVoiceService NULL\n", __FUNCTION__, __LINE__));
+
+        return ret;
+    }
+
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    uNetworkIndex = pHEAD->uInstanceNumber;
 
     if( AnscEqualString(ParamName, "X_RDK-Central_COM_ConferencingURI", TRUE) )
     {
@@ -3393,8 +3414,21 @@ ULONG TelcoVoiceMgrDml_SIP_NetworkList_GetParamStringValue(ANSC_HANDLE hInsConte
     }
     else if( AnscEqualString(ParamName, "OutboundProxyResolvedAddress", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->OutboundProxyResolvedAddress);
-        ret = 0;
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+
+        snprintf(req_param.name, sizeof(req_param.name), "Device.Services.VoiceService.%d.SIP.Network.%d.OutboundProxyResolvedAddress",
+                 uVsIndex,uNetworkIndex );
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            AnscCopyString(pValue, req_param.value);
+            ret = 0;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: OutboundProxyResolvedAddress:get failed \n", __FUNCTION__, __LINE__));
+        }
     }
     else if( AnscEqualString(ParamName, "OutboundProxy", TRUE) )
     {

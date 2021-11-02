@@ -83,6 +83,9 @@
 #define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallingFeatures."
 #define   LINE_STATUS                         "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.Status"
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d.CallState"
+#define   TELCOVOICE_QUERY_VOICEPROFILE       "Device.Services.VoiceService.%d.VoiceProfile."
+#define   TELCOVOICE_QUERY_VOICEPROFILE_LINE  "Device.Services.VoiceService.%d.VoiceProfile.%d.Line.%d."
+#define   TELCOVOICE_QUERY_PHYINTERFACE       "Device.Services.VoiceService.%d.PhyInterface."
 #endif /*FEATURE_RDKB_VOICE_DM_TR104_V2*/
 
 /**
@@ -94,10 +97,8 @@
 #define NULL_TYPE 0
 #define JSON_RPC_PARAM_ARR_INDEX 0
 
-#define TELCOVOICE_QUERY_VOICESERVICE   "Device.Services.VoiceService."
-#define TELCOVOICE_QUERY_CAPABILITIES   "Device.Services.VoiceService.%d.Capabilities."
-#define TELCOVOICE_QUERY_VOICEPROFILE   "Device.Services.VoiceService.%d.VoiceProfile."
-#define TELCOVOICE_QUERY_PHYINTERFACE   "Device.Services.VoiceService.%d.PhyInterface."
+#define TELCOVOICE_QUERY_VOICESERVICE    "Device.Services.VoiceService."
+#define TELCOVOICE_QUERY_CAPABILITIES    "Device.Services.VoiceService.%d.Capabilities."
 
 #define FIREWALL_RULE_DATA          "Device.Services.VoiceService.%d.X_RDK_Firewall_Rule_Data"
 
