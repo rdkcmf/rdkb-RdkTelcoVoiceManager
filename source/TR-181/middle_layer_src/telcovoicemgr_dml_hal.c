@@ -1012,6 +1012,7 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
             }
         }
     }
+    return ANSC_STATUS_SUCCESS;
 }
 
 ANSC_STATUS TelcoVoiceMgrHal_EventSubscribe(event_callback callback, const char* event_name, const char* event_notification_type)
