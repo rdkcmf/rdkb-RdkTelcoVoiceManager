@@ -2406,27 +2406,26 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_PROXYLIST, sipOutBoundProxyBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_PROXYLIST %s\n", __FUNCTION__, __LINE__, sipOutBoundProxyBuffer));
 
-            if(strlen(rtpPinholeBuffer) != 0)
+
+            /* Delete old rule and add new one for RTP*/
+            if(prevRtpRuleData[0] != '\0')
             {
-                /* Delete old rule and add new one for RTP*/
-                if(prevRtpRuleData[0] != '\0')
-                {
-                    set_iptable_rules_for_rtp(prevRtpRuleData, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
-                }
-
-                //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
-                set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V4, ADD_RULE);
-
-                sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_RTPLIST, rtpPinholeBuffer, 0);
-                CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
-
-                /* Save previous data and delete old rules in next iteration.*/
-                snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
-                prevRtpDscpMark = rtpDscpMark;
-                prevRtpSkbMark = rtpSkbMark;
-                previpAddressFamily = VOICE_HAL_AF_INET_V4;
+                set_iptable_rules_for_rtp(prevRtpRuleData, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
             }
-            else
+
+            //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
+            set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V4, ADD_RULE);
+
+            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_RTPLIST, rtpPinholeBuffer, 0);
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
+
+            /* Save previous data and delete old rules in next iteration.*/
+            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
+            prevRtpDscpMark = rtpDscpMark;
+            prevRtpSkbMark = rtpSkbMark;
+            previpAddressFamily = VOICE_HAL_AF_INET_V4;
+
+            if(strlen(rtpPinholeBuffer) == 0)
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
@@ -2452,27 +2451,25 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_PROXYLIST, sipOutBoundProxyBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_PROXYLIST %s\n", __FUNCTION__, __LINE__, sipOutBoundProxyBuffer));
 
-            if(strlen(rtpPinholeBuffer) != 0)
+            /* Delete old rule and add new one for RTP*/
+            if(prevRtpRuleData[0] != '\0')
             {
-                /* Delete old rule and add new one for RTP*/
-                if(prevRtpRuleData[0] != '\0')
-                {
-                    set_iptable_rules_for_rtp(prevRtpRuleData, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
-                }
-
-                //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
-                set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V6, ADD_RULE);
-
-                sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, rtpPinholeBuffer, 0);
-                CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
-
-                /* Save previous data and delete old rules in next iteration.*/
-                snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
-                prevRtpDscpMark = rtpDscpMark;
-                prevRtpSkbMark = rtpSkbMark;
-                previpAddressFamily = VOICE_HAL_AF_INET_V6;
+                set_iptable_rules_for_rtp(prevRtpRuleData, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
             }
-            else
+
+            //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
+            set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V6, ADD_RULE);
+
+            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, rtpPinholeBuffer, 0);
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
+
+            /* Save previous data and delete old rules in next iteration.*/
+            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
+            prevRtpDscpMark = rtpDscpMark;
+            prevRtpSkbMark = rtpSkbMark;
+            previpAddressFamily = VOICE_HAL_AF_INET_V6;
+
+            if(strlen(rtpPinholeBuffer) == 0)
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
