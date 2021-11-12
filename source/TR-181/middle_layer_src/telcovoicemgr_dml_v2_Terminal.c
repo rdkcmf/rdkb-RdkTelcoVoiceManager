@@ -1282,6 +1282,8 @@ BOOL TelcoVoiceMgrDml_TerminalList_AudioList_VoiceProcessing_SetParamIntValue(AN
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, uTermIndex, uAudioIndex, "TxGain", iValue);
+
             ret = TRUE;
         }
     }
@@ -1296,6 +1298,8 @@ BOOL TelcoVoiceMgrDml_TerminalList_AudioList_VoiceProcessing_SetParamIntValue(AN
             pHEAD->ReceiveGain = iValue;
 
             TELCOVOICEMGR_UNLOCK()
+
+            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, uTermIndex, uAudioIndex, "RxGain", iValue);
 
             ret = TRUE;
         }

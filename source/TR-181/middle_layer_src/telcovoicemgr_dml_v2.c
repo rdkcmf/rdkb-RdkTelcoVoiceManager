@@ -199,6 +199,7 @@ ANSC_HANDLE VoiceService_GetEntry(ANSC_HANDLE hInsContext, ULONG nIndex, ULONG* 
 BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    TELCOVOICEMGR_VOICE_STATUS_ENUM voiceStatus;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -214,8 +215,12 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
 
     if( AnscEqualString(ParamName, "X_RDK_Status", TRUE) )
     {
-        *puLong = pHEAD->X_RDK_Status;
-        ret = TRUE;
+        if(TelcoVoiceMgrDmlGetVoiceProcessStatus(pHEAD->InstanceNumber, &voiceStatus) == ANSC_STATUS_SUCCESS)
+        {
+            pHEAD->X_RDK_Status = voiceStatus;
+            *puLong = pHEAD->X_RDK_Status;
+            ret = TRUE;
+        }
     }
     else if( AnscEqualString(ParamName, "X_RDK_Enable", TRUE) )
     {

@@ -115,6 +115,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
     ANSC_STATUS                       returnStatus        = ANSC_STATUS_SUCCESS;
     ULONG                             uVsIndex            = 0;
     ULONG                             uIndex              = 0;
+    ULONG                             audioIndex          = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE   pDmlVoiceService    = NULL;
     PDML_SIP                          pDmlSipObj          = NULL;
     PDML_CALLCONTROL                  pDmlCallControlObj  = NULL;
@@ -123,6 +124,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
     PDML_VOIPPROFILE                  pDmlVoipProfile     = NULL;
     PDML_CALLCONTROL_LINE             pDmlCallControlLine = NULL;
     PDML_VOICESERVICE_TERMINAL        pDmlTerminal        = NULL;
+    PDML_TERMINAL_AUDIO               pDmlTerminalAudio   = NULL;
 
     if(pTelcoVoiceMgrData != NULL)
     {
@@ -229,7 +231,26 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                     pDmlTerminal->uInstanceNumber = uIndex + 1;
                     pDmlTerminal->pParentVoiceService = pDmlVoiceService;
                     pDmlTerminal->Enable = 1;
-                    pDmlTerminal->Audio.ulQuantity = 0;
+                    pDmlTerminal->Audio.ulQuantity = 1;
+                    if ( pDmlTerminal->Audio.ulQuantity != 0 )
+                    {
+                        for (audioIndex = 0; audioIndex < 1; audioIndex++)
+                        {
+                            pDmlTerminal->Audio.pdata[audioIndex] = (DML_TERMINAL_AUDIO_CTRL_T*) AnscAllocateMemory(sizeof(DML_TERMINAL_AUDIO_CTRL_T));
+                            DML_TERMINAL_AUDIO_CTRL_T* pTerminalAudio = pDmlTerminal->Audio.pdata[audioIndex];
+                            pDmlTerminalAudio = &(pTerminalAudio->dml);
+
+                            if ( !pDmlTerminalAudio )
+                            {
+                                returnStatus = ANSC_STATUS_RESOURCES;
+                                CcspTraceError(("%s - Failed pDmlTerminalAudio : NULL\n", __FUNCTION__));
+                                goto EXIT;
+                            }
+                            pDmlTerminalAudio->uInstanceNumber = audioIndex + 1;
+                            pDmlTerminalAudio->pParentVoiceService = pDmlVoiceService;
+                            pDmlTerminalAudio->pParentTerminal = pDmlTerminal;
+                        }
+                    }
                     PDML_TERMINAL_BUTTONMAP pDmlButtonMap = &(pDmlTerminal->ButtonMap);
                     pDmlButtonMap->Button.ulQuantity = 0;
                     PDML_TERMINAL_RINGER pDmlRinger= &(pDmlTerminal->Ringer);
