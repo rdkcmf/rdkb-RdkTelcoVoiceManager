@@ -2425,7 +2425,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             prevRtpSkbMark = rtpSkbMark;
             previpAddressFamily = VOICE_HAL_AF_INET_V4;
 
-            if(strlen(rtpPinholeBuffer) == 0)
+            if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
@@ -2469,7 +2469,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             prevRtpSkbMark = rtpSkbMark;
             previpAddressFamily = VOICE_HAL_AF_INET_V6;
 
-            if(strlen(rtpPinholeBuffer) == 0)
+            if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
