@@ -361,6 +361,7 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsCo
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
  
     TELCOVOICEMGR_LINE_STATUS_ENUM lineStatus = VOICE_LINE_STATE_DISABLED;
+    TELCOVOICEMGR_CALL_STATE_ENUM  callStatus = VOICE_CALL_STATE_IDLE;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -411,12 +412,11 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_GetParamUlongValue(ANSC_HANDLE hInsCo
     else if( AnscEqualString(ParamName, "CallStatus", TRUE) )
     {
         //Fetch status from voice stack
-        hal_param_t req_param;
-        memset(&req_param, 0, sizeof(req_param));
-        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLCONTROL_LINE_PARAM_NAME"%s", uVsIndex, uCCLineIndex, "CallStatus");
-        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineCallState(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOIP_PROFILE,
+                                             uCCLineIndex, &callStatus))
         {
-            *puLong = strtoul(req_param.value,NULL,10);
+            pHEAD->CallStatus = callStatus;
+            *puLong = pHEAD->CallStatus;
             ret = TRUE;
         }
         else
