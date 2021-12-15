@@ -961,6 +961,8 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
     int  uVsIndex            = 0;
     int  uVpIndex            = 0;
     int  uIndex              = 0;
+    int  uVpQuantity         = 0;
+    char FirewallRuleBuffer[BUF_LEN_1024] = {'\0'};
     PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
 
     ret = get_event_param(msg, len, event_name, event_val);
@@ -999,7 +1001,14 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                     }
                 }
                 parse_and_update_rule(pDmlVoiceService->X_RDK_Firewall_Rule_Data, event_val, sizeof(pDmlVoiceService->X_RDK_Firewall_Rule_Data));
-                ret =  TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(pDmlVoiceService);
+                snprintf(FirewallRuleBuffer, sizeof(FirewallRuleBuffer), "%s", pDmlVoiceService->X_RDK_Firewall_Rule_Data);
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+                uVpQuantity = pDmlVoiceService->VoIPProfile->ulQuantity;
+#else
+                uVpQuantity = pDmlVoiceService->VoiceProfileList.ulQuantity;
+#endif
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+                ret =  TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(&FirewallRuleBuffer, uVsIndex, uVpQuantity);
                 if(ret == ANSC_STATUS_SUCCESS)
                 {
                     CcspTraceDebug(("[%s: %d] Sysevent set for firewall rules success\n", __FUNCTION__, __LINE__));
@@ -1008,7 +1017,6 @@ void eventcb_FirewallRuleData(const char *msg, const int len)
                 {
                     CcspTraceWarning(("[%s: %d] Sysevent set for firewall rules failed\n", __FUNCTION__, __LINE__));
                 }
-                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
             }
         }
     }

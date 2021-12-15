@@ -90,6 +90,8 @@ typedef enum {
 } FirewallStatus_e;
 
 extern bool bTelcoVoiceManagerRunning;
+extern int sysevent_voice_fd;
+extern token_t sysevent_voice_token;
 static pthread_t sysevent_tid;
 static int sysevent_fd = -1;
 static token_t sysevent_token = -1;
@@ -501,8 +503,11 @@ int firewall_restart_for_voice(unsigned long timeout_ms)
     timeradd (&tstart, &ttimeout, &tend);
 
     firewall_status = FIREWALLSTATUS_STARTING;
-    sysevent_set(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_RESTART, NULL, 0);
-
+    if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIREWALL_RESTART, NULL, 0))
+    {
+        CcspTraceWarning(("%s :: SYSEVENT_FIREWALL_RESTART failed \n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
+    }
     gettimeofday(&tnow, NULL);
     while (timercmp (&tnow, &tend, <))
     {

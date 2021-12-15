@@ -2265,14 +2265,9 @@ EXIT:
     return returnStatus;
 }
 
-static ANSC_STATUS TelcoVoiceMgrDmlGetMarking(uint32_t uiService,  uint32_t uiProfile, PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService, uint32_t *sipSkbMark, uint32_t *rtpSkbMark, uint32_t *sipDscpMark, uint32_t *rtpDscpMark)
+static ANSC_STATUS TelcoVoiceMgrDmlGetMarking(uint32_t uiService,  uint32_t uiProfile, uint32_t *sipSkbMark, uint32_t *rtpSkbMark, uint32_t *sipDscpMark, uint32_t *rtpDscpMark)
 {
-    if(!pDmlVoiceService)
-    {
-        CcspTraceWarning(("%s Invalid ParamName\n", __FUNCTION__));
-        return ANSC_STATUS_FAILURE;
-    }
-
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
     PDML_VOIPPROFILE                  pDmlVoiceProfile   = NULL;
     PDML_SIP                          pDmlSipObj         = NULL;
@@ -2280,44 +2275,62 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetMarking(uint32_t uiService,  uint32_t uiPr
 #else
     PTELCOVOICEMGR_DML_PROFILE        pDmlVoiceProfile   = NULL;
 #endif
+
+    TELCOVOICEMGR_DML_DATA*  pTelcoVoiceMgrData = TelcoVoiceMgrDmlGetDataLocked();
+    if(pTelcoVoiceMgrData != NULL)
+    {
+        DML_VOICE_SERVICE_CTRL_T* pVoiceService = pTelcoVoiceMgrData->Service.VoiceService.pdata[uiService - 1];
+        pDmlVoiceService = &(pVoiceService->dml);
+        if(!pDmlVoiceService)
+        {
+            CcspTraceWarning(("%s pDmlVoiceService NULL\n", __FUNCTION__));
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+            return ANSC_STATUS_FAILURE;
+        }
+
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-    DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoIPProfile->pdata[uiProfile - 1];
+        DML_VOIPPROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoIPProfile->pdata[uiProfile - 1];
 #else
-    DML_PROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoiceProfileList.pdata[uiProfile - 1];
+        DML_PROFILE_CTRL_T* pVoiceProfile = pDmlVoiceService->VoiceProfileList.pdata[uiProfile - 1];
 #endif
-    pDmlVoiceProfile = &(pVoiceProfile->dml);
-    if ( (!pDmlVoiceProfile) || !(pDmlVoiceProfile->Enable))
-    {
-        CcspTraceError(("%s:%d:: pDmlVoiceProfile: NULL or Disabled\n", __FUNCTION__, __LINE__));
-        return ANSC_STATUS_FAILURE;
-    }
+        pDmlVoiceProfile = &(pVoiceProfile->dml);
+        if ( (!pDmlVoiceProfile) || !(pDmlVoiceProfile->Enable))
+        {
+            CcspTraceError(("%s:%d:: pDmlVoiceProfile: NULL or Disabled\n", __FUNCTION__, __LINE__));
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+            return ANSC_STATUS_FAILURE;
+        }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-    pDmlSipObj = &(pDmlVoiceService->SIP_obj);
-    if( !pDmlSipObj )
-    {
-        CcspTraceError(("%s:%d:: pDmlSipObj: NULL\n", __FUNCTION__, __LINE__));
-        return ANSC_STATUS_RESOURCES;
-    }
+        pDmlSipObj = &(pDmlVoiceService->SIP_obj);
+        if( !pDmlSipObj )
+        {
+            CcspTraceError(("%s:%d:: pDmlSipObj: NULL\n", __FUNCTION__, __LINE__));
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+            return ANSC_STATUS_RESOURCES;
+        }
 
-    DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uiProfile - 1];
-    pDmlSipNetwork = &(pSipNetwork->dml);
+        DML_SIP_NETWORK_CTRL_T* pSipNetwork = pDmlSipObj->Network.pdata[uiProfile - 1];
+        pDmlSipNetwork = &(pSipNetwork->dml);
 
-    if ( pDmlSipNetwork == NULL )
-    {
-        CcspTraceError(("%s:%d:: pDmlSipNetwork: NULL\n", __FUNCTION__, __LINE__));
-        return ANSC_STATUS_RESOURCES;
-    }
-    *sipSkbMark = pDmlSipNetwork->X_RDK_SKBMark;
-    *sipDscpMark = pDmlSipNetwork->DSCPMark;
-    *rtpSkbMark = pDmlVoiceProfile->RTP.X_RDK_SKBMark;
-    *rtpDscpMark = pDmlVoiceProfile->RTP.DSCPMark;
+        if ( pDmlSipNetwork == NULL )
+        {
+            CcspTraceError(("%s:%d:: pDmlSipNetwork: NULL\n", __FUNCTION__, __LINE__));
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+            return ANSC_STATUS_RESOURCES;
+        }
+        *sipSkbMark = pDmlSipNetwork->X_RDK_SKBMark;
+        *sipDscpMark = pDmlSipNetwork->DSCPMark;
+        *rtpSkbMark = pDmlVoiceProfile->RTP.X_RDK_SKBMark;
+        *rtpDscpMark = pDmlVoiceProfile->RTP.DSCPMark;
 
 #else
-    *sipSkbMark = pDmlVoiceProfile->SIPObj.X_RDK_SKBMark;
-    *sipDscpMark = pDmlVoiceProfile->SIPObj.DSCPMark;
-    *rtpSkbMark = pDmlVoiceProfile->RTPObj.X_RDK_SKBMark;
-    *rtpDscpMark = pDmlVoiceProfile->RTPObj.DSCPMark;
+        *sipSkbMark = pDmlVoiceProfile->SIPObj.X_RDK_SKBMark;
+        *sipDscpMark = pDmlVoiceProfile->SIPObj.DSCPMark;
+        *rtpSkbMark = pDmlVoiceProfile->RTPObj.X_RDK_SKBMark;
+        *rtpDscpMark = pDmlVoiceProfile->RTPObj.DSCPMark;
 #endif
+        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+    }
 
     return ANSC_STATUS_SUCCESS;
 }
@@ -2335,7 +2348,7 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetMarking(uint32_t uiService,  uint32_t uiPr
 *
 */
 
-ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService)
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, ULONG uVsIndex, ULONG uVpQuantity)
 {
     char ethernetPriorityBuffer[BUF_LEN_512] = {0};
     char dscpBuffer[BUF_LEN_512] = {0};
@@ -2346,11 +2359,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
     static uint prevRtpDscpMark = 0;
     static uint prevRtpSkbMark = 0;
     ULONG  uVpIndex = 0;
-    ULONG  uVsIndex = 0;
     static TELCOVOICEMGR_VOICE_IP_ADD_FAMILY previpAddressFamily = VOICE_HAL_AF_INET_V4;
     uint sipSkbMark, rtpSkbMark, sipDscpMark, rtpDscpMark;
 
-    if(!pVoiceService)
+    if(!FirewallRuleData)
     {
         CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
@@ -2360,19 +2372,15 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
         CcspTraceError(("Failed to get ipAddressFamily from sysevent \n"));
         return ANSC_STATUS_FAILURE;
     }
-    uVsIndex = pVoiceService->InstanceNumber;
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-    for(uVpIndex = 1; uVpIndex <= pVoiceService->VoIPProfile->ulQuantity; uVpIndex++)
-#else
-    for(uVpIndex = 1; uVpIndex <= pVoiceService->VoiceProfileList.ulQuantity; uVpIndex++)
-#endif
+
+    for(uVpIndex = 1; uVpIndex <= uVpQuantity; uVpIndex++)
     {
-        TelcoVoiceMgrDmlGetMarking(uVsIndex, uVpIndex, pVoiceService, &sipSkbMark, &rtpSkbMark, &sipDscpMark, &rtpDscpMark);
+        TelcoVoiceMgrDmlGetMarking(uVsIndex, uVpIndex, &sipSkbMark, &rtpSkbMark, &sipDscpMark, &rtpDscpMark);
         memset(ethernetPriorityBuffer, 0, sizeof(ethernetPriorityBuffer));
         memset(dscpBuffer, 0, sizeof(dscpBuffer));
         memset(sipOutBoundProxyBuffer, 0, sizeof(sipOutBoundProxyBuffer));
         memset(rtpPinholeBuffer, 0, sizeof(rtpPinholeBuffer));
-        if(generate_voice_firewall_sysevent_string(pVoiceService->X_RDK_Firewall_Rule_Data,
+        if(generate_voice_firewall_sysevent_string(FirewallRuleData,
                         sipSkbMark,
                         rtpSkbMark,
                         sipDscpMark,
@@ -2419,18 +2427,17 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV4_RTPLIST, rtpPinholeBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV4_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
 
-            /* Save previous data and delete old rules in next iteration.*/
-            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
-            prevRtpDscpMark = rtpDscpMark;
-            prevRtpSkbMark = rtpSkbMark;
-            previpAddressFamily = VOICE_HAL_AF_INET_V4;
-
             if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
                 firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
             }
+            /* Save previous data and delete old rules in next iteration.*/
+            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
+            prevRtpDscpMark = rtpDscpMark;
+            prevRtpSkbMark = rtpSkbMark;
+            previpAddressFamily = VOICE_HAL_AF_INET_V4;
         }
         else if( !strcmp(ipAddrFamily, STR_IPV6) )
         {
@@ -2463,18 +2470,17 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESE
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, rtpPinholeBuffer, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
 
-            /* Save previous data and delete old rules in next iteration.*/
-            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
-            prevRtpDscpMark = rtpDscpMark;
-            prevRtpSkbMark = rtpSkbMark;
-            previpAddressFamily = VOICE_HAL_AF_INET_V6;
-
             if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
                 //Restart firewall for only SIP events.
                 //Iptable rules for RTP are explicitly added without firewall restart.
                 firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
             }
+            /* Save previous data and delete old rules in next iteration.*/
+            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
+            prevRtpDscpMark = rtpDscpMark;
+            prevRtpSkbMark = rtpSkbMark;
+            previpAddressFamily = VOICE_HAL_AF_INET_V6;
         }
         else
         {

@@ -3182,6 +3182,6 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTransmitGain(UINT uiService, UINT uiProfile,UINT 
 ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(UINT uiService, UINT uiProfile, UINT uiLine, char*pSipURI);
 ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(UINT uiService, UINT uiProfile, BOOL bValue);
 ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(UINT uiService, UINT uiProfile, UINT uiLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats);
-ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService);
+ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, ULONG uVsIndex, ULONG uVpQuantity);
 
 #endif /* _TELCOVOICEMGR_SERVICES_APIS_H */
