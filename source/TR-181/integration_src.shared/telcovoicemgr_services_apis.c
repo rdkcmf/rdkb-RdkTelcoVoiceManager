@@ -1151,12 +1151,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetIpAddressFamily(uint32_t uiService, char *IpAddre
        return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-IpAddressFamily", IpAddressFamily);
-    if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily, 0))
-    {
-        CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
-    }
     if(TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily) != ANSC_STATUS_SUCCESS)
     {
+        CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
     return ANSC_STATUS_SUCCESS;
