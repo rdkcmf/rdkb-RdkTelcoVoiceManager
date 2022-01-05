@@ -823,7 +823,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddSipNetwork(PDML_SIP_NETWORK_LIST_T pSipNetworkLis
 
     if(pSipNetworkList != NULL)
     {
-        if(index < TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES)
+        if(index < TELCOVOICE_DATA_MAX)
         {
             //delete old
             if(pSipNetworkList->pdata[index] != NULL)
@@ -1733,7 +1733,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddCallCtrlCFSet(PDML_CALLCONTROL_CALLINGFEATURES_SE
 
     if(pCallCtrlCFSetList != NULL)
     {
-        if(index < TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES)
+        if(index < TELCOVOICE_DATA_MAX)
         {
             //delete old
             if(pCallCtrlCFSetList->pdata[index] != NULL)
@@ -2209,7 +2209,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddVoipProfile(PDML_VOIPPROFILE_LIST_T pVoipProfileL
 
     if(pVoipProfileList != NULL)
     {
-        if(index < TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES)
+        if(index < TELCOVOICE_DATA_MAX)
         {
             //delete old
             if(pVoipProfileList->pdata[index] != NULL)
@@ -2472,7 +2472,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddTerminal(PDML_VOICESERVICE_TERMINAL_LIST_T pTermi
 
     if(pTerminalList != NULL)
     {
-        if(index < TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES)
+        if(index < TELCOVOICE_DATA_MAX)
         {
             //delete old
             if(pTerminalList->pdata[index] != NULL)

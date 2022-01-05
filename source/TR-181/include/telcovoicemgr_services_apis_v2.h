@@ -31,7 +31,7 @@
 #include "ansc_platform.h"
 #include "ansc_string_util.h"
 
-#define TELCOVOICE_DATA_MAX                                1
+#define TELCOVOICE_DATA_MAX                                3
 #define TELCOVOICEMGR_DATA_MAX_VOICE_SERVICES              1
 
 #define  TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES        1
