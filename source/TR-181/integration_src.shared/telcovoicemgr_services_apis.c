@@ -1077,6 +1077,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLoopCurrentDisabled(uint32_t uiService, BOOL bSta
     {
        return ANSC_STATUS_FAILURE;
     }
+    (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DisLoopCurrentReg", strValue);
     return ANSC_STATUS_SUCCESS;
 }
 
