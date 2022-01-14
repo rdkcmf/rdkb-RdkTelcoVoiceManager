@@ -59,13 +59,13 @@
 
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
 /*  TR104 V2 DML Tables */
-#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.Terminal.%d.DiagTests."
+#define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.POTS.FXS.%d.DiagTests."
 #define   PROFILE_TABLE_NAME                  "Device.Services.VoiceService.%d.VoIPProfile.%d."
 #define   SIP_TABLE_NAME                      "Device.Services.VoiceService.%d.SIP.Network.%d."
 #define   RTP_TABLE_NAME                      "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP."
 #define   LINE_TABLE_NAME                     "Device.Services.VoiceService.%d.CallControl.Line.%d."
 #define   LINE_SIP_TABLE_NAME                 "Device.Services.VoiceService.%d.SIP.Client.%d."
-#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.Terminal.%d.Audio.%d.VoiceProcessing."
+#define   LINE_VOICE_PROCESSING_TABLE_NAME    "Device.Services.VoiceService.%d.POTS.FXS.%d.VoiceProcessing."
 #define   LINE_CALING_FEATURE_TABLE_NAME      "Device.Services.VoiceService.%d.CallControl.CallingFeatures.Set.%d."
 #define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"

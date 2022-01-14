@@ -125,6 +125,8 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
     PDML_CALLCONTROL_LINE             pDmlCallControlLine = NULL;
     PDML_VOICESERVICE_TERMINAL        pDmlTerminal        = NULL;
     PDML_TERMINAL_AUDIO               pDmlTerminalAudio   = NULL;
+    PDML_POTS                         pDmlPOTSObj         = NULL;
+    PDML_POTS_FXS                     pDmlPOTSFxs         = NULL;
 
     if(pTelcoVoiceMgrData != NULL)
     {
@@ -258,6 +260,33 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                     pDmlRinger->Description.ulQuantity = 0;
                 }
             }
+
+           pDmlPOTSObj = &(pDmlVoiceService->POTS_obj);
+
+            if( pDmlPOTSObj )
+            {
+                pDmlPOTSObj->FXS.ulQuantity = 1;
+
+                if ( pDmlPOTSObj->FXS.ulQuantity != 0 )
+                {
+                    for (uIndex = 0; uIndex < TELCOVOICE_DATA_MAX; uIndex++)
+                    {
+                        pDmlPOTSObj->FXS.pdata[uIndex] = (DML_POTS_FXS_CTRL_T*) AnscAllocateMemory(sizeof(DML_POTS_FXS_CTRL_T));
+                        DML_POTS_FXS_CTRL_T* pPOTSFxs = pDmlPOTSObj->FXS.pdata[uIndex];
+                        pDmlPOTSFxs = &(pPOTSFxs->dml);
+
+                        if ( pDmlPOTSFxs == NULL )
+                        {
+                            returnStatus = ANSC_STATUS_RESOURCES;
+                            CcspTraceError(("%s - Failed pDmlPOTSFxs : NULL\n", __FUNCTION__));
+                            goto EXIT;
+                        }
+                        pDmlPOTSFxs->uInstanceNumber = uIndex + 1;
+                        pDmlPOTSFxs->pParentVoiceService = pDmlVoiceService;
+                    }
+                }
+            }
+
             pDmlCallControlObj = &(pDmlVoiceService->CallControl_obj);
             if(pDmlCallControlObj)
             {

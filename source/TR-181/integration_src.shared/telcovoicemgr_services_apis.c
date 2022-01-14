@@ -357,6 +357,53 @@ ANSC_STATUS TelcoVoiceMgrSetSyseventData(char *eventName, char *eventValue)
     return ANSC_STATUS_SUCCESS;
 }
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TelcoVoiceMgrConvertProtocolToEnum */
+/**
+* @description helper function to convert Transport Protocol to corresponding enum.
+*
+* @param char* protocol 
+* @param uint32_t *protocolEnum
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+ANSC_STATUS TelcoVoiceMgrConvertProtocolToEnum(char *protocol, uint32_t *protocolEnum)
+{
+    if(!protocol || !protocolEnum)
+    {
+      CcspTraceWarning(("%s :: NULL Param Passed\n", __FUNCTION__));
+      return ANSC_STATUS_FAILURE;
+    }
+    if(!strcmp(protocol, "TCP"))
+    {
+      *protocolEnum = TRANSPORT_TCP;
+    }
+    else if(!strcmp(protocol, "UDP"))
+    {
+      *protocolEnum = TRANSPORT_UDP;
+    }
+    else if(!strcmp(protocol, "TLS"))
+    {
+      *protocolEnum = TRANSPORT_TLS;
+    }
+    else if(!strcmp(protocol, "SCTP"))
+    {
+      *protocolEnum = TRANSPORT_SCTP;
+    }
+    else
+    {
+      CcspTraceWarning(("%s :: Invalid Protocol Passed\n", __FUNCTION__));
+      return ANSC_STATUS_FAILURE;
+    }
+    return ANSC_STATUS_SUCCESS;
+}
+#endif
 /* TelcoVoiceMgrDmlGetTableEntryNames: */
 /**
 * @description Helper function to get table entry names from data model.Retrieves
@@ -3141,7 +3188,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetReceiveGain(uint32_t uiService, uint32_t uiProfil
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_VOICE_PROCESSING_TABLE_NAME"%s",uiService,uiProfile,uiLine,"ReceiveGain");
+#else
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_VOICE_PROCESSING_TABLE_NAME"%s",uiService,uiLine,"ReceiveGain");
+#endif
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iGain);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
@@ -3175,7 +3226,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTransmitGain(uint32_t uiService, uint32_t uiProfi
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_VOICE_PROCESSING_TABLE_NAME"%s",uiService,uiProfile,uiLine,"TransmitGain");
+#else
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_VOICE_PROCESSING_TABLE_NAME"%s",uiService,uiLine,"TransmitGain");
+#endif
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iGain);
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {

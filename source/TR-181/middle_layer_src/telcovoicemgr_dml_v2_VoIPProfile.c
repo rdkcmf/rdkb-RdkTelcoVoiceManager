@@ -1235,6 +1235,8 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamUlongValue(ANSC_HANDLE hInsCon
 
             TELCOVOICEMGR_UNLOCK()
 
+            (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "DSCPMark", uValue);
+
             ret = TRUE;
         }
     }
@@ -1434,6 +1436,10 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue(ANSC_HANDLE hInsConte
     }
     else if( AnscEqualString(ParamName, "EthernetPriorityMark", TRUE) )
     {
+        if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
+        {
+            return ANSC_STATUS_DISCARD;
+        }
         snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP.EthernetPriorityMark",uVsIndex,uProfileIndex);
 
         if (TelcoVoiceMgrHal_SetParamInt(HalName,iValue) == ANSC_STATUS_SUCCESS)

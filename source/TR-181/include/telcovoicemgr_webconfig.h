@@ -61,10 +61,11 @@
 #define match(p, s) strncmp((p)->key.via.str.ptr, s, (p)->key.via.str.size)
 #define member_size(type, member) sizeof(((type *)0)->member)
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 typedef struct
 {
     unsigned int            uiLineInstanceNumber;
-    unsigned char           CallWaitingEnable;	
+    unsigned char           CallWaitingEnable;
     unsigned char           IsCallWaitingEnablePresent;
     unsigned char           MWIEnable;
     unsigned char           IsMWIEnablePresent;
@@ -131,6 +132,131 @@ typedef struct
     unsigned int            LineCount;
     WebConfig_LineTable_t   *pstLineInfo;
 } WebConfig_VoiceServiceTable_t;
+#else
+typedef struct
+{
+    unsigned int            uiSipNwInstanceNumber;
+    unsigned char           SIPNetworkEnable;
+    unsigned char           IsSIPNetworkEnablePresent;
+    char                    OutboundProxy[BUFFER_LENGTH_256];
+    unsigned char           IsOutboundProxyPresent;
+    int                     OutboundProxyPort;
+    unsigned char           IsOutboundProxyPortPresent;
+    char                    ProxyServer[BUFFER_LENGTH_256];
+    unsigned char           IsProxyServerPresent;
+    int                     ProxyServerPort;
+    unsigned char           IsProxyServerPortPresent;
+    char                    ProxyServerTransport[BUFFER_LENGTH_256];
+    unsigned char           IsProxyServerTransportPresent;
+    char                    RegistrarServer[BUFFER_LENGTH_256];
+    unsigned char           IsRegistrarServerPresent;
+    int                     RegistrarServerPort;
+    unsigned char           IsRegistrarServerPortPresent;
+    char                    RegistrarServerTransport[BUFFER_LENGTH_256];
+    unsigned char           IsRegistrarServerTransportPresent;
+    char                    UserAgentDomain[BUFFER_LENGTH_256];
+    unsigned char           IsUserAgentDomainPresent;
+    int                     UserAgentPort;
+    unsigned char           IsUserAgentPortPresent;
+    char                    UserAgentTransport[BUFFER_LENGTH_256];
+    unsigned char           IsUserAgentTransportPresent;
+    char                    SIPNetworkVoIPProfile[BUFFER_LENGTH_256];
+    unsigned char           IsSIPNetworkVoIPProfilePresent;
+    int                     SIPDSCPMark;
+    unsigned char           IsSIPDSCPMarkPresent;
+    int                     SIPEthernetPriorityMark;
+    unsigned char           IsSIPEthernetPriorityMarkPresent;
+    char                    ConferencingURI[BUFFER_LENGTH_256];
+    unsigned char           IsConferencingURIPresent;
+    unsigned char           NetworkDisconnect;
+    unsigned char           IsNetworkDisconnectPresent;
+    unsigned char           PRACKRequired;
+    unsigned char           IsPRACKRequiredPresent;
+} WebConfig_SipNwTable_t;
+
+typedef struct
+{
+    unsigned int            uiSipClientInstanceNumber;
+    unsigned char           SIPClientEnable;
+    unsigned char           IsSIPClientEnablePresent;
+    char                    SIPClientNetwork[BUFFER_LENGTH_64];
+    unsigned char           IsSIPClientNetworkPresent;
+    char                    SIPAuthUserName[BUFFER_LENGTH_64];
+    unsigned char           IsSIPAuthUserNamePresent;
+    char                    SIPAuthPassword[BUFFER_LENGTH_64];
+    unsigned char           IsSIPAuthPasswordPresent;
+    char                    SIPURI[BUFFER_LENGTH_32];
+    unsigned char           IsSIPURIPresent;
+} WebConfig_SipClientTable_t;
+
+typedef struct
+{
+    unsigned int            uiProfileInstanceNumber;
+    unsigned char           ProfileEnable;
+    unsigned char           IsProfileEnablePresent;
+    int                     RTPDSCPMark;
+    unsigned char           IsRTPDSCPMarkPresent;
+    int                     RTPEthernetPriorityMark;
+    unsigned char           IsRTPEthernetPriorityMarkPresent;
+    char                    DigitMap[BUFFER_LENGTH_2048];
+    unsigned char           IsDigitMapPresent;
+    char                    EmergencyDigitMap[BUFFER_LENGTH_2048];
+    unsigned char           IsEmergencyDigitMapPresent;
+    int                     SDigitTimer;
+    unsigned char           IsSDigitTimerPresent;
+    int                     ZDigitTimer;
+    unsigned char           IsZDigitTimerPresent;
+} WebConfig_VoIPTable_t;
+
+typedef struct
+{
+    unsigned int            uiLineInstanceNumber;
+    unsigned char           CallWaitingEnable;
+    unsigned char           IsCallWaitingEnablePresent;
+    unsigned char           MWIEnable;
+    unsigned char           IsMWIEnablePresent;
+    unsigned char           ConferenceCallingEnable;
+    unsigned char           IsConferenceCallingEnablePresent;
+    unsigned char           HoldEnable;
+    unsigned char           IsHoldEnablePresent;
+    unsigned char           PhoneCallerIDEnable;
+    unsigned char           IsPhoneCallerIDEnablePresent;
+    char                    DirectoryNumber[BUFFER_LENGTH_32];
+    unsigned char           IsDirectoryNumberPresent;
+    char                    LineProvider[BUFFER_LENGTH_32];
+    unsigned char           IsLineProviderPresent;
+    char                    LineCallingFeatures[BUFFER_LENGTH_32];
+    unsigned char           IsLineCallingFeaturesPresent;
+    unsigned char           LineEnable;
+    unsigned char           IsLineEnablePresent;
+} WebConfig_LineTable_t;
+
+typedef struct
+{
+    unsigned int            uiFXSInstanceNumber;
+    unsigned char           FXSEnable;
+    unsigned char           IsFXSEnablePresent;
+    int                     ReceiveGain;
+    unsigned char           IsReceiveGainPresent;
+    int                     TransmitGain;
+    unsigned char           IsTransmitGainPresent;
+} WebConfig_POTSFxsTable_t;
+
+typedef struct
+{
+    unsigned int                uiServiceInstanceNumber;
+    unsigned int                SipNwCount;
+    WebConfig_SipNwTable_t      *pstSipNwInfo;
+    unsigned int                SipClientCount;
+    WebConfig_SipClientTable_t  *pstSipClientInfo;
+    unsigned int                VoIPCount;
+    WebConfig_VoIPTable_t       *pstVoIPInfo;
+    unsigned int                LineCount;
+    WebConfig_LineTable_t       *pstLineInfo;
+    unsigned int                FXSCount;
+    WebConfig_POTSFxsTable_t   *pstPOTSFxsInfo;
+} WebConfig_VoiceServiceTable_t;
+#endif
 
 typedef struct {
     char                            spec[BUFFER_LENGTH_64];
@@ -144,5 +270,12 @@ typedef struct {
 ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_TelcoVoipParams(msgpack_object obj, TelcoVoice_WebConfig_t *pWebConfig);
 ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_VoiceServiceParams( WebConfig_VoiceServiceTable_t *e, msgpack_object_map *map );
 ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_LineTable( WebConfig_LineTable_t *e, msgpack_object_map *map );
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_SipNetworkTable( WebConfig_SipNwTable_t *e, msgpack_object_map *map );
+ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_SipClientTable( WebConfig_SipClientTable_t *e, msgpack_object_map *map );
+ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_ProfileTable( WebConfig_VoIPTable_t *e, msgpack_object_map *map );
+ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_POTSFxsTable( WebConfig_POTSFxsTable_t *e, msgpack_object_map *map );
+#endif
 
 #endif /* _TELCOVOICEMGR_WEBCONFIG_H */

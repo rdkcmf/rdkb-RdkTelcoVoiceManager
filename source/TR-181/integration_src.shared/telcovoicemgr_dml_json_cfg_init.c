@@ -1585,7 +1585,11 @@ static void jsonCfgDoVoiceProcessing(uint32_t service, uint32_t profile, uint32_
         if (cJSON_IsNumber(procItem))
         {
             memset(&initParam, 0, sizeof(initParam));
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
             snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, profile+1, line+1, "ReceiveGain");
+#else
+            snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, line+1, "ReceiveGain");
+#endif
             snprintf(initParam.value, sizeof(initParam.value), "%d", procItem->valueint);
             initParam.type = PARAM_INTEGER;
             json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
@@ -1601,7 +1605,11 @@ static void jsonCfgDoVoiceProcessing(uint32_t service, uint32_t profile, uint32_
         if (cJSON_IsNumber(procItem))
         {
             memset(&initParam, 0, sizeof(initParam));
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
             snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, profile+1, line+1, "TransmitGain");
+#else
+            snprintf(initParam.name, sizeof(initParam), LINE_VOICE_PROCESSING_TABLE_NAME"%s", service+1, line+1, "TransmitGain");
+#endif
             snprintf(initParam.value, sizeof(initParam.value), "%d", procItem->valueint);
             initParam.type = PARAM_INTEGER;
             json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
