@@ -65,11 +65,17 @@
 #include <systemd/sd-daemon.h>
 #endif
 
-#ifdef INCLUDE_BREAKPAD
-#include "telcovoicemgr_breakpad_wrapper.h"
-#endif
 
 #include "webconfig_framework.h"
+#ifdef INCLUDE_BREAKPAD
+const int kExceptSig[] = {
+  SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTRAP
+};
+const int kNumHandSig =
+    sizeof(kExceptSig) / sizeof(kExceptSig[0]);
+struct sigaction old_handlers[(sizeof(kExceptSig) / sizeof(kExceptSig[0]))];
+struct sigaction act;
+#endif
 
 extern char* pComponentName;
 char g_Subsystem[32]         = {0};
@@ -210,31 +216,45 @@ static void daemonize(void)
 #endif
 }
 
+#ifdef INCLUDE_BREAKPAD
+void sig_handler(int sig, siginfo_t* info, void* uc)
+#else
 void sig_handler(int sig)
+#endif
 {
     if ( sig == SIGUSR1 ) 
     {
+      #ifndef INCLUDE_BREAKPAD
         signal(SIGUSR1, sig_handler); /* reset it to this function */
+      #endif
         CcspTraceInfo(("SIGUSR1 received!\n"));
     }
     else if ( sig == SIGUSR2 ) 
     {
+      #ifndef INCLUDE_BREAKPAD
         signal(SIGUSR2, sig_handler); /* reset it to this function */
+      #endif
         CcspTraceInfo(("SIGUSR2 received!\n"));
     }
     else if ( sig == SIGCHLD ) 
-    {
+    {    
+      #ifndef INCLUDE_BREAKPAD
         signal(SIGCHLD, sig_handler); /* reset it to this function */
+      #endif
         CcspTraceInfo(("SIGCHLD received!\n"));
     }
     else if ( sig == SIGPIPE ) 
     {
+      #ifndef INCLUDE_BREAKPAD
         signal(SIGPIPE, sig_handler); /* reset it to this function */
+      #endif
         CcspTraceInfo(("SIGPIPE received!\n"));
     }
     else if ( sig == SIGALRM )
     {
+      #ifndef INCLUDE_BREAKPAD
         signal(SIGALRM, sig_handler); /* reset it to this function */
+      #endif
         CcspTraceWarning(("SIGALRM received!\n"));
         RDKLogEnable = GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LoggerEnable");
         RDKLogLevel = (char)GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LogLevel");
@@ -250,8 +270,26 @@ void sig_handler(int sig)
         CcspTraceWarning(("Signal %d received, exiting!\n", sig));
         bTelcoVoiceManagerRunning = FALSE;
         voicemgr_sysevent_close();
-        exit(0);
+        #ifndef INCLUDE_BREAKPAD
+         exit(0);
+        #endif
     }
+    #ifdef INCLUDE_BREAKPAD
+    //allow signal to be processed normally for correct core dump
+         CcspTraceInfo(("Restore breakpad signal handlers\n"));
+         for (int i = 0; i < kNumHandSig; ++i) {
+             if(sig==kExceptSig[i])
+             {
+             if (sigaction(kExceptSig[i], &old_handlers[i], NULL) == -1) {
+                 CcspTraceWarning(("sigaction could not restore the signal\n"));
+                 signal(kExceptSig[i], SIG_DFL);
+             }
+             raise(sig);// (*old_handlers[i].sa_sigaction)(sig,info,uc);
+             break;
+             }
+
+         }
+    #endif
 }
 #endif
 
@@ -312,9 +350,34 @@ int main(int argc, char* argv[])
         fputs(cmd, fd);
         fclose(fd);
     }
+#ifdef INCLUDE_BREAKPAD
+  //auto constructor will call breakpad_ExceptionHandler 
+  //backing up the old signal handlers
+  for (int i = 0; i < kNumHandSig; ++i) {
+       if (sigaction(kExceptSig[i], NULL, &old_handlers[i]) == -1) {
+          CcspTraceWarning(("sigaction failed while trying to fetch existing handlers : %d",kExceptSig[i]));
+         }
+     }
+    memset (&act, 0, sizeof(act));
+    act.sa_sigaction = sig_handler;
+    act.sa_flags = SA_ONSTACK | SA_SIGINFO | SA_NODEFER;
 
+    sigaction(SIGSEGV, &act, NULL);
+
+    sigaction(SIGTERM, &act, NULL);
+    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGUSR1, &act, NULL);
+    sigaction(SIGUSR2, &act, NULL);
+    sigaction(SIGPIPE, &act, NULL);
+    sigaction(SIGBUS, &act, NULL);
+    sigaction(SIGKILL, &act, NULL);
+    sigaction(SIGFPE, &act, NULL);
+    sigaction(SIGILL, &act, NULL);
+    sigaction(SIGQUIT, &act, NULL);
+    sigaction(SIGHUP, &act, NULL);
+    sigaction(SIGALRM, &act, NULL);
+#else
     signal(SIGSEGV, sig_handler);
-
     signal(SIGTERM, sig_handler);
     signal(SIGINT, sig_handler);
     signal(SIGUSR1, sig_handler);
@@ -328,8 +391,6 @@ int main(int argc, char* argv[])
     signal(SIGHUP, sig_handler);
     signal(SIGALRM, sig_handler);
 
-#ifdef INCLUDE_BREAKPAD
-    breakpad_ExceptionHandler();
 #endif
 
     cmd_dispatch('e');
