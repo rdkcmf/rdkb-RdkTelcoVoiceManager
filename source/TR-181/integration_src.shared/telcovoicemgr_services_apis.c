@@ -1453,74 +1453,40 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetDnsServers(char *dns_server_address)
     char ipAddrFamily[IP_ADDR_FAMILY_LENGTH] = {0};
     char dns_server_prim[48] = {0};
     char dns_server_sec[48] = {0};
+    char ifName[32] = {0};
+    char sysevent_param_name[32] = {0};
 
     if(dns_server_address == NULL)
     {
         return ANSC_STATUS_FAILURE;
     }
-    if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_UPDATE_IPFAMILY, ipAddrFamily, sizeof(ipAddrFamily)) != 0)
-    {
-        CcspTraceError(("%s : Failed to get ipAddressFamily from sysevent \n", __FUNCTION__));
-        return ANSC_STATUS_FAILURE;
-    }
 
-    if( !strcmp(ipAddrFamily, STR_IPV4) )
+    sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_CURRENT_WAN_IFNAME, ifName, sizeof(ifName));
+    if ((sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_PRIMARY, dns_server_prim, sizeof(dns_server_prim)) != 0) || (strlen(dns_server_prim) == 0))
     {
-        char ifName[32] = {0};
-        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_CURRENT_WAN_IFNAME, ifName, sizeof(ifName)) == 0)
+        //Look for Ipv4 Dns Server
+        snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_PRIMARY, ifName);
+        if ((sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_prim, sizeof(dns_server_prim)) != 0) || (strlen(dns_server_prim) == 0))
         {
-            char sysevent_param_name[32] = {0};
-            snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_PRIMARY, ifName);
-            if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_prim, sizeof(dns_server_prim)) != 0)
-            {
-                //set default
-                snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
-            }
-            else if(strlen(dns_server_prim) == 0)
-            {
+            //Set default
+            CcspTraceError(("[%s]::[%d] Set default Dns Server Address !!!! \n", __FUNCTION__,__LINE__));
             snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
-            }
+        }
+    }
 
-            memset(sysevent_param_name, 0, sizeof(sysevent_param_name));
-            snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_SECONDARY, ifName);
-
-            if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_sec, sizeof(dns_server_sec)) != 0)
-            {
-                //set default
-                snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
-            }
-            else if(strlen(dns_server_sec) == 0)
-            {
+    if ((sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_SECONDARY, dns_server_sec, sizeof(dns_server_sec)) != 0) || (strlen(dns_server_sec) == 0))
+    {
+        //Look for Ipv4 Dns Server
+        memset(sysevent_param_name, 0, sizeof(sysevent_param_name));
+        snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_DNS_SECONDARY, ifName);
+        if ((sysevent_get(sysevent_voice_fd, sysevent_voice_token, sysevent_param_name, dns_server_sec, sizeof(dns_server_sec)) != 0) || (strlen(dns_server_sec) == 0))
+        {
+            //Set default
+            CcspTraceError(("[%s]::[%d] Set default Dns Server Address !!!! \n", __FUNCTION__,__LINE__));
             snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
-            }
         }
     }
-    else if( !strcmp(ipAddrFamily, STR_IPV6) )
-    {
-        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_PRIMARY, dns_server_prim, sizeof(dns_server_prim)) != 0)
-        {
-           //set default
-           snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
-        }
-        else if(strlen(dns_server_prim) == 0)
-        {
-           snprintf(dns_server_prim, sizeof(dns_server_prim), "%s", "0.0.0.0");
-        }
-        if (sysevent_get(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIELD_IPV6_DNS_SECONDARY, dns_server_sec, sizeof(dns_server_sec)) != 0)
-        {
-           //set default
-           snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
-        }
-        else if(strlen(dns_server_sec) == 0)
-        {
-           snprintf(dns_server_sec, sizeof(dns_server_sec), "%s", "0.0.0.0");
-        }
-    }
-    else
-    {
-       CcspTraceError(("[%s]::[%d] Invalid IpAddress Family !!!! \n", __FUNCTION__,__LINE__));
-       return ANSC_STATUS_FAILURE;
-    }
+
     snprintf(dns_server_address,JSON_MAX_VAL_ARR_SIZE,"%s,%s", dns_server_prim, dns_server_sec);
     return ANSC_STATUS_SUCCESS;
 }
