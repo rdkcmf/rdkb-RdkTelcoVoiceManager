@@ -333,7 +333,7 @@ static void event_set_lan_status (void)
                     CcspTraceInfo(("LAN - ipv4 address from sysevent : %s \n", ipAddr));
                     CcspTraceWarning(("Voice Manager: LAN up !\n"));
                     printf("Voice Manager: LAN up !\n");
-                    CcspTraceNotice(("CCSPTELCOVOIP_LANUP :: Voice Manager: LAN up\n"));
+                    CcspTraceNotice(("TELCOVOICEMANAGER_LANUP :: Voice Manager: LAN up\n"));
                     fflush(stdout);
                     TelcoVoiceMgrDmlSetBoundIpAddress(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, ipAddr);
                     TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_UP, ipAddrFamily, ipAddr);
@@ -347,7 +347,7 @@ static void event_set_lan_status (void)
         else
         {
             CcspTraceWarning(("Voice Manager: LAN down !\n"));
-            CcspTraceNotice(("CCSPTELCOVOIP_LANDOWN :: Voice Manager: LAN down\n"));
+            CcspTraceNotice(("TELCOVOICEMANAGER_LANDOWN :: Voice Manager: LAN down\n"));
             printf("Voice Manager: LAN down !\n");
             fflush(stdout);
             TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);
@@ -381,7 +381,7 @@ static void event_set_wan_status (void)
                     if (sysevent_get(sysevent_fd, sysevent_token, sysevent_param_name, ipAddr, sizeof(ipAddr)) == 0)
                     {
                         CcspTraceInfo(("%s:: WAN IPv4 Address updated! { %s }\n", __FUNCTION__, ipAddr));
-                        CcspTraceNotice(("CCSPTELCOVOIP_IPV4_WANUP :: Voice Manager: IPV4 WAN up\n"));
+                        CcspTraceNotice(("TELCOVOICEMANAGER_IPV4_WANUP :: Voice Manager: IPV4 WAN up\n"));
 
                         //update the SKBmark reading from Wan Manager
                         if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, SIP, &iEthPriority))
@@ -412,7 +412,7 @@ static void event_set_wan_status (void)
             else
             {
                 CcspTraceWarning(("Voice Manager: WAN down !\n"));
-                CcspTraceNotice(("CCSPTELCOVOIP_IPV4_WANDOWN :: Voice Manager: IPV4 WAN down\n"));
+                CcspTraceNotice(("TELCOVOICEMANAGER_IPV4_WANDOWN :: Voice Manager: IPV4 WAN down\n"));
                 printf("Voice Manager: WAN down !\n");
                 fflush(stdout);
                 TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);
@@ -438,7 +438,7 @@ static void event_set_wan_status (void)
                     {
                         strncpy(ipv6_addr, "1",2);
                         CcspTraceInfo(("%s:: WAN IPv6 Address updated! { %s }\n", __FUNCTION__, ipAddr));
-                        CcspTraceNotice(("CCSPTELCOVOIP_IPV6_WANUP :: Voice Manager: IPV6 WAN up\n"));
+                        CcspTraceNotice(("TELCOVOICEMANAGER_IPV6_WANUP :: Voice Manager: IPV6 WAN up\n"));
                         //update the SKBmark reading from Wan Manager
 
                         if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetEthernetPriorityMark(TELCOVOICEMGR_DML_VOICE_SERVICE_INDEX, SIP_INDEX, SIP, &iEthPriority))
@@ -468,7 +468,7 @@ static void event_set_wan_status (void)
             else
             {
                 CcspTraceWarning(("Voice Manager: WAN down !\n"));
-                CcspTraceNotice(("CCSPTELCOVOIP_IPV6_WANDOWN :: Voice Manager: IPV6 WAN down\n"));
+                CcspTraceNotice(("TELCOVOICEMANAGER_IPV6_WANDOWN :: Voice Manager: IPV6 WAN down\n"));
                 printf("Voice Manager: WAN down !\n");
                 fflush(stdout);
                 TelcoVoiceMgrDmlSetLinkState(VOICE_HAL_IP_LINK_STATE_DOWN, ipAddrFamily, NULL);

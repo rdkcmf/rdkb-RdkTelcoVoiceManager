@@ -1581,6 +1581,7 @@ ANSC_STATUS TelcoVoiceMgrDmlFactoryReset(uint32_t uiService, TELCOVOICEMGR_VOICE
         CcspTraceWarning(("[%s]::[%d] Voice process stop failed!!!! \n", __FUNCTION__,__LINE__));
         return ANSC_STATUS_FAILURE;
     }
+    CcspTraceWarning(("TELCOVOICEMANAGER_FACTORY_DEF :: Voice factory defaults requested\n"));
     if(voice_process_factory_default() != ANSC_STATUS_SUCCESS)
     {
         CcspTraceInfo(("%s %d - Error in initialising datamodels on factory reset. \n", __FUNCTION__, __LINE__ ));
