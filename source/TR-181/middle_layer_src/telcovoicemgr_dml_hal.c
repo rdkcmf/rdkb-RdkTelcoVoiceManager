@@ -596,7 +596,8 @@ ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCa
 {
 
     ANSC_STATUS rc = ANSC_STATUS_SUCCESS;
-
+    char *strChildName = NULL;
+    char *endPtr = NULL;
     if (pCapabilities == NULL)
     {
         fprintf(stderr,"%s - %d Invalid argument \n", __FUNCTION__, __LINE__);
@@ -630,7 +631,14 @@ ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCa
             fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
             continue;
         }
-        rc = Map_hal_dml_capabilities(pCapabilities,resp_param.name,resp_param.value);
+        strChildName = strstr(resp_param.name, "Capabilities");
+        if(strChildName)
+        {
+            strChildName += strlen("Capabilities") + 1;
+            endPtr = resp_param.name + strlen(resp_param.name);
+            rc = Map_hal_dml_capabilities(pCapabilities,strChildName, endPtr,resp_param.value);
+        }
+
     }
     if (rc != ANSC_STATUS_SUCCESS)
     {
@@ -651,6 +659,9 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileLi
     hal_param_t resp_param;
     char paramName[JSON_MAX_STR_ARR_SIZE] = { 0 };
     json_object *jreply_msg = NULL;
+    char *strTableName = NULL;
+    char *endPtr = NULL;
+
     memset(&resp_param, 0, sizeof(resp_param));
 
     if ((pVoiceProfileList == NULL ) || (vsIndex <=0))
@@ -684,7 +695,12 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileLi
             fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
             continue;
         }
-        Map_hal_dml_voiceProfile(pVoiceProfileList, resp_param.name, resp_param.value);
+        strTableName = strstr(resp_param.name, "VoiceProfile");
+        if(strTableName)
+        {
+            endPtr = resp_param.name + strlen(resp_param.name);
+            Map_hal_dml_voiceProfile(pVoiceProfileList, strTableName, endPtr, resp_param.value);
+        }
     }
 
 
@@ -703,6 +719,9 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
     char paramName[JSON_MAX_STR_ARR_SIZE] = { 0 };
     hal_param_t resp_param;
     json_object *jreply_msg = NULL;
+    char *strTableName = NULL;
+    char *endPtr = NULL;
+
     memset(&resp_param, 0, sizeof(resp_param));
 
     if ((pPhyInterfaceList == NULL) || (vsIndex <=0))
@@ -736,7 +755,12 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
             fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
             continue;
         }
-        Map_hal_dml_phyInterface(pPhyInterfaceList, resp_param.name, resp_param.value);
+        strTableName = strstr(resp_param.name, "PhyInterface");
+        if(strTableName)
+        {
+            endPtr = resp_param.name + strlen(resp_param.name);
+            Map_hal_dml_phyInterface(pPhyInterfaceList, strTableName, endPtr, resp_param.value);
+        }
     }
 
 

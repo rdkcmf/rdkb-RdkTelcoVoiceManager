@@ -72,8 +72,8 @@
 #define telcovoicemgr_hal_get_voiceProfile_line_codecList_index         telcovoicemgr_hal_get_third_index
 #define telcovoicemgr_hal_get_voiceProfile_line_session_index           telcovoicemgr_hal_get_third_index
 
-ANSC_STATUS Map_hal_dml_capabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities, char* ParamName, char* pValue);
-ANSC_STATUS Map_hal_dml_phyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterfaceList, char* ParamName, char* pValue);
-ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char* ParamName, char* pValue);
-ANSC_STATUS Map_hal_dml_voiceProfileLine(DML_LINE_LIST_T* pVoiceProfile_Line_List, char* ParamName, char* pValue);
+ANSC_STATUS Map_hal_dml_capabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities, char* ParamName, char *pathEnd, char* pValue);
+ANSC_STATUS Map_hal_dml_phyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterfaceList, char* ParamName, char* ptrEnd, char* pValue);
+ANSC_STATUS Map_hal_dml_voiceProfile(DML_PROFILE_LIST_T* pVoiceProfileList, char* ParamName, char* ptrEnd, char* pValue);
+ANSC_STATUS Map_hal_dml_voiceProfileLine(DML_LINE_LIST_T* pVoiceProfile_Line_List, char* ParamName, char* ptrEnd,char* pValue);
 #endif //_TELCOVOICEMGR_DML_HAL_PARAM_H
