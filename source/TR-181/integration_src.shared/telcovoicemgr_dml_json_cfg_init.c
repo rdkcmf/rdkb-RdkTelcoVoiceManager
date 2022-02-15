@@ -1743,7 +1743,7 @@ static int32_t jsonCfgSetLineEnable(uint32_t service, uint32_t profile, uint32_t
     return 0;
 }
 
-int32_t voice_process_factory_default()
+ANSC_STATUS voice_process_factory_default()
 {
     ANSC_STATUS returnStatus = ANSC_STATUS_SUCCESS;
     (void)remove(VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME);

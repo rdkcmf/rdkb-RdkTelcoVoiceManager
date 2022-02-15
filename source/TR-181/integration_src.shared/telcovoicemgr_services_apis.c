@@ -528,7 +528,7 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetParamValue(char *pComponent, char *pBus, c
     {
         free_parameterValStruct_t(bus_handle, nval, retVal);
     }
-
+    CcspTraceInfo(("%s ANSC_STATUS_FAILURE\n", __FUNCTION__));
     return ANSC_STATUS_FAILURE;
 }
 
@@ -883,7 +883,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetWanEthernetPriorityMark(PROTOCOL_TYPE protocol, i
     valStruct.protocol = protocol;
     valStruct.iEthPriorityMark = iValue;
     valStruct.iUpdateStatus = FALSE;
-
+    CcspTraceInfo(("%s:%d:: Protocol[%d],iValue[%d]\n", __FUNCTION__, __LINE__,protocol,iValue));
     if( TelcoVoiceMgrDmlIterateEnabledInterfaces(
                 TelcoVoiceMgrDmlSetMarkingEthPriorityMark, (void *)&valStruct) == ANSC_STATUS_SUCCESS)
     {
@@ -2813,6 +2813,8 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
     PDML_SIP_NETWORK                  pDmlSipNetwork     = NULL;
 #else
     PTELCOVOICEMGR_DML_PROFILE        pDmlVoiceProfile   = NULL;
+    PTELCOVOICEMGR_DML_SIP pDmlSipObj = NULL;
+    PTELCOVOICEMGR_DML_RTP pDmlRtpObj = NULL;
 #endif
 
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
@@ -2862,16 +2864,18 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
                 }
             }
 #else
-            if(pDmlVoiceProfile->SIPObj.EthernetPriorityMark != NULL)
+            pDmlSipObj = &(pDmlVoiceProfile->SIPObj);
+            if(pDmlSipObj != NULL)
             {
-                CcspTraceWarning(("%s:%d:: Sip Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->SIPObj.EthernetPriorityMark));
-                *pValue = pDmlVoiceProfile->SIPObj.EthernetPriorityMark;
+                CcspTraceInfo(("%s:%d:: Sip Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlSipObj->EthernetPriorityMark));
+                *pValue = pDmlSipObj->EthernetPriorityMark;
                 returnStatus = ANSC_STATUS_SUCCESS;
                 goto EXIT;
             }
 #endif
             else
             {
+                CcspTraceWarning(("%s:%d:: Sip Ethernet Priority: NULL\n", __FUNCTION__, __LINE__));
                 returnStatus = ANSC_STATUS_FAILURE;
                 goto EXIT;
             }
@@ -2886,27 +2890,31 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
                 goto EXIT;
             }
 #else
-            if(pDmlVoiceProfile->RTPObj.EthernetPriorityMark != NULL)
+            pDmlRtpObj = &(pDmlVoiceProfile->RTPObj);
+            if(pDmlRtpObj != NULL)
             {
-                CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->RTPObj.EthernetPriorityMark));
-                *pValue = pDmlVoiceProfile->RTPObj.EthernetPriorityMark;
+                CcspTraceInfo(("%s:%d:: Rtp Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlRtpObj->EthernetPriorityMark));
+                *pValue = pDmlRtpObj->EthernetPriorityMark;
                 returnStatus = ANSC_STATUS_SUCCESS;
                 goto EXIT;
             }
 #endif
             else
             {
+                CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority: NULL\n", __FUNCTION__, __LINE__));
                 returnStatus = ANSC_STATUS_FAILURE;
                 goto EXIT;
             }
             break;
         default:
+            CcspTraceWarning(("%s:%d:: Invalid protocol\n", __FUNCTION__, __LINE__));
             returnStatus = ANSC_STATUS_FAILURE;
             goto EXIT;
     }
 
 EXIT:
     TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+    CcspTraceWarning(("%s:%d:: returnStatus[%s]\n", __FUNCTION__, __LINE__,(returnStatus==ANSC_STATUS_SUCCESS)?"Success":"Failed"));
     return returnStatus;
 }
 
