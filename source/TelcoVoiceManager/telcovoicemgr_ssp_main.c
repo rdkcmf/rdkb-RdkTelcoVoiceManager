@@ -256,12 +256,6 @@ void sig_handler(int sig)
         signal(SIGALRM, sig_handler); /* reset it to this function */
       #endif
         CcspTraceWarning(("SIGALRM received!\n"));
-        RDKLogEnable = GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LoggerEnable");
-        RDKLogLevel = (char)GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LogLevel");
-        TELCOVOICEMANAGER_RDKLogLevel = GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_TelcoVOICEManager_LogLevel");
-        TELCOVOICEMANAGER_RDKLogEnable = (char)GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_TelcoVOICEManager_LoggerEnable");
-        CcspTraceWarning(("RDKLogEnable %d, RDKLogLevel %d, TELCOVOICEMANAGER_RDKLogLevel %d, TELCOVOICEMANAGER_RDKLogEnable %d\n",
-                          RDKLogEnable, RDKLogLevel, TELCOVOICEMANAGER_RDKLogLevel, TELCOVOICEMANAGER_RDKLogEnable));
     }
     else 
     {
@@ -405,14 +399,6 @@ int main(int argc, char* argv[])
         fprintf(stderr, "Cdm_Init: %s\n", Cdm_StrError(err));
         exit(1);
     }
-
-    //Needs to configure initial logger setup
-    RDKLogEnable = GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LoggerEnable");
-    RDKLogLevel = (char)GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_LogLevel");
-    TELCOVOICEMANAGER_RDKLogLevel = GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_TelcoVOICEManager_LogLevel");
-    TELCOVOICEMANAGER_RDKLogEnable = (char)GetLogInfo(bus_handle,"eRT.","Device.LogAgent.X_RDKCENTRAL-COM_TelcoVOICEManager_LoggerEnable");
-    CcspTraceWarning(("RDKLogEnable %d, RDKLogLevel %d, TELCOVOICEMANAGER_RDKLogLevel %d, TELCOVOICEMANAGER_RDKLogEnable %d\n",
-                          RDKLogEnable, RDKLogLevel, TELCOVOICEMANAGER_RDKLogLevel, TELCOVOICEMANAGER_RDKLogEnable));
 
     //rdk_logger_init("/fss/gw/lib/debug.ini");
     rdk_logger_init(DEBUG_INI_NAME);
