@@ -1,6 +1,6 @@
 {
   "namespace": "com.comcast.kestrel.odp.event",
-  "name": "VoiceDiagnostics",
+  "name": "TelcoVOIPTelemetryDiagnostics",
   "type": "record",
   "doc": "Contains a list of zero of more reports for each device connected to a network interface (Ethernet/Moca/WiFi). Each report contains device status and L2 counters",
   "fields": [
