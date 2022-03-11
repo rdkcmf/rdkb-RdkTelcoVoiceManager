@@ -1238,6 +1238,26 @@ ANSC_STATUS TelcoVoiceMgrDmlSetBoundIpAddress(uint32_t uiService, char *BoundIpA
        return ANSC_STATUS_FAILURE;
     }
 
+    PTELCOVOICEMGR_DML_VOICESERVICE       pDmlVoiceService    = NULL;
+    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+    if(pTelcoVoiceMgrDmlData == NULL)
+    {
+        CcspTraceError(("%s:%d:: TelcoVoiceMgrDmlGetDataLocked: Failed\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_RESOURCES;
+    }
+
+    DML_VOICE_SERVICE_CTRL_T* pVoiceService = pTelcoVoiceMgrDmlData->Service.VoiceService.pdata[uiService - 1];
+    pDmlVoiceService = &(pVoiceService->dml);
+    if ( !pDmlVoiceService )
+    {
+        CcspTraceError(("%s:%d:: pDmlVoiceService: NULL\n", __FUNCTION__, __LINE__));
+        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+        return ANSC_STATUS_RESOURCES;
+    }
+    AnscCopyString(pDmlVoiceService->X_RDK_BoundIpAddr, BoundIpAddress);
+
+    TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+
     return ANSC_STATUS_SUCCESS;
 }
 
