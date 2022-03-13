@@ -24,7 +24,7 @@ static pthread_cond_t VoiceReportCond = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t device_mac_mutex = PTHREAD_MUTEX_INITIALIZER;
 static BOOL rt_schema_file_parsed = FALSE;
 static avro_value_iface_t *iface = NULL;
-static char ReportSource[] = "VOICE";
+static char ReportSource[] = "VOIP";
 static char CPE_TYPE_STRING[] = "Gateway";
 static char *macStr = NULL;
 static char CpemacStr[32];
@@ -744,7 +744,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
     int k = 0, i, j;
     avro_writer_t writer;
     uint8_t *b64buffer = NULL;
-    char *serviceName = "VOICE";
+    char *serviceName = "VOIP";
     char *dest = "event:raw.kestrel.reports.VoipDiagnostics";
     char *contentType = "avro/binary"; // contentType "application/json", "avro/binary"
     size_t decodesize = 0;
@@ -999,7 +999,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)ptr->MaxServiceCount);
+        avro_value_set_int(&optional, ptr->MaxServiceCount);
         CcspTraceInfo(("MaxServiceCount\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1009,7 +1009,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)pstVoiceService->MaxPhyInterfaceCount);
+        avro_value_set_int(&optional, pstVoiceService->MaxPhyInterfaceCount);
         CcspTraceInfo(("MaxPhyInterfaceCount\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1019,7 +1019,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)pstVoiceService->MaxProfileCount);
+        avro_value_set_int(&optional, pstVoiceService->MaxProfileCount);
         CcspTraceInfo(("MaxProfileCount\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1029,7 +1029,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)ptr->VoiceServiceNumberOfEntries);
+        avro_value_set_int(&optional, ptr->VoiceServiceNumberOfEntries);
         CcspTraceInfo(("VoiceServiceNumberOfEntries\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1039,7 +1039,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)pstVoiceService->PhyInterfaceNumberOfEntries);
+        avro_value_set_int(&optional, pstVoiceService->PhyInterfaceNumberOfEntries);
         CcspTraceInfo(("PhyInterfaceNumberOfEntries\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1049,7 +1049,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
         avro_value_set_branch(&drField, 1, &optional);
-        avro_value_set_double(&optional, (double)pstVoiceService->VoiceProfileNumberOfEntries);
+        avro_value_set_int(&optional, pstVoiceService->VoiceProfileNumberOfEntries);
         CcspTraceInfo(("VoiceProfileNumberOfEntries\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1088,7 +1088,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->SIPOutboundProxyPort);
+            avro_value_set_int(&optional, pstVoiceProfile->SIPOutboundProxyPort);
             CcspTraceInfo(("SIPOutboundProxyPort\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s\n", avro_strerror()));
@@ -1108,7 +1108,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->SIPProxyServerPort);
+            avro_value_set_int(&optional, pstVoiceProfile->SIPProxyServerPort);
             CcspTraceInfo(("SIPProxyServerPort\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s\n", avro_strerror()));
@@ -1128,7 +1128,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->SIPRegistrarServerPort);
+            avro_value_set_int(&optional, pstVoiceProfile->SIPRegistrarServerPort);
             CcspTraceInfo(("SIPRegistrarServerPort\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s\n", avro_strerror()));
@@ -1178,7 +1178,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->SDigitTimer);
+            avro_value_set_int(&optional, pstVoiceProfile->SDigitTimer);
             CcspTraceInfo(("SDigitTimer\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s\n", avro_strerror()));
@@ -1188,7 +1188,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->ZDigitTimer);
+            avro_value_set_int(&optional, pstVoiceProfile->ZDigitTimer);
             CcspTraceInfo(("ZDigitTimer\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s\n", avro_strerror()));
@@ -1198,7 +1198,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->MaxLineCount);
+            avro_value_set_int(&optional, pstVoiceProfile->MaxLineCount);
             CcspTraceInfo(("MaxLineCount\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1208,7 +1208,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
                 CcspTraceError(("%s LINE %d\n", avro_strerror(), __LINE__));
             avro_value_set_branch(&drVoiceProfField, 1, &optional);
-            avro_value_set_double(&optional, (double)pstVoiceProfile->VoiceProfileNumberOfLines);
+            avro_value_set_int(&optional, pstVoiceProfile->VoiceProfileNumberOfLines);
             CcspTraceInfo(("VoiceProfileNumberOfLines\tType: %d\n", avro_value_get_type(&optional)));
             if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
@@ -1347,7 +1347,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->AverageFarEndInterarrivalJitter);
+                avro_value_set_int(&optional, pstLine->AverageFarEndInterarrivalJitter);
                 CcspTraceInfo(("AverageFarEndInterarrivalJitter\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1357,7 +1357,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->AverageReceiveInterarrivalJitter);
+                avro_value_set_int(&optional, pstLine->AverageReceiveInterarrivalJitter);
                 CcspTraceInfo(("AverageReceiveInterarrivalJitter\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1367,7 +1367,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->AverageRoundTripDelay);
+                avro_value_set_int(&optional, pstLine->AverageRoundTripDelay);
                 CcspTraceInfo(("AverageRoundTripDelay\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1407,7 +1407,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->FarEndPacketLossRate);
+                avro_value_set_int(&optional, pstLine->FarEndPacketLossRate);
                 CcspTraceInfo(("FarEndPacketLossRate\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1417,7 +1417,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->IncomingCallsAnswered);
+                avro_value_set_int(&optional, pstLine->IncomingCallsAnswered);
                 CcspTraceInfo(("IncomingCallsAnswered\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1427,7 +1427,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->IncomingCallsConnected);
+                avro_value_set_int(&optional, pstLine->IncomingCallsConnected);
                 CcspTraceInfo(("IncomingCallsConnected\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1437,7 +1437,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->IncomingCallsFailed);
+                avro_value_set_int(&optional, pstLine->IncomingCallsFailed);
                 CcspTraceInfo(("IncomingCallsFailed\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1447,7 +1447,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->IncomingCallsReceived);
+                avro_value_set_int(&optional, pstLine->IncomingCallsReceived);
                 CcspTraceInfo(("IncomingCallsReceived\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1457,7 +1457,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->OutgoingCallsAnswered);
+                avro_value_set_int(&optional, pstLine->OutgoingCallsAnswered);
                 CcspTraceInfo(("OutgoingCallsAnswered\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1467,7 +1467,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->OutgoingCallsAttempted);
+                avro_value_set_int(&optional, pstLine->OutgoingCallsAttempted);
                 CcspTraceInfo(("OutgoingCallsAttempted\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1477,7 +1477,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->OutgoingCallsConnected);
+                avro_value_set_int(&optional, pstLine->OutgoingCallsConnected);
                 CcspTraceInfo(("OutgoingCallsConnected\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1487,7 +1487,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->OutgoingCallsFailed);
+                avro_value_set_int(&optional, pstLine->OutgoingCallsFailed);
                 CcspTraceInfo(("OutgoingCallsFailed\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1527,7 +1527,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->ReceiveInterarrivalJitter);
+                avro_value_set_int(&optional, pstLine->ReceiveInterarrivalJitter);
                 CcspTraceInfo(("ReceiveInterarrivalJitter\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1537,7 +1537,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->ReceivePacketLossRate);
+                avro_value_set_int(&optional, pstLine->ReceivePacketLossRate);
                 CcspTraceInfo(("ReceivePacketLossRate\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1557,7 +1557,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->RoundTripDelay);
+                avro_value_set_int(&optional, pstLine->RoundTripDelay);
                 CcspTraceInfo(("RoundTripDelay\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1577,7 +1577,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->ReceiveGain);
+                avro_value_set_int(&optional, pstLine->ReceiveGain);
                 CcspTraceInfo(("ReceiveGain\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
@@ -1587,7 +1587,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
                 avro_value_set_branch(&drLineField, 1, &optional);
-                avro_value_set_double(&optional, (double)pstLine->TransmitGain);
+                avro_value_set_int(&optional, pstLine->TransmitGain);
                 CcspTraceInfo(("TransmitGain\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
