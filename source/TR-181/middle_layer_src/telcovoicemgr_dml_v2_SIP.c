@@ -3943,21 +3943,15 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
         {
             return ANSC_STATUS_DISCARD;
         }
-        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.SIP.Network.%d.EthernetPriorityMark",uVsIndex,uNetworkIndex);
+        TELCOVOICEMGR_LOCK_OR_EXIT()
 
-        if (TelcoVoiceMgrHal_SetParamInt(HalName,iValue) == ANSC_STATUS_SUCCESS)
-        {
-            TELCOVOICEMGR_LOCK_OR_EXIT()
+        pHEAD->EthernetPriorityMark = iValue;
 
-            pHEAD->EthernetPriorityMark = iValue;
+        TELCOVOICEMGR_UNLOCK()
 
-            TELCOVOICEMGR_UNLOCK()
+        (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "EthernetPriorityMark", iValue);
 
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                      uNetworkIndex, "EthernetPriorityMark", iValue);
-
-            ret = TRUE;
-        }
+        ret = TRUE;
     }
     else
     {

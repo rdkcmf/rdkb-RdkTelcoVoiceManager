@@ -1440,20 +1440,15 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue(ANSC_HANDLE hInsConte
         {
             return ANSC_STATUS_DISCARD;
         }
-        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP.EthernetPriorityMark",uVsIndex,uProfileIndex);
+        TELCOVOICEMGR_LOCK_OR_EXIT()
 
-        if (TelcoVoiceMgrHal_SetParamInt(HalName,iValue) == ANSC_STATUS_SUCCESS)
-        {
-            TELCOVOICEMGR_LOCK_OR_EXIT()
+        pHEAD->EthernetPriorityMark = iValue;
 
-            pHEAD->EthernetPriorityMark = iValue;
+        TELCOVOICEMGR_UNLOCK()
 
-            TELCOVOICEMGR_UNLOCK()
+        (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "RtpEthernetPriorityMark", iValue);
 
-            (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "RtpEthernetPriorityMark", iValue);
-
-            ret = TRUE;
-        }
+        ret = TRUE;
     }
     else
     {
