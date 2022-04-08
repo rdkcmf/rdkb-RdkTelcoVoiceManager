@@ -310,6 +310,15 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                     }
                 }
             }
+            //CallLog
+            pDmlVoiceService->CallLog = (DML_CALLLOG_LIST_T*) AnscAllocateMemory(sizeof(DML_CALLLOG_LIST_T));
+            if ( pDmlVoiceService->CallLog == NULL )
+            {
+                returnStatus = ANSC_STATUS_RESOURCES;
+                CcspTraceError(("%s - Failed CallLog List: NULL\n", __FUNCTION__));
+                goto EXIT;
+            }
+            pDmlVoiceService->CallLog->ulQuantity = 0;
         }
     }
     else
@@ -2108,7 +2117,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddCallLog(PDML_CALLLOG_LIST_T pCallLogList, int ind
 
     if(pCallLogList != NULL)
     {
-        if(index < TELCOVOICE_DATA_MAX)
+        if(index < TELCOVOICEMGR_DML_MAX_CALLLOG_ENTRY)
         {
             //delete old
             if(pCallLogList->pdata[index] != NULL)
@@ -2194,7 +2203,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddCallLogSession(PDML_CALLLOG_SESSION_LIST_T pCallL
 
     if(pCallLogSessionList != NULL)
     {
-        if(index < TELCOVOICE_DATA_MAX)
+        if(index < TELCOVOICEMGR_DML_MAX_CALLLOG_SESSION)
         {
             //delete old
             if(pCallLogSessionList->pdata[index] != NULL)

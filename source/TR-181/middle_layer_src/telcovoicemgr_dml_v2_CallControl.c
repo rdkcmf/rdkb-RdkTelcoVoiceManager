@@ -913,6 +913,11 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_Rollback(ANSC_HANDLE hInsContext)
 BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_InCalls_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    char HalName[MAX_STR_LEN] = {0};
+    BOOL bIsUpdated   = FALSE;
+    TELCOVOICEMGR_DML_VOICESERVICE_STATS  stVoiceStats;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -928,6 +933,30 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_InCalls_GetParamUlongValue(ANSC
 
     PDML_CALLCONTROL_STATS_INCALLS  pHEAD = &(pDmlCallCtrlLine->Stats.IncomingCalls);
 
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlCallCtrlLine->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    if ( ( AnscGetTickInSeconds() - pCallCtrlLineCtrl->PreviousVisitTimeOfLine) < 10 )
+    {
+        bIsUpdated  = TRUE;
+    }
+    else
+    {
+        pCallCtrlLineCtrl->PreviousVisitTimeOfLine =  AnscGetTickInSeconds();
+        bIsUpdated  = FALSE;
+    }
+
+    if(!bIsUpdated)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats.", uVsIndex, pDmlCallCtrlLine->uInstanceNumber);
+        TelcoVoiceHal_GetLineStats(HalName, &stVoiceStats);
+
+        TELCOVOICEMGR_LOCK_OR_EXIT()
+
+        TelcoVoiceMgrDml_MapLineStats(pDmlCallCtrlLine, &stVoiceStats);
+    }
     if( AnscEqualString(ParamName, "TotalCallTime", TRUE) )
     {
         *puLong = pHEAD->TotalCallTime;
@@ -991,6 +1020,11 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_InCalls_GetParamUlongValue(ANSC
 BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_OutCalls_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    char HalName[MAX_STR_LEN] = {0};
+    BOOL bIsUpdated   = FALSE;
+    TELCOVOICEMGR_DML_VOICESERVICE_STATS  stVoiceStats;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1005,6 +1039,31 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_OutCalls_GetParamUlongValue(ANS
     PDML_CALLCONTROL_LINE pDmlCallCtrlLine = &(pCallCtrlLineCtrl->dml);
 
     PDML_CALLCONTROL_STATS_OUTCALLS  pHEAD = &(pDmlCallCtrlLine->Stats.OutgoingCalls);
+
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlCallCtrlLine->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    if ( ( AnscGetTickInSeconds() - pCallCtrlLineCtrl->PreviousVisitTimeOfLine) < 10 )
+    {
+        bIsUpdated  = TRUE;
+    }
+    else
+    {
+        pCallCtrlLineCtrl->PreviousVisitTimeOfLine =  AnscGetTickInSeconds();
+        bIsUpdated  = FALSE;
+    }
+
+    if(!bIsUpdated)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats.", uVsIndex, pDmlCallCtrlLine->uInstanceNumber);
+        TelcoVoiceHal_GetLineStats(HalName, &stVoiceStats);
+
+        TELCOVOICEMGR_LOCK_OR_EXIT()
+
+        TelcoVoiceMgrDml_MapLineStats(pDmlCallCtrlLine, &stVoiceStats);        CcspTraceWarning(("%s: %d\n", __func__, __LINE__));
+    }
 
     if( AnscEqualString(ParamName, "TotalCallTime", TRUE) )
     {
@@ -1070,6 +1129,11 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_OutCalls_GetParamUlongValue(ANS
 BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_RTP_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    char HalName[MAX_STR_LEN] = {0};
+    BOOL bIsUpdated   = FALSE;
+    TELCOVOICEMGR_DML_VOICESERVICE_STATS  stVoiceStats;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1084,6 +1148,31 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_RTP_GetParamUlongValue(ANSC_HAN
     PDML_CALLCONTROL_LINE pDmlCallCtrlLine = &(pCallCtrlLineCtrl->dml);
 
     PDML_CALLCONTROL_STATS_RTP  pHEAD = &(pDmlCallCtrlLine->Stats.RTP);
+
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlCallCtrlLine->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    if ( ( AnscGetTickInSeconds() - pCallCtrlLineCtrl->PreviousVisitTimeOfLine) < 10 )
+    {
+        bIsUpdated  = TRUE;
+    }
+    else
+    {
+        pCallCtrlLineCtrl->PreviousVisitTimeOfLine =  AnscGetTickInSeconds();
+        bIsUpdated  = FALSE;
+    }
+
+    if(!bIsUpdated)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats.", uVsIndex, pDmlCallCtrlLine->uInstanceNumber);
+        TelcoVoiceHal_GetLineStats(HalName, &stVoiceStats);
+
+        TELCOVOICEMGR_LOCK_OR_EXIT()
+
+        TelcoVoiceMgrDml_MapLineStats(pDmlCallCtrlLine, &stVoiceStats);
+    }
 
     if( AnscEqualString(ParamName, "PacketsSent", TRUE) )
     {
@@ -1147,6 +1236,11 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_RTP_GetParamUlongValue(ANSC_HAN
 BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_DSP_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0;
+    char HalName[MAX_STR_LEN] = {0};
+    BOOL bIsUpdated   = FALSE;
+    TELCOVOICEMGR_DML_VOICESERVICE_STATS  stVoiceStats;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -1161,6 +1255,32 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_stats_DSP_GetParamUlongValue(ANSC_HAN
     PDML_CALLCONTROL_LINE pDmlCallCtrlLine = &(pCallCtrlLineCtrl->dml);
 
     PDML_CALLCONTROL_STATS_DSP  pHEAD = &(pDmlCallCtrlLine->Stats.DSP);
+
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlCallCtrlLine->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+
+    if ( ( AnscGetTickInSeconds() - pCallCtrlLineCtrl->PreviousVisitTimeOfLine) < 10 )
+    {
+        bIsUpdated  = TRUE;
+
+    }
+    else
+    {
+        pCallCtrlLineCtrl->PreviousVisitTimeOfLine =  AnscGetTickInSeconds();
+        bIsUpdated  = FALSE;
+    }
+
+    if(!bIsUpdated)
+    {
+        TELCOVOICEMGR_UNLOCK()
+
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats.", uVsIndex, pDmlCallCtrlLine->uInstanceNumber);
+        TelcoVoiceHal_GetLineStats(HalName, &stVoiceStats);
+
+        TELCOVOICEMGR_LOCK_OR_EXIT()
+
+        TelcoVoiceMgrDml_MapLineStats(pDmlCallCtrlLine, &stVoiceStats);
+    }
 
     if( AnscEqualString(ParamName, "Underruns", TRUE) )
     {

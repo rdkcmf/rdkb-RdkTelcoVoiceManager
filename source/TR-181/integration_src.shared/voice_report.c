@@ -128,7 +128,9 @@ BOOL VoiceServiceReportGetStatus()
 static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceService *pstReportData)
 {
     TELCOVOICEMGR_DML_VOICESERVICE_STATS  stStats = { 0 };
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS  stCallLogStats = { 0 };
+#endif
     VoiceProfile *pstVoiceProfile = NULL;
     int rc = ANSC_STATUS_SUCCESS, iCommonEnumRet = 0;
     unsigned int i, j, voice_profile_id = 0, line_id = 0, phy_interface_id = 0;
@@ -153,6 +155,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
      */
      memset(pstReportData->VoiceServiceVersion, 0, sizeof(pstReportData->VoiceServiceVersion));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
      snprintf(req_param.name, sizeof(req_param.name), HAL_VS_BOUNDIFNAME, iVoiceServiceID);
      if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
      {
@@ -229,20 +232,15 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
      {
          snprintf(pstReportData->VoiceProcessStatus, sizeof(pstReportData->VoiceProcessStatus),"%s",req_param.value);
      }
-
+#endif
      pstReportData->VoiceProfileNumberOfEntries = 1;
      /* Fill Voice Profile Object */
      for( i = 0; i < pstReportData->VoiceProfileNumberOfEntries;  i++ )
      {
         voice_profile_id = i + 1;
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        unsigned int sip_network_id = i + 1;
-
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_OBPROXY, iVoiceServiceID, sip_network_id);
-#else
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_OBPROXY, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
              //Fallback case
@@ -253,11 +251,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              snprintf(pstVoiceProfile[i].SIPOutboundProxy, sizeof(pstVoiceProfile[i].SIPOutboundProxy),"%s",req_param.value);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_OBPROXYPORT, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_OBPROXYPORT, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
             pstVoiceProfile[i].SIPOutboundProxyPort = 0;
@@ -267,11 +261,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              pstVoiceProfile[i].SIPOutboundProxyPort = strtoul(req_param.value,&err,10);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_PROXYSERV, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_PROXYSERV, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
              //Fallback case
@@ -282,11 +272,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              snprintf(pstVoiceProfile[i].SIPProxyServer, sizeof(pstVoiceProfile[i].SIPProxyServer),"%s",req_param.value);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_PROXYSERVPORT, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_PROXYSERVPORT, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
             pstVoiceProfile[i].SIPProxyServerPort = 0;
@@ -296,11 +282,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              pstVoiceProfile[i].SIPProxyServerPort = strtoul(req_param.value,&err,10);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_REGSERV, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_REGSERV, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
              //Fallback case
@@ -311,11 +293,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              snprintf(pstVoiceProfile[i].SIPRegistrarServer, sizeof(pstVoiceProfile[i].SIPRegistrarServer),"%s",req_param.value);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_REGSERVPORT, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_REGSERVPORT, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
             pstVoiceProfile[i].SIPRegistrarServerPort = 0;
@@ -325,11 +303,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
             pstVoiceProfile[i].SIPRegistrarServerPort = strtoul(req_param.value,&err,10);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_USERAGENTDOMAIN, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_USERAGENTDOMAIN, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
              //Fallback case
@@ -340,11 +314,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
             snprintf(pstVoiceProfile[i].SIPUserAgentDomain, sizeof(pstVoiceProfile[i].SIPUserAgentDomain),"%s",req_param.value);
         }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_CONFURI, iVoiceServiceID, sip_network_id);
-#else
         snprintf(req_param.name, sizeof(req_param.name), HAL_SIP_CONFURI, iVoiceServiceID, voice_profile_id);
-#endif
         if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
         {
             //Fallback case
@@ -396,7 +366,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
         {
              pstVoiceProfile[i].ZDigitTimer = strtoul(req_param.value,&err,10);
         }
-
+#endif
         //Fill line object with respect to voice profile
         for( j = 0; j < pstVoiceProfile[i].VoiceProfileNumberOfLines; j++ )
         {
@@ -404,24 +374,16 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
 
             line_id = j + 1;
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
             pstLine->CallWaitingEnable = FALSE;
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            unsigned int callfeature_set_id = j + 1;
-            snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CW, iVoiceServiceID, callfeature_set_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CW, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                 pstLine->CallWaitingEnable = strstr(req_param.value,"1")?TRUE:FALSE;
             }
 
             pstLine->MWIEnable = FALSE;
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name), HAL_CF_MWI, iVoiceServiceID, callfeature_set_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name), HAL_CF_MWI, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                 pstLine->MWIEnable = strstr(req_param.value,"1")?TRUE:FALSE;
@@ -429,40 +391,28 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
 
             pstLine->ConferenceCallingEnable = FALSE;
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CONF, iVoiceServiceID, callfeature_set_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CONF, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                 pstLine->ConferenceCallingEnable = strstr(req_param.value,"1")?TRUE:FALSE;
             }
 
             pstLine->HoldEnable = FALSE;
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name), HAL_CF_HOLD, iVoiceServiceID, callfeature_set_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name), HAL_CF_HOLD, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                 pstLine->HoldEnable = strstr(req_param.value,"1")?TRUE:FALSE;
             }
 
             pstLine->PhoneCallerIDEnable = FALSE;
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CID, iVoiceServiceID, callfeature_set_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name), HAL_CF_CID, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                 pstLine->PhoneCallerIDEnable = strstr(req_param.value,"1")?TRUE:FALSE;
             }
 
             snprintf(pstLine->CallerIDName, sizeof(pstLine->CallerIDName),"%s","");
-
+#endif
             if( ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineCallState( iVoiceServiceID,
                                                                 voice_profile_id,
                                                                 line_id,
@@ -473,11 +423,8 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
                 snprintf(pstLine->CallState, sizeof(pstLine->CallState),"%s",array_list[ulCommonRet]);
             }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_DIRECTORYNUM, iVoiceServiceID, line_id);
-#else
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
             snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_DIRECTORYNUM, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                  //Fallback case
@@ -488,11 +435,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
                  snprintf(pstLine->DirectoryNumber, sizeof(pstLine->DirectoryNumber),"%s",req_param.value);
             }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-            snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_ENABLE, iVoiceServiceID, line_id);
-#else
             snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_ENABLE, iVoiceServiceID, voice_profile_id, line_id);
-#endif
             if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
             {
                  memset(pstLine->VoiceServiceEnable, 0, sizeof(pstLine->VoiceServiceEnable));
@@ -502,12 +445,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
                 snprintf(pstLine->VoiceServiceEnable, sizeof(pstLine->VoiceServiceEnable),"%s",req_param.value);
             }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-             unsigned int sip_client_id = j + 1;
-             snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_SIP_AUTHUSER, iVoiceServiceID, sip_client_id );
-#else
              snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_SIP_AUTHUSER, iVoiceServiceID, voice_profile_id, line_id);
-#endif
              if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
              {
                  //Fallback case
@@ -518,11 +456,7 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
                  snprintf(pstLine->SIPAuthUserName, sizeof(pstLine->SIPAuthUserName),"%s",req_param.value);
              }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-             snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_SIP_URI, iVoiceServiceID, sip_client_id);
-#else
              snprintf(req_param.name, sizeof(req_param.name),HAL_LINE_SIP_URI, iVoiceServiceID, voice_profile_id, line_id);
-#endif
              if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetSingleParameter(&req_param))
              {
                  //Fallback case
@@ -532,43 +466,65 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
              {
                  snprintf(pstLine->SIPURI, sizeof(pstLine->SIPURI),"%s",req_param.value);
              }
-
+#endif
              if ( ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineStats( iVoiceServiceID,
                                                               voice_profile_id,
                                                               line_id,
                                                               &stStats ) )
              {
                  //Assign Stats Values
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                  pstLine->AverageFarEndInterarrivalJitter = stStats.FarEndInterarrivalJitter;
                  pstLine->AverageReceiveInterarrivalJitter = stStats.AverageReceiveInterarrivalJitter;
                  pstLine->AverageRoundTripDelay = stStats.AverageRoundTripDelay;
-                 pstLine->BytesReceived = stStats.BytesReceived;
-                 pstLine->BytesSent = stStats.BytesSent;
                  pstLine->FarEndInterarrivalJitter = stStats.FarEndInterarrivalJitter;
                  pstLine->FarEndPacketLossRate = stStats.FarEndPacketLossRate;
+                 pstLine->ReceiveInterarrivalJitter = stStats.ReceiveInterarrivalJitter;
+                 pstLine->ReceivePacketLossRate = stStats.ReceivePacketLossRate;
+                 pstLine->ResetStatistics = stStats.ResetStatistics;
+                 pstLine->RoundTripDelay = stStats.RoundTripDelay;
                  pstLine->IncomingCallsAnswered = stStats.IncomingCallsAnswered;
+                 pstLine->OutgoingCallsAnswered = stStats.OutgoingCallsAnswered;
+                 pstLine->TotalCallTime = stStats.TotalCallTime;
+                 pstLine->CallsDropped = stStats.CallsDropped;
+                 pstLine->ServerDownTime = stStats.ServerDownTime;
+#else
+                 pstLine->IncomingCallsDropped = stStats.IncomingCallsDropped;
+                 pstLine->OutgoingCallsDropped = stStats.OutgoingCallsDropped;
+                 pstLine->IncomingTotalCallTime = stStats.IncomingTotalCallTime;
+                 pstLine->OutgoingTotalCallTime = stStats.OutgoingTotalCallTime;
+#endif
                  pstLine->IncomingCallsConnected = stStats.IncomingCallsConnected;
                  pstLine->IncomingCallsFailed = stStats.IncomingCallsFailed;
                  pstLine->IncomingCallsReceived = stStats.IncomingCallsReceived;
-                 pstLine->OutgoingCallsAnswered = stStats.OutgoingCallsAnswered;
                  pstLine->OutgoingCallsAttempted = stStats.OutgoingCallsAttempted;
                  pstLine->OutgoingCallsConnected = stStats.OutgoingCallsConnected;
                  pstLine->OutgoingCallsFailed = stStats.OutgoingCallsFailed;
                  pstLine->PacketsLost = stStats.PacketsLost;
                  pstLine->PacketsReceived = stStats.PacketsReceived;
                  pstLine->PacketsSent = stStats.PacketsSent;
-                 pstLine->ReceiveInterarrivalJitter = stStats.ReceiveInterarrivalJitter;
-                 pstLine->ReceivePacketLossRate = stStats.ReceivePacketLossRate;
-                 pstLine->ResetStatistics = stStats.ResetStatistics;
-                 pstLine->RoundTripDelay = stStats.RoundTripDelay;
-#ifdef HUB4_SDK_L07
+                 pstLine->BytesReceived = stStats.BytesReceived;
+                 pstLine->BytesSent = stStats.BytesSent;
                  pstLine->OverRuns = stStats.Overruns;
                  pstLine->UnderRuns = stStats.Underruns;
-                 pstLine->CallsDropped = stStats.CallsDropped;
-                 pstLine->TotalCallTime = stStats.TotalCallTime;
-                 pstLine->ServerDownTime = stStats.ServerDownTime;
-#endif /* HUB4_SDK_L07 */
              }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+             if ( ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetCallLogStats( iVoiceServiceID,
+                                                              voice_profile_id,
+                                                              line_id,
+                                                              &stCallLogStats ) )
+             {
+                 pstLine->AverageFarEndInterarrivalJitter  = stCallLogStats.FarEndInterarrivalJitter;
+                 pstLine->AverageReceiveInterarrivalJitter = stCallLogStats.AverageReceiveInterarrivalJitter;
+                 pstLine->AverageRoundTripDelay            = stCallLogStats.AverageRoundTripDelay;
+                 pstLine->FarEndInterarrivalJitter         = stCallLogStats.FarEndInterarrivalJitter;
+                 pstLine->FarEndPacketLossRate             = stCallLogStats.FarEndPacketLossRate;
+                 pstLine->ReceiveInterarrivalJitter        = stCallLogStats.ReceiveInterarrivalJitter;
+                 pstLine->ReceivePacketLossRate            = stCallLogStats.ReceivePacketLossRate;
+                 pstLine->RoundTripDelay                   = stCallLogStats.RoundTripDelay;
+             }
+#endif
+
 
              if( ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetLineStatus( iVoiceServiceID,
                                                               voice_profile_id,
@@ -580,29 +536,23 @@ static ANSC_STATUS VoiceServicePrepareReportData(int iVoiceServiceID, VoiceServi
                  snprintf(pstLine->Status, sizeof(pstLine->Status),"%s",array_list[iCommonEnumRet]);
              }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-             unsigned int terminal_id = i + 1;
-             unsigned int audio_id    = j + 1;
-             snprintf(req_param.name, sizeof(req_param.name), HAL_VPROCESS_RXGAIN, iVoiceServiceID, terminal_id, audio_id);
-#else
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
+
              snprintf(req_param.name, sizeof(req_param.name), HAL_VPROCESS_RXGAIN, iVoiceServiceID, voice_profile_id, line_id);
-#endif
              if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
              {
                 pstLine->ReceiveGain = strtoul(req_param.value,&err,10);
              }
 
-#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-             snprintf(req_param.name, sizeof(req_param.name), HAL_VPROCESS_TXGAIN, iVoiceServiceID, terminal_id, audio_id);
-#else
              snprintf(req_param.name, sizeof(req_param.name), HAL_VPROCESS_TXGAIN, iVoiceServiceID, voice_profile_id, line_id);
-#endif
              if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
              {
                 pstLine->TransmitGain = strtoul(req_param.value,&err,10);
              }
+#endif
 
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+             unsigned int sip_network_id = i + 1;
              snprintf(req_param.name, sizeof(req_param.name), HAL_LINE_OBPROXYADDR, iVoiceServiceID, sip_network_id);
 #else
              snprintf(req_param.name, sizeof(req_param.name), HAL_LINE_OBPROXYADDR, iVoiceServiceID, voice_profile_id, line_id);
@@ -924,6 +874,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
         // BoundIfName
         avro_value_get_by_name(&dr, "BoundIfName", &drField, NULL);
         if (CHK_AVRO_ERR)
@@ -974,6 +925,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
 
+#endif
         // VoiceProcessState
         avro_value_get_by_name(&dr, "VoiceProcessState", &drField, NULL);
         if (CHK_AVRO_ERR)
@@ -994,6 +946,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
         // MaxServiceCount
         avro_value_get_by_name(&dr, "MaxServiceCount", &drField, NULL);
         if (CHK_AVRO_ERR)
@@ -1053,7 +1006,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
         CcspTraceInfo(("VoiceProfileNumberOfEntries\tType: %d\n", avro_value_get_type(&optional)));
         if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
-
+#endif
         //Voice Profiles Fields
         avro_value_get_by_name(&dr, "VoiceProfiles", &drField, NULL);
         if (CHK_AVRO_ERR)
@@ -1073,6 +1026,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             avro_value_append(&drField, &drVoiceProf, NULL);
             CcspTraceInfo(("RDK_LOG_DEBUG, \tVoice Profile Report\tType: %d\n", avro_value_get_type(&drVoiceProf)));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
             // SIPOutboundProxy
             avro_value_get_by_name(&drVoiceProf, "SIPOutboundProxy", &drVoiceProfField, NULL);
             if (CHK_AVRO_ERR)
@@ -1213,6 +1167,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
             if (CHK_AVRO_ERR)
             CcspTraceError(("%s\n", avro_strerror()));
 
+#endif
             //Voice Lines Fields
             avro_value_get_by_name(&drVoiceProf, "Lines", &drVoiceProfField, NULL);
             if (CHK_AVRO_ERR)
@@ -1232,6 +1187,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 avro_value_append(&drVoiceProfField, &drLine, NULL);
                 CcspTraceInfo(("RDK_LOG_DEBUG, \tVoice Line Report\tType: %d\n", avro_value_get_type(&drLine)));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                 // CallWaitingEnable
                 avro_value_get_by_name(&drLine, "CallWaitingEnable", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1292,6 +1248,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceError(("%s\n", avro_strerror()));
 
+#endif
                 // CallState
                 avro_value_get_by_name(&drLine, "CallState", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1302,6 +1259,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceError(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                 // DirectoryNumber
                 avro_value_get_by_name(&drLine, "DirectoryNumber", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1341,7 +1299,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 CcspTraceInfo(("SIPURI\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
-
+#endif
                 // AverageFarEndInterarrivalJitter
                 avro_value_get_by_name(&drLine, "AverageFarEndInterarrivalJitter", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1412,6 +1370,17 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+                // IncomingCallsDropped
+                avro_value_get_by_name(&drLine, "IncomingCallsDropped", &drLineField, NULL);
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
+                avro_value_set_branch(&drLineField, 1, &optional);
+                avro_value_set_int(&optional, pstLine->IncomingCallsDropped);
+                CcspTraceInfo(("IncomingCallsDropped\tType: %d\n", avro_value_get_type(&optional)));
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s\n", avro_strerror()));
+#else
                 // IncomingCallsAnswered
                 avro_value_get_by_name(&drLine, "IncomingCallsAnswered", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1421,6 +1390,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 CcspTraceInfo(("IncomingCallsAnswered\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
+#endif
 
                 // IncomingCallsConnected
                 avro_value_get_by_name(&drLine, "IncomingCallsConnected", &drLineField, NULL);
@@ -1452,6 +1422,27 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+                // IncomingTotalCallTime
+                avro_value_get_by_name(&drLine, "IncomingTotalCallTime", &drLineField, NULL);
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
+                avro_value_set_branch(&drLineField, 1, &optional);
+                avro_value_set_int(&optional, pstLine->IncomingTotalCallTime);
+                CcspTraceInfo(("IncomingTotalCallTime\tType: %d\n", avro_value_get_type(&optional)));
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s\n", avro_strerror()));
+
+                // OutgoingCallsDropped
+                avro_value_get_by_name(&drLine, "OutgoingCallsDropped", &drLineField, NULL);
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
+                avro_value_set_branch(&drLineField, 1, &optional);
+                avro_value_set_int(&optional, pstLine->OutgoingCallsDropped);
+                CcspTraceInfo(("OutgoingCallsDropped\tType: %d\n", avro_value_get_type(&optional)));
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s\n", avro_strerror()));
+#else
                 // OutgoingCallsAnswered
                 avro_value_get_by_name(&drLine, "OutgoingCallsAnswered", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1461,6 +1452,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 CcspTraceInfo(("OutgoingCallsAnswered\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
+#endif
 
                 // OutgoingCallsAttempted
                 avro_value_get_by_name(&drLine, "OutgoingCallsAttempted", &drLineField, NULL);
@@ -1492,6 +1484,17 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+                // OutgoingTotalCallTime
+                avro_value_get_by_name(&drLine, "OutgoingTotalCallTime", &drLineField, NULL);
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s LINE %d\n", avro_strerror(), __LINE__));
+                avro_value_set_branch(&drLineField, 1, &optional);
+                avro_value_set_int(&optional, pstLine->OutgoingTotalCallTime);
+                CcspTraceInfo(("OutgoingTotalCallTime\tType: %d\n", avro_value_get_type(&optional)));
+                if (CHK_AVRO_ERR)
+                    CcspTraceInfo(("%s\n", avro_strerror()));
+#endif
                 // PacketsLost
                 avro_value_get_by_name(&drLine, "PacketsLost", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1542,6 +1545,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                 // ResetStatistics
                 avro_value_get_by_name(&drLine, "ResetStatistics", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1551,7 +1555,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 CcspTraceInfo(("ResetStatistics\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
-
+#endif
                 // RoundTripDelay
                 avro_value_get_by_name(&drLine, "RoundTripDelay", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1572,6 +1576,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                 // ReceiveGain
                 avro_value_get_by_name(&drLine, "ReceiveGain", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1592,6 +1597,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#endif
                 // OutboundProxyAddresses
                 avro_value_get_by_name(&drLine, "OutboundProxyAddresses", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1622,6 +1628,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
                 // CallsDropped
                 avro_value_get_by_name(&drLine, "CallsDropped", &drLineField, NULL);
                 if (CHK_AVRO_ERR)
@@ -1651,6 +1658,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
                 CcspTraceInfo(("ServerDownTime\tType: %d\n", avro_value_get_type(&optional)));
                 if (CHK_AVRO_ERR)
                     CcspTraceInfo(("%s\n", avro_strerror()));
+#endif
             }
         }
 
@@ -1714,7 +1722,7 @@ static int harvester_report_voice_service(VoiceServiceReportData *head)
     CcspTraceInfo(("dest: %s\n", dest));
     CcspTraceInfo(("trans_id: %s\n", trans_id));
     CcspTraceInfo(("contentType: %s\n", contentType));
-    CcspTraceInfo(("AvroRTSerializedBuf: %s\n", AvroRTSerializedBuf));
+    CcspTraceInfo(("AvroRTSerializedBuf: [%x]\n", AvroRTSerializedBuf));
     CcspTraceInfo(("AvroRTSerializedSize: %d\n", (int)AvroRTSerializedSize));
 
     // Send data from VOICE REPORT to webpa using CCSP bus interface

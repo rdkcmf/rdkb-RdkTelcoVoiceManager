@@ -246,7 +246,7 @@ void sendWebpaMsg(char *serviceName, char *dest, char *trans_id, char *contentTy
     CcspTraceInfo((" payload_len :%d\n", payload_len));
     if (payload != NULL)
     {
-        CcspTraceInfo((" payload :%s\n", payload));
+        CcspTraceInfo((" payload : [%x]\n", payload));
     }
 
     snprintf(source, sizeof(source), "mac:%s/%s", deviceMAC, serviceName);
@@ -266,7 +266,7 @@ void sendWebpaMsg(char *serviceName, char *dest, char *trans_id, char *contentTy
 
         CcspTraceInfo((" wrp_msg->msg_type :%d\n", wrp_msg->msg_type));
         if (wrp_msg->u.event.payload != NULL)
-            CcspTraceInfo((" wrp_msg->u.event.payload :%s\n", (char *)(wrp_msg->u.event.payload)));
+            CcspTraceInfo((" wrp_msg->u.event.payload : [%x]\n", (char *)(wrp_msg->u.event.payload)));
         CcspTraceInfo((" wrp_msg->u.event.payload_size :%d\n", wrp_msg->u.event.payload_size));
         if (wrp_msg->u.event.source != NULL)
             CcspTraceInfo((" wrp_msg->u.event.source :%s\n", wrp_msg->u.event.source));

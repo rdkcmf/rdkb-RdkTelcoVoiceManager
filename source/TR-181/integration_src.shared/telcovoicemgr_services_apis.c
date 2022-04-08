@@ -3377,6 +3377,51 @@ ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(uint32_t uiService, uint32_t uiProfil
     return ANSC_STATUS_SUCCESS;
 }
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TelcoVoiceMgrDmlV2_MapLineStats : */
+/**
+* @description Map Line Stats for V2
+*
+* @param PDML_CALLCONTROL_LINE pDmlCallCtrlLine - Line Stats struct to be filled
+* @param TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats - Line Stats temporary struct
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+ANSC_STATUS TelcoVoiceMgrDml_MapLineStats(PDML_CALLCONTROL_LINE pDmlCallCtrlLine, TELCOVOICEMGR_DML_VOICESERVICE_STATS *pStats)
+{
+    if ( NULL == pDmlCallCtrlLine  || NULL == pStats )
+    {
+        CcspTraceError(("%s %d - Invalid Parameter\n",__FUNCTION__,__LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    pDmlCallCtrlLine->Stats.IncomingCalls.CallsReceived = pStats->IncomingCallsReceived;
+    pDmlCallCtrlLine->Stats.IncomingCalls.CallsConnected = pStats->IncomingCallsConnected;
+    pDmlCallCtrlLine->Stats.IncomingCalls.CallsDropped = pStats->IncomingCallsDropped;
+    pDmlCallCtrlLine->Stats.IncomingCalls.CallsFailed = pStats->IncomingCallsFailed;
+    pDmlCallCtrlLine->Stats.IncomingCalls.TotalCallTime = pStats->IncomingTotalCallTime;
+    pDmlCallCtrlLine->Stats.OutgoingCalls.CallsAttempted = pStats->OutgoingCallsAttempted;
+    pDmlCallCtrlLine->Stats.OutgoingCalls.CallsConnected = pStats->OutgoingCallsConnected;
+    pDmlCallCtrlLine->Stats.OutgoingCalls.CallsFailed = pStats->OutgoingCallsFailed;
+    pDmlCallCtrlLine->Stats.OutgoingCalls.CallsDropped = pStats->OutgoingCallsDropped;
+    pDmlCallCtrlLine->Stats.OutgoingCalls.TotalCallTime = pStats->OutgoingTotalCallTime;
+    pDmlCallCtrlLine->Stats.RTP.PacketsReceived = pStats->PacketsReceived;
+    pDmlCallCtrlLine->Stats.RTP.PacketsSent = pStats->PacketsSent;
+    pDmlCallCtrlLine->Stats.RTP.PacketsLost = pStats->PacketsLost;
+    pDmlCallCtrlLine->Stats.RTP.BytesSent = pStats->BytesSent;
+    pDmlCallCtrlLine->Stats.RTP.BytesReceived = pStats->BytesReceived;
+    pDmlCallCtrlLine->Stats.DSP.Overruns = pStats->Overruns;
+    pDmlCallCtrlLine->Stats.DSP.Underruns = pStats->Underruns;
+
+    return ANSC_STATUS_SUCCESS;
+}
+#endif
 /* TelcoVoiceMgrDmlGetLineStats : */
 /**
 * @description Get Line Stats
@@ -3427,6 +3472,34 @@ ANSC_STATUS TelcoVoiceMgrDmlGetLineStats(uint32_t uiService, uint32_t uiProfile,
     CcspTraceInfo(("%s:%d:: Line Stats fetched \n", __FUNCTION__, __LINE__));
     return  ANSC_STATUS_SUCCESS;
 }
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_STATUS TelcoVoiceMgrDmlGetCallLogStats(uint32_t uiService, uint32_t uiCallLog, uint32_t uiSession, TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS *pStats)
+{
+    //Fetch line stats from voice stack
+    ANSC_STATUS returnStatus = ANSC_STATUS_FAILURE;
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
+    //Validate buffer
+    if ( NULL == pStats )
+    {
+        CcspTraceError(("%s %d - Invalid buffer\n",__FUNCTION__,__LINE__));
+        return returnStatus;
+    }
+
+    // Device.Services.VoiceService.%d.CallLog.%d.Session.%d.Source.RTP
+    snprintf(strName, JSON_MAX_STR_ARR_SIZE, CALLLOG_SRC_RTP_STATS, uiService, uiCallLog,uiSession);
+    if (ANSC_STATUS_SUCCESS != TelcoVoiceHal_GetCallLogStats(strName, pStats))
+    {
+        CcspTraceError(("%s:%d:: call log Stats get failed \n", __FUNCTION__, __LINE__));
+        return  returnStatus;
+    }
+
+    CcspTraceInfo(("%s:%d:: call log Stats fetched \n", __FUNCTION__, __LINE__));
+    return  ANSC_STATUS_SUCCESS;
+}
+#endif
+
 #ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 /* TelcoVoiceMgrDmlResetLineStats : */
 /**

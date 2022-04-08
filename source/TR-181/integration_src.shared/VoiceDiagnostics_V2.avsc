@@ -1,0 +1,412 @@
+{
+  "namespace": "com.comcast.kestrel.odp.event",
+  "name": "TelcoVOICETelemetryDiagnostics",
+  "type": "record",
+  "doc": "Contains data that reports Voice Status, Line Statistics and Call Statistics of device at a configured interval",
+  "fields": [
+    {
+      "name": "header",
+      "type": {
+        "namespace": "com.comcast.kestrel",
+        "name": "CoreHeader",
+        "type": "record",
+        "doc": "Common information related to the event which MUST be included in any kestrel event. It allows some common processing at the system level, and some consistency for processing events.",
+        "fields": [
+          {
+            "name": "timestamp",
+            "type": [
+              "null",
+              {
+                "logicalType": "timestamp-millis",
+                "type": "long"
+              }
+            ],
+            "doc": "The UTC time stamp in milliseconds since Unix epoch (January 1, 1970 midnight) when the event is generated.",
+            "default": null
+          },
+          {
+            "name": "uuid",
+            "type": [
+              "null",
+              {
+                "name": "UUID",
+                "namespace": "com.comcast.kestrel.datatype",
+                "size": 16,
+                "type": "fixed"
+              }
+            ],
+            "doc": "Unique identifier for the event used for event de-duplication and tracing.",
+            "default": null
+          },
+          {
+            "name": "source",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Source of this report - generally the application or process generating the event",
+            "default": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "cpe_id",
+      "type": {
+        "namespace": "com.comcast.kestrel.odp",
+        "name": "CPEIdentifier",
+        "type": "record",
+        "doc": "Unique identifying fields for a CPE device. All fields are optional, but at least one field should be populated with a non null value",
+        "fields": [
+          {
+            "name": "mac_address",
+            "type": [
+              "null",
+              {
+                "name": "MacAddress",
+                "namespace": "com.comcast.kestrel.datatype",
+                "size": 6,
+                "type": "fixed"
+              }
+            ],
+            "doc": "Canonical (Identifying) MAC address for the gateway. (Eg, may be CM Mac for cable modems)",
+            "default": null
+          },
+          {
+            "name": "cpe_type",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Contains the cpe type e.g. Extender or Gateway",
+            "default": null
+          },
+          {
+            "name": "cpe_parent",
+            "type": [
+              "null",
+              "com.comcast.kestrel.odp.CPEIdentifier"
+            ],
+            "doc": "If this device is a child device (it is managed by another CPE device), this field identifies the parent device. Canonical identifier for the CPE. (Eg, may be CM Mac for cable modems)",
+            "default": null
+          }
+        ]
+      }
+    },
+    {
+      "name": "data",
+      "type": {
+      "items": {
+        "namespace": "com.comcast.kestrel.odp",
+        "name": "VoiceData",
+        "type": "record",
+        "doc": "Contains gateway network and L3 data for a network related to a specific connected device at a point in time",
+        "fields": [
+          {
+            "name": "VoiceServiceVersion",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "The version of the voice service",
+            "default": null
+          },
+          {
+            "name": "VoiceProcessState",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Current state of voice process (Enabled/Disabled)",
+            "default": null
+          },
+          {
+            "name": "VoiceProcessStatus",
+            "type": [
+              "null",
+              "string"
+            ],
+            "doc": "Current Status of voice process (Stopped/Starting/Started/Stopping/Error)",
+            "default": null
+          },
+          {
+            "name": "VoiceProfiles", "type": {
+            "type": "array", "items": {
+                "name": "VoiceProfile",
+                "type": "record",
+                "doc": "Voice Profiles with respect to voice services",
+                "fields": [
+                  {
+                    "name": "Lines", "type": {
+                    "type": "array", "items": {
+                        "name": "Line",
+                        "type": "record",
+                        "doc": "Lines with respect to voice profiles",
+                        "fields": [
+                          {
+                            "name": "CallState",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Indicates the call state for this line. Enumeration of: Idle Calling Ringing Connecting InCall Hold Disconnecting",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageFarEndInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Average far-end interarrival jitter",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageReceiveInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Average receive interarrival jitter",
+                            "default": null
+                          },
+                          {
+                            "name": "AverageRoundTripDelay",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Average round trip delay in microseconds since the beginning of the current session",
+                            "default": null
+                          },
+                          {
+                            "name": "BytesReceived",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes received for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "BytesSent",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes sent for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "FarEndInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Current Interarrival jitter in timestamp units as reported from the far-end device via RTCP. Calculated from J(i) as defined in [Section 6.4/RFC3550]",
+                            "default": null
+                          },
+                          {
+                            "name": "FarEndPacketLossRate",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current far end receive packet lost rate in percent; calculated as defined in [Section6.4/RFC3550].",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsDropped",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total calls that were successfully connected (incoming), but dropped unexpectedly while in progress without explicit user termination",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsConnected",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls that successfully completed call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsFailed",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls that failed to successfully complete call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingCallsReceived",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total incoming calls received.",
+                            "default": null
+                          },
+                          {
+                            "name": "IncomingTotalCallTime",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Call duration in seconds.(incoming)",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsDropped",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total calls that were successfully connected (outgoing), but dropped unexpectedly while in progress without explicit user termination",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsAttempted",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls attempted.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsConnected",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls that successfully completed call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingCallsFailed",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Total outgoing calls that failed to successfully complete call setup signaling.",
+                            "default": null
+                          },
+                          {
+                            "name": "OutgoingTotalCallTime",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Call duration in seconds.(outgoing)",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsLost",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP packets that have been lost for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsReceived",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP payload bytes received for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "PacketsSent",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of RTP packets sent for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "ReceiveInterarrivalJitter",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current receive interarrival jitter in timestamp units. Calculated from J(i) as defined in [Section6.4/RFC3550]",
+                            "default": null
+                          },
+                          {
+                            "name": "ReceivePacketLossRate",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current receive packet loss rate in percent; calculated as defined in [Section6.4/RFC3550]",
+                            "default": null
+                          },
+                          {
+                            "name": "RoundTripDelay",
+                            "type": [
+                              "null",
+                              "int"
+                            ],
+                            "doc": "Current round trip delay in microseconds calculated as defined in [Section 6.4/RFC3550]",
+                            "default": null
+                          },
+                          {
+                            "name": "Status",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Indicates the status of this line. Enumeration of: Up Initializing Registering Unregistering Error Testing Quiescent Disabled",
+                            "default": null
+                          },
+                          {
+                            "name": "OutboundProxyAddresses",
+                            "type": [
+                              "null",
+                              "string"
+                            ],
+                            "doc": "Ordered list of resolved IP Addresses from the configured FQDN",
+                            "default": null
+                          },
+                          {
+                            "name": "OverRuns",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of times the receive jitter buffer has overrun for this line.",
+                            "default": null
+                          },
+                          {
+                            "name": "UnderRuns",
+                            "type": [
+                              "null",
+                              "long"
+                            ],
+                            "doc": "Total number of times the receive jitter buffer has underrun for this line.",
+                            "default": null
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "type": "array"
+      }
+    }
+  ]
+}

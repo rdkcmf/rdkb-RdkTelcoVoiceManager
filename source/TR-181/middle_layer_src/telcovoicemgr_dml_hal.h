@@ -70,6 +70,7 @@
 #define   LINE_STATUS                         "Device.Services.VoiceService.%d.CallControl.Line.%d.Status"
 #define   CALL_STATE                          "Device.Services.VoiceService.%d.CallControl.Line.%d.CallStatus"
 #define   LINE_STATS_TABLE_NAME               "Device.Services.VoiceService.%d.CallControl.Line.%d.Stats."
+#define   CALLLOG_SRC_RTP_STATS               "Device.Services.VoiceService.%d.CallLog.%d.Session.%d.Source.RTP."
 #else
 /* TR104 V1 DML Tables*/
 #define   PHYINTERFACE_TABLE_NAME             "Device.Services.VoiceService.%d.PhyInterface.%d.Tests."

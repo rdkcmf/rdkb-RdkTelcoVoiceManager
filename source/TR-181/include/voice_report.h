@@ -123,11 +123,19 @@ typedef struct _VoiceLine
     UINT   BytesSent;
     UINT   FarEndInterarrivalJitter;
     INT    FarEndPacketLossRate;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    INT    IncomingCallsDropped;
+#else
     INT    IncomingCallsAnswered;
+#endif
     INT    IncomingCallsConnected;
     INT    IncomingCallsFailed;
     INT    IncomingCallsReceived;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    INT    OutgoingCallsDropped;
+#else
     INT    OutgoingCallsAnswered;
+#endif
     INT    OutgoingCallsAttempted;
     INT    OutgoingCallsConnected;
     INT    OutgoingCallsFailed;
@@ -143,9 +151,14 @@ typedef struct _VoiceLine
     CHAR   OutboundProxyAddresses[128];
     UINT   OverRuns;
     UINT   UnderRuns;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    INT    IncomingTotalCallTime;
+    INT    OutgoingTotalCallTime;
+#else
     UINT   CallsDropped;
     UINT   TotalCallTime;
     UINT   ServerDownTime;
+#endif
 
 }VoiceLine;
 

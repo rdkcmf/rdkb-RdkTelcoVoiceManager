@@ -399,16 +399,6 @@ ANSC_STATUS Map_hal_dml_voiceService(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList
             return ANSC_STATUS_FAILURE;
         }
     }
-    else if(strstr(ParamName,"CallLog"))
-    {
-        //VoiceService.{i}.CallLog{i}.
-        retStatus = Map_hal_dml_CallLog(pVoiceServiceList, ParamName, pValue);
-        if(retStatus != ANSC_STATUS_SUCCESS)
-        {
-            AnscTraceError(("%s:%d:: \nMapping failed for ParamName[%s]\n", __FUNCTION__, __LINE__,ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
-    }
     else if(strstr(ParamName,"VoIPProfile"))
     {
         //VoiceService.{i}.VoipProfile{i}.
@@ -8474,18 +8464,16 @@ ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, c
 }
 
 
-ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue)
+ANSC_STATUS Map_hal_dml_CallLog(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService, char* ParamName, char* pValue)
 {
     char *err;
     int hal_index = 0;
 
-    if(pVoiceServiceList == NULL || ParamName == NULL || pValue == NULL)
+    if(pVoiceService == NULL || ParamName == NULL || pValue == NULL)
     {
         AnscTraceError(("%s:%d:: Invalid Input Parameter[%s]\n", __FUNCTION__, __LINE__, ParamName));
         return ANSC_STATUS_FAILURE;
     }
-
-    PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService = getVoiceService(pVoiceServiceList, ParamName);
 
     if (pVoiceService == NULL )
     {
@@ -8525,7 +8513,665 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
 
     pCallLog->pParentVoiceService = pVoiceService;
 
-    if( strstr(ParamName, "CallingPartyNumber") )
+    if( strstr(ParamName, "SignalingPerformance") )
+    {
+        //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_SignalingPerformance_index(ParamName, DML_VOICESERVICE_CALLLOG_SIGNALINGPERFORMANCE_PARAM_NAME, &hal_index)) ||
+            ( hal_index <= 0 ))
+        {
+             AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+            return ANSC_STATUS_FAILURE;
+        }
+
+        PDML_CALLLOG_SIGNALINGPERF_LIST_T    pCallLogSignPerfList = &(pCallLog->SignalingPerformance);
+
+        PDML_CALLLOG_SIGNALINGPERF_CTRL_T    pCallLogSignPerfData = pCallLogSignPerfList->pdata[hal_index - 1];
+
+        if(pCallLogSignPerfData == NULL)
+        {
+
+            if( TelcoVoiceMgrDmlAddCallLogSignalPerf(pCallLogSignPerfList, hal_index - 1) != ANSC_STATUS_SUCCESS)
+            {
+                AnscTraceError(("%s:%d:: Failed\n", __FUNCTION__, __LINE__));
+                return ANSC_STATUS_FAILURE;
+            }
+
+            pCallLogSignPerfData = pCallLogSignPerfList->pdata[hal_index - 1];
+
+            if(pCallLogSignPerfData == NULL)
+            {
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+
+        PDML_CALLLOG_SIGNALINGPERF pCallLogSignPerf = &(pCallLogSignPerfData->dml);
+
+        pCallLogSignPerf->uInstanceNumber = hal_index;
+
+        pCallLogSignPerf->pParentCallLog = pCallLog;
+
+        pCallLogSignPerf->pParentVoiceService = pVoiceService;
+
+        if( strstr(ParamName, "Protocol") )
+        {
+            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.Protocol
+            if (strcmp(pValue,"H.323") == 0)
+            {
+                pCallLogSignPerf->Protocol = H323_PROTOCOL;
+            }
+            else if (strcmp(pValue,"SIP") == 0)
+            {
+                pCallLogSignPerf->Protocol = SIP_PROTOCOL;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
+        else if( strstr(ParamName, "CallSetupDelay") )
+        {
+            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.CallSetupDelay
+            pCallLogSignPerf->CallSetupDelay = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "OutgoingMediaEstablishDelay") )
+        {
+            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.OutgoingMediaEstablishDelay
+            pCallLogSignPerf->OutgoingMediaEstablishDelay = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "IncomingMediaEstablishDelay") )
+        {
+            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.IncomingMediaEstablishDelay
+            pCallLogSignPerf->IncomingMediaEstablishDelay = strtoul(pValue,&err, 10);
+        }
+        else
+        {
+            AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+            return ANSC_STATUS_FAILURE;
+        }
+    }
+    else if( strstr(ParamName, "Session") )
+    {
+        //VoiceService.{i}.CallLog.{i}.Session.{i}.
+        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_Session_index(ParamName, DML_VOICESERVICE_CALLLOG_SESSION_PARAM_NAME, &hal_index)) ||
+            ( hal_index <= 0 ))
+        {
+             AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+            return ANSC_STATUS_FAILURE;
+        }
+
+        PDML_CALLLOG_SESSION_LIST_T    pCallLogSessionList = &(pCallLog->Session);
+
+        PDML_CALLLOG_SESSION_CTRL_T    pCallLogSessionData = pCallLogSessionList->pdata[hal_index - 1];
+
+        if(pCallLogSessionData == NULL)
+        {
+
+            if( TelcoVoiceMgrDmlAddCallLogSession(pCallLogSessionList, hal_index - 1) != ANSC_STATUS_SUCCESS)
+            {
+                AnscTraceError(("%s:%d:: Failed\n", __FUNCTION__, __LINE__));
+                return ANSC_STATUS_FAILURE;
+            }
+
+            pCallLogSessionData = pCallLogSessionList->pdata[hal_index - 1];
+
+            if(pCallLogSessionData == NULL)
+            {
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+
+        PDML_CALLLOG_SESSION pCallLogSession = &(pCallLogSessionData->dml);
+
+        pCallLogSession->uInstanceNumber = hal_index;
+
+        pCallLogSession->pParentCallLog  = pCallLog;
+
+        pCallLogSession->pParentVoiceService = pVoiceService;
+
+        if( strstr(ParamName, "Source.RTP") )
+        {
+            PDML_CALLLOG_SESSION_SOURCE pCallLogSessionSrc = &(pCallLogSession->Source);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.
+
+            PDML_CALLLOG_SESSION_RTP pCallLogSessSrcRtp = &(pCallLogSessionSrc->RTP);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.
+            if( strstr(ParamName, "FarEndIPAddress") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndIPAddress
+                strncpy(pCallLogSessSrcRtp->FarEndIPAddress, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "FarEndUDPPort") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndUDPPort
+                pCallLogSessSrcRtp->FarEndUDPPort = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "LocalUDPPort") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.LocalUDPPort
+                pCallLogSessSrcRtp->LocalUDPPort = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MinJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MinJitter
+                pCallLogSessSrcRtp->MinJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MaxJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MaxJitter
+                pCallLogSessSrcRtp->MaxJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MeanJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MeanJitter
+                pCallLogSessSrcRtp->MeanJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketDelayVariation") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketDelayVariation
+                pCallLogSessSrcRtp->PacketDelayVariation = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BufferDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BufferDelay
+                pCallLogSessSrcRtp->BufferDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BurstCount") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BurstCount
+                pCallLogSessSrcRtp->BurstCount = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsReceived") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsReceived
+                pCallLogSessSrcRtp->PacketsReceived = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsSent") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsSent
+                pCallLogSessSrcRtp->PacketsSent = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsLost") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsLost
+                pCallLogSessSrcRtp->PacketsLost = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsDiscarded") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsDiscarded
+                pCallLogSessSrcRtp->PacketsDiscarded = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BytesReceived") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BytesReceived
+            }
+            else if( strstr(ParamName, "BytesSent") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BytesSent
+            }
+            else if( strstr(ParamName, "ReceivePacketLossRate") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.ReceivePacketLossRate
+            }
+            else if( strstr(ParamName, "FarEndPacketLossRate") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndPacketLossRate
+            }
+            else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.ReceiveInterarrivalJitter
+                pCallLogSessSrcRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "FarEndInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndInterarrivalJitter
+                pCallLogSessSrcRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "AverageReceiveInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageReceiveInterarrivalJitter
+                pCallLogSessSrcRtp->AverageReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "AverageFarEndInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageFarEndInterarrivalJitter
+                pCallLogSessSrcRtp->AverageFarEndInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "RoundTripDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.RoundTripDelay
+                pCallLogSessSrcRtp->RoundTripDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "AverageRoundTripDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageRoundTripDelay
+                pCallLogSessSrcRtp->AverageRoundTripDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "SamplingFrequency") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.SamplingFrequency
+                pCallLogSessSrcRtp->SamplingFrequency = strtoul(pValue,&err, 10);
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "Source.DSP") )
+        {
+            PDML_CALLLOG_SESSION_SOURCE pCallLogSessionSrc = &(pCallLogSession->Source);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.
+
+            PDML_CALLLOG_SESSION_DSP pCallLogSessionSrcDsp = &(pCallLogSessionSrc->DSP);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.
+            if( strstr(ParamName, "ReceiveCodec") )
+            {
+                PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDspRevCodec = &(pCallLogSessionSrcDsp->ReceiveCodec);
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.
+                if( strstr(ParamName, "ReceiveCodec.Codec") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Codec
+                    strncpy(pCallLogSessDspRevCodec->Codec, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "SilenceSuppression") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.SilenceSuppression
+                    if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
+                    {
+                            pCallLogSessDspRevCodec->SilenceSuppression = true;
+                    }
+                    else
+                    {
+                            pCallLogSessDspRevCodec->SilenceSuppression = false;
+                    }
+                }
+                else if( strstr(ParamName, "Overruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Overruns
+                    pCallLogSessDspRevCodec->Overruns = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Underruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Underruns
+                    pCallLogSessDspRevCodec->Underruns = strtoul(pValue,&err, 10);
+                }
+                else
+                {
+                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                    return ANSC_STATUS_FAILURE;
+                }
+            }
+            else if( strstr(ParamName, "TransmitCodec") )
+            {
+                PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDspTXCodec = &(pCallLogSessionSrcDsp->TransmitCodec);
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.
+                if( strstr(ParamName, "TransmitCodec.Codec") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Codec
+                    strncpy(pCallLogSessDspTXCodec->Codec, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "SilenceSuppression") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.SilenceSuppression
+                    if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
+                    {
+                            pCallLogSessDspTXCodec->SilenceSuppression = true;
+                    }
+                    else
+                    {
+                            pCallLogSessDspTXCodec->SilenceSuppression = false;
+                    }
+                }
+                else if( strstr(ParamName, "PacketizationPeriod") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.PacketizationPeriod
+                    pCallLogSessDspTXCodec->PacketizationPeriod = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Overruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Overruns
+                    pCallLogSessDspTXCodec->Overruns = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Underruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Underruns
+                    pCallLogSessDspTXCodec->Underruns = strtoul(pValue,&err, 10);
+                }
+                else
+                {
+                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                    return ANSC_STATUS_FAILURE;
+                }
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "Source.VoiceQuality") )
+        {
+            PDML_CALLLOG_SESSION_SOURCE pCallLogSessionSrc = &(pCallLogSession->Source);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.
+
+            PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessSrcVoipVQ = &(pCallLogSessionSrc->VoiceQuality);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.
+            if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorsValues
+                strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "WorstVoIPQualityIndicatorTimestamps") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
+                strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "VoIPQualityIndicator") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.VoIPQualityIndicator
+                strncpy(pCallLogSessSrcVoipVQ->VoIPQualityIndicator, pValue,strlen(pValue)+1);
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "Destination.RTP") )
+        {
+            PDML_CALLLOG_SESSION_DESTINATION pCallLogSessDst = &(pCallLogSession->Destination);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.
+
+            PDML_CALLLOG_SESSION_RTP pCallLogSessDstRtp = &(pCallLogSessDst->RTP);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.
+            if( strstr(ParamName, "FarEndIPAddress") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndIPAddress
+                strncpy(pCallLogSessDstRtp->FarEndIPAddress, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "FarEndUDPPort") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndUDPPort
+                pCallLogSessDstRtp->FarEndUDPPort = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "LocalUDPPort") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.LocalUDPPort
+                pCallLogSessDstRtp->LocalUDPPort = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MinJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MinJitter
+                pCallLogSessDstRtp->MinJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MaxJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MaxJitter
+                pCallLogSessDstRtp->MaxJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "MeanJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MeanJitter
+                pCallLogSessDstRtp->MeanJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketDelayVariation") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketDelayVariation
+                pCallLogSessDstRtp->PacketDelayVariation = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BufferDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BufferDelay
+                pCallLogSessDstRtp->BufferDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BurstCount") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BurstCount
+                pCallLogSessDstRtp->BurstCount = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsReceived") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsReceived
+                pCallLogSessDstRtp->PacketsReceived = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsSent") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsSent
+                pCallLogSessDstRtp->PacketsSent = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsLost") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsLost
+                pCallLogSessDstRtp->PacketsLost = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "PacketsDicarded") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsDiscarded
+                pCallLogSessDstRtp->PacketsDiscarded = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "BytesReceived") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BytesReceived
+            }
+            else if( strstr(ParamName, "BytesSent") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BytesSent
+            }
+            else if( strstr(ParamName, "ReceivePacketLossRate") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceivePacketLossRate
+            }
+            else if( strstr(ParamName, "FarEndPacketLossRate") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndPacketLossRate
+            }
+            else if( strstr(ParamName, "AverageReceiveInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageReceiveInterarrivalJitter
+                pCallLogSessDstRtp->AverageReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "AverageFarEndInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageFarEndInterarrivalJitter
+                pCallLogSessDstRtp->AverageFarEndInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceiveInterarrivalJitter
+                pCallLogSessDstRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "FarEndInterarrivalJitter") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndInterarrivalJitter
+                pCallLogSessDstRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "AverageRoundTripDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageRoundTripDelay
+                pCallLogSessDstRtp->AverageRoundTripDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "RoundTripDelay") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.RoundTripDelay
+                pCallLogSessDstRtp->RoundTripDelay = strtoul(pValue,&err, 10);
+            }
+            else if( strstr(ParamName, "SamplingFrequency") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.SamplingFrequency
+                pCallLogSessDstRtp->SamplingFrequency = strtoul(pValue,&err, 10);
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "Destination.DSP") )
+        {
+            PDML_CALLLOG_SESSION_DESTINATION pCallLogSessDst = &(pCallLogSession->Destination);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.
+
+            PDML_CALLLOG_SESSION_DSP pCallLogSessDstDsp = &(pCallLogSessDst->DSP);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.
+            if( strstr(ParamName, "ReceiveCodec") )
+            {
+                PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDstDspRXCodec = &(pCallLogSessDstDsp->ReceiveCodec);
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.
+                if( strstr(ParamName, "ReceiveCodec.Codec") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Codec
+                    strncpy(pCallLogSessDstDspRXCodec->Codec, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "SilenceSuppression") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.SilenceSuppression
+                    if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
+                    {
+                            pCallLogSessDstDspRXCodec->SilenceSuppression = true;
+                    }
+                    else
+                    {
+                            pCallLogSessDstDspRXCodec->SilenceSuppression = false;
+                    }
+                }
+                else if( strstr(ParamName, "Overruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Overruns
+                    pCallLogSessDstDspRXCodec->Overruns = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Underruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Underruns
+                    pCallLogSessDstDspRXCodec->Underruns = strtoul(pValue,&err, 10);
+                }
+                else
+                {
+                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                    return ANSC_STATUS_FAILURE;
+                }
+            }
+            else if( strstr(ParamName, "TransmitCodec") )
+            {
+                PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDstDspTXCodec = &(pCallLogSessDstDsp->TransmitCodec);
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.
+                if( strstr(ParamName, "TransmitCodec.Codec") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Codec
+                    strncpy(pCallLogSessDstDspTXCodec->Codec, pValue,strlen(pValue)+1);
+                }
+                else if( strstr(ParamName, "SilenceSuppression") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.SilenceSuppression
+                    if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
+                    {
+                            pCallLogSessDstDspTXCodec->SilenceSuppression = true;
+                    }
+                    else
+                    {
+                            pCallLogSessDstDspTXCodec->SilenceSuppression = false;
+                    }
+                }
+                else if( strstr(ParamName, "PacketizationPeriod") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.PacketizationPeriod
+                    pCallLogSessDstDspTXCodec->PacketizationPeriod = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Overruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Overruns
+                    pCallLogSessDstDspTXCodec->Overruns = strtoul(pValue,&err, 10);
+                }
+                else if( strstr(ParamName, "Underruns") )
+                {
+                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Underruns
+                    pCallLogSessDstDspTXCodec->Underruns = strtoul(pValue,&err, 10);
+                }
+                else
+                {
+                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                    return ANSC_STATUS_FAILURE;
+                }
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "Destination.VoiceQuality") )
+        {
+            PDML_CALLLOG_SESSION_DESTINATION pCallLogSessDst = &(pCallLogSession->Destination);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.
+
+            PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessDstDspVQVoipQI = &(pCallLogSessDst->VoiceQuality);
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.
+            if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorsValues
+                strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "WorstVoIPQualityIndicatorTimestamps") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
+                strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
+            }
+            else if( strstr(ParamName, "VoIPQualityIndicator") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.VoIPQualityIndicator
+                strncpy(pCallLogSessDstDspVQVoipQI->VoIPQualityIndicator, pValue,strlen(pValue)+1);
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+        else if( strstr(ParamName, "StreamType") )
+        {
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.StreamType
+            if (strcmp(pValue,"Audio") == 0)
+            {
+                pCallLogSession->StreamType = STREAM_AUDIO;
+            }
+            else if (strcmp(pValue,"Video") == 0)
+            {
+                pCallLogSession->StreamType = STREAM_VIDEO;
+            }
+            else if (strcmp(pValue,"Fax") == 0)
+            {
+                pCallLogSession->StreamType = STREAM_FAX;
+            }
+            else if (strcmp(pValue,"Modem") == 0)
+            {
+                pCallLogSession->StreamType = STREAM_MODEM;
+            }
+            else
+            {
+                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
+            }
+        }
+        else if( strstr(ParamName, "Start") )
+        {
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Start
+            strncpy(pCallLogSession->Start, pValue,strlen(pValue)+1);
+        }
+        else if( strstr(ParamName, "Duration") )
+        {
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.Duration
+            pCallLogSession->Duration = strtoul(pValue,&err, 10);
+        }
+        else if( strstr(ParamName, "SessionID") )
+        {
+            //VoiceService.{i}.CallLog.{i}.Session.{i}.SessionID
+            strncpy(pCallLogSession->SessionID, pValue,strlen(pValue)+1);
+        }
+        else
+        {
+            AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
+            return ANSC_STATUS_FAILURE;
+        }
+    }
+    else if( strstr(ParamName, "CallingPartyNumber") )
     {
         //VoiceService.{i}.CallLog.{i}.CallingPartyNumber
         strncpy(pCallLog->CallingPartyNumber, pValue,strlen(pValue)+1);
@@ -8700,673 +9346,13 @@ ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, cha
         {
             AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
         }
-
-    }
-    else if( strstr(ParamName, "SignalingPerformance") )
-    {
-        //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_SignalingPerformance_index(ParamName, DML_VOICESERVICE_CALLLOG_SIGNALINGPERFORMANCE_PARAM_NAME, &hal_index)) ||
-            ( hal_index <= 0 ))
-        {
-             AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
-
-        PDML_CALLLOG_SIGNALINGPERF_LIST_T    pCallLogSignPerfList = &(pCallLog->SignalingPerformance);
-
-        PDML_CALLLOG_SIGNALINGPERF_CTRL_T    pCallLogSignPerfData = pCallLogSignPerfList->pdata[hal_index - 1];
-
-        if(pCallLogSignPerfData == NULL)
-        {
-
-            if( TelcoVoiceMgrDmlAddCallLogSignalPerf(pCallLogSignPerfList, hal_index - 1) != ANSC_STATUS_SUCCESS)
-            {
-                AnscTraceError(("%s:%d:: Failed\n", __FUNCTION__, __LINE__));
-                return ANSC_STATUS_FAILURE;
-            }
-
-            pCallLogSignPerfData = pCallLogSignPerfList->pdata[hal_index - 1];
-
-            if(pCallLogSignPerfData == NULL)
-            {
-                return ANSC_STATUS_FAILURE;
-            }
-        }
-
-        PDML_CALLLOG_SIGNALINGPERF pCallLogSignPerf = &(pCallLogSignPerfData->dml);
-
-        pCallLogSignPerf->uInstanceNumber = hal_index;
-
-        pCallLogSignPerf->pParentCallLog = pCallLog;
-
-        pCallLogSignPerf->pParentVoiceService = pVoiceService;
-
-        if( strstr(ParamName, "Protocol") )
-        {
-            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.Protocol
-            if (strcmp(pValue,"H.323") == 0)
-            {
-                pCallLogSignPerf->Protocol = H323_PROTOCOL;
-            }
-            else if (strcmp(pValue,"SIP") == 0)
-            {
-                pCallLogSignPerf->Protocol = SIP_PROTOCOL;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
-        }
-        else if( strstr(ParamName, "CallSetupDelay") )
-        {
-            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.CallSetupDelay
-            pCallLogSignPerf->CallSetupDelay = strtoul(pValue,&err, 10);
-        }
-        else if( strstr(ParamName, "OutgoingMediaEstablishDelay") )
-        {
-            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.OutgoingMediaEstablishDelay
-            pCallLogSignPerf->OutgoingMediaEstablishDelay = strtoul(pValue,&err, 10);
-        }
-        else if( strstr(ParamName, "IncomingMediaEstablishDelay") )
-        {
-            //VoiceService.{i}.CallLog.{i}.SignalingPerformance.{i}.IncomingMediaEstablishDelay
-            pCallLogSignPerf->IncomingMediaEstablishDelay = strtoul(pValue,&err, 10);
-        }
-        else
-        {
-            AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
-    }
-    else if( strstr(ParamName, "Session") )
-    {
-        //VoiceService.{i}.CallLog.{i}.Session.{i}.
-        if( (ANSC_STATUS_FAILURE == telcovoicemgr_hal_get_VoiceService_CallLog_Session_index(ParamName, DML_VOICESERVICE_CALLLOG_SESSION_PARAM_NAME, &hal_index)) ||
-            ( hal_index <= 0 ))
-        {
-             AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
-
-        PDML_CALLLOG_SESSION_LIST_T    pCallLogSessionList = &(pCallLog->Session);
-
-        PDML_CALLLOG_SESSION_CTRL_T    pCallLogSessionData = pCallLogSessionList->pdata[hal_index - 1];
-
-        if(pCallLogSessionData == NULL)
-        {
-
-            if( TelcoVoiceMgrDmlAddCallLogSession(pCallLogSessionList, hal_index - 1) != ANSC_STATUS_SUCCESS)
-            {
-                AnscTraceError(("%s:%d:: Failed\n", __FUNCTION__, __LINE__));
-                return ANSC_STATUS_FAILURE;
-            }
-
-            pCallLogSessionData = pCallLogSessionList->pdata[hal_index - 1];
-
-            if(pCallLogSessionData == NULL)
-            {
-                return ANSC_STATUS_FAILURE;
-            }
-        }
-
-        PDML_CALLLOG_SESSION pCallLogSession = &(pCallLogSessionData->dml);
-
-        pCallLogSession->uInstanceNumber = hal_index;
-
-        pCallLogSession->pParentCallLog  = pCallLog;
-
-        pCallLogSession->pParentVoiceService = pVoiceService;
-
-        if( strstr(ParamName, "StreamType") )
-        {
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.StreamType
-            if (strcmp(pValue,"Audio") == 0)
-            {
-                pCallLogSession->StreamType = STREAM_AUDIO;
-            }
-            else if (strcmp(pValue,"Video") == 0)
-            {
-                pCallLogSession->StreamType = STREAM_VIDEO;
-            }
-            else if (strcmp(pValue,"Fax") == 0)
-            {
-                pCallLogSession->StreamType = STREAM_FAX;
-            }
-            else if (strcmp(pValue,"Modem") == 0)
-            {
-                pCallLogSession->StreamType = STREAM_MODEM;
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid ParamName[%s] paramValue[%s].\n", __FUNCTION__, __LINE__, ParamName, pValue));
-            }
-        }
-        else if( strstr(ParamName, "Start") )
-        {
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.Start
-            strncpy(pCallLogSession->Start, pValue,strlen(pValue)+1);
-        }
-        else if( strstr(ParamName, "Duration") )
-        {
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.Duration
-            pCallLogSession->Duration = strtoul(pValue,&err, 10);
-        }
-        else if( strstr(ParamName, "SessionID") )
-        {
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.SessionID
-            strncpy(pCallLogSession->SessionID, pValue,strlen(pValue)+1);
-        }
-        else if( strstr(ParamName, "Source") )
-        {
-            PDML_CALLLOG_SESSION_SOURCE pCallLogSessionSrc = &(pCallLogSession->Source);
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.
-            if( strstr(ParamName, "RTP") )
-            {
-                PDML_CALLLOG_SESSION_RTP pCallLogSessSrcRtp = &(pCallLogSessionSrc->RTP);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.
-                if( strstr(ParamName, "FarEndIPAddress") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndIPAddress
-                    strncpy(pCallLogSessSrcRtp->FarEndIPAddress, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "FarEndUDPPort") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndUDPPort
-                    pCallLogSessSrcRtp->FarEndUDPPort = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "LocalUDPPort") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.LocalUDPPort
-                    pCallLogSessSrcRtp->LocalUDPPort = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MinJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MinJitter
-                    pCallLogSessSrcRtp->MinJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MaxJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MaxJitter
-                    pCallLogSessSrcRtp->MaxJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MeanJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.MeanJitter
-                    pCallLogSessSrcRtp->MeanJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketDelayVariation") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketDelayVariation
-                    pCallLogSessSrcRtp->PacketDelayVariation = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BufferDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BufferDelay
-                    pCallLogSessSrcRtp->BufferDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BurstCount") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BurstCount
-                    pCallLogSessSrcRtp->BurstCount = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsReceived") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsReceived
-                    pCallLogSessSrcRtp->PacketsReceived = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsSent") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsSent
-                    pCallLogSessSrcRtp->PacketsSent = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsLost") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsLost
-                    pCallLogSessSrcRtp->PacketsLost = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsDiscarded") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.PacketsDiscarded
-                    pCallLogSessSrcRtp->PacketsDiscarded = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BytesReceived") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BytesReceived
-                }
-                else if( strstr(ParamName, "BytesSent") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.BytesSent
-                }
-                else if( strstr(ParamName, "ReceivePacketLossRate") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.ReceivePacketLossRate
-                }
-                else if( strstr(ParamName, "FarEndPacketLossRate") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndPacketLossRate
-                }
-                else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.ReceiveInterarrivalJitter
-                    pCallLogSessSrcRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "FarEndInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.FarEndInterarrivalJitter
-                    pCallLogSessSrcRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "AverageReceiveInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageReceiveInterarrivalJitter
-                    pCallLogSessSrcRtp->AverageReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "AverageFarEndInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageFarEndInterarrivalJitter
-                    pCallLogSessSrcRtp->AverageFarEndInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "RoundTripDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.RoundTripDelay
-                    pCallLogSessSrcRtp->RoundTripDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "AverageRoundTripDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.AverageRoundTripDelay
-                    pCallLogSessSrcRtp->AverageRoundTripDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "SamplingFrequency") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.RTP.SamplingFrequency
-                    pCallLogSessSrcRtp->SamplingFrequency = strtoul(pValue,&err, 10);
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else if( strstr(ParamName, "DSP") )
-            {
-                PDML_CALLLOG_SESSION_DSP pCallLogSessionSrcDsp = &(pCallLogSessionSrc->DSP);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.
-                if( strstr(ParamName, "ReceiveCodec") )
-                {
-                    PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDspRevCodec = &(pCallLogSessionSrcDsp->ReceiveCodec);
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.
-                    if( strstr(ParamName, "ReceiveCodec.Codec") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Codec
-                        strncpy(pCallLogSessDspRevCodec->Codec, pValue,strlen(pValue)+1);
-                    }
-                    else if( strstr(ParamName, "SilenceSuppression") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.SilenceSuppression
-                        if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
-                        {
-                             pCallLogSessDspRevCodec->SilenceSuppression = true;
-                        }
-                        else
-                        {
-                             pCallLogSessDspRevCodec->SilenceSuppression = false;
-                        }
-                    }
-                    else if( strstr(ParamName, "Overruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Overruns
-                        pCallLogSessDspRevCodec->Overruns = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Underruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.ReceiveCodec.Underruns
-                        pCallLogSessDspRevCodec->Underruns = strtoul(pValue,&err, 10);
-                    }
-                    else
-                    {
-                        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                        return ANSC_STATUS_FAILURE;
-                    }
-                }
-                else if( strstr(ParamName, "TransmitCodec") )
-                {
-                    PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDspTXCodec = &(pCallLogSessionSrcDsp->TransmitCodec);
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.
-                    if( strstr(ParamName, "TransmitCodec.Codec") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Codec
-                        strncpy(pCallLogSessDspTXCodec->Codec, pValue,strlen(pValue)+1);
-                    }
-                    else if( strstr(ParamName, "SilenceSuppression") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.SilenceSuppression
-                        if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
-                        {
-                             pCallLogSessDspTXCodec->SilenceSuppression = true;
-                        }
-                        else
-                        {
-                             pCallLogSessDspTXCodec->SilenceSuppression = false;
-                        }
-                    }
-                    else if( strstr(ParamName, "PacketizationPeriod") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.PacketizationPeriod
-                        pCallLogSessDspTXCodec->PacketizationPeriod = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Overruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Overruns
-                        pCallLogSessDspTXCodec->Overruns = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Underruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.DSP.TransmitCodec.Underruns
-                        pCallLogSessDspTXCodec->Underruns = strtoul(pValue,&err, 10);
-                    }
-                    else
-                    {
-                        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                        return ANSC_STATUS_FAILURE;
-                    }
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else if( strstr(ParamName, "VoiceQuality") )
-            {
-                PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessSrcVoipVQ = &(pCallLogSessionSrc->VoiceQuality);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.
-                if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorsValues
-                    strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "WorstVoIPQualityIndicatorTimestamps") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
-                    strncpy(pCallLogSessSrcVoipVQ->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "VoIPQualityIndicator") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.VoIPQualityIndicator
-                    strncpy(pCallLogSessSrcVoipVQ->VoIPQualityIndicator, pValue,strlen(pValue)+1);
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                return ANSC_STATUS_FAILURE;
-            }
-        }
-        else if( strstr(ParamName, "Destination") )
-        {
-            PDML_CALLLOG_SESSION_DESTINATION pCallLogSessDst = &(pCallLogSession->Destination);
-            //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.
-            if( strstr(ParamName, "RTP") )
-            {
-                PDML_CALLLOG_SESSION_RTP pCallLogSessDstRtp = &(pCallLogSessDst->RTP);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.
-                if( strstr(ParamName, "FarEndIPAddress") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndIPAddress
-                    strncpy(pCallLogSessDstRtp->FarEndIPAddress, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "FarEndUDPPort") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndUDPPort
-                    pCallLogSessDstRtp->FarEndUDPPort = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "LocalUDPPort") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.LocalUDPPort
-                    pCallLogSessDstRtp->LocalUDPPort = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MinJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MinJitter
-                    pCallLogSessDstRtp->MinJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MaxJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MaxJitter
-                    pCallLogSessDstRtp->MaxJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "MeanJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.MeanJitter
-                    pCallLogSessDstRtp->MeanJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketDelayVariation") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketDelayVariation
-                    pCallLogSessDstRtp->PacketDelayVariation = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BufferDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BufferDelay
-                    pCallLogSessDstRtp->BufferDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BurstCount") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BurstCount
-                    pCallLogSessDstRtp->BurstCount = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsReceived") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsReceived
-                    pCallLogSessDstRtp->PacketsReceived = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsSent") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsSent
-                    pCallLogSessDstRtp->PacketsSent = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsLost") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsLost
-                    pCallLogSessDstRtp->PacketsLost = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "PacketsDicarded") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.PacketsDiscarded
-                    pCallLogSessDstRtp->PacketsDiscarded = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "BytesReceived") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BytesReceived
-                }
-                else if( strstr(ParamName, "BytesSent") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.BytesSent
-                }
-                else if( strstr(ParamName, "ReceivePacketLossRate") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceivePacketLossRate
-                }
-                else if( strstr(ParamName, "FarEndPacketLossRate") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndPacketLossRate
-                }
-                else if( strstr(ParamName, "AverageReceiveInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageReceiveInterarrivalJitter
-                    pCallLogSessDstRtp->AverageReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "AverageFarEndInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageFarEndInterarrivalJitter
-                    pCallLogSessDstRtp->AverageFarEndInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "ReceiveInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.ReceiveInterarrivalJitter
-                    pCallLogSessDstRtp->ReceiveInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "FarEndInterarrivalJitter") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.FarEndInterarrivalJitter
-                    pCallLogSessDstRtp->FarEndInterarrivalJitter = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "AverageRoundTripDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.AverageRoundTripDelay
-                    pCallLogSessDstRtp->AverageRoundTripDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "RoundTripDelay") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.RoundTripDelay
-                    pCallLogSessDstRtp->RoundTripDelay = strtoul(pValue,&err, 10);
-                }
-                else if( strstr(ParamName, "SamplingFrequency") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.RTP.SamplingFrequency
-                    pCallLogSessDstRtp->SamplingFrequency = strtoul(pValue,&err, 10);
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else if( strstr(ParamName, "DSP") )
-            {
-                PDML_CALLLOG_SESSION_DSP pCallLogSessDstDsp = &(pCallLogSessDst->DSP);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.
-                if( strstr(ParamName, "ReceiveCodec") )
-                {
-                    PDML_CALLLOG_SESSION_DSP_RXCODEC pCallLogSessDstDspRXCodec = &(pCallLogSessDstDsp->ReceiveCodec);
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.
-                    if( strstr(ParamName, "ReceiveCodec.Codec") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Codec
-                        strncpy(pCallLogSessDstDspRXCodec->Codec, pValue,strlen(pValue)+1);
-                    }
-                    else if( strstr(ParamName, "SilenceSuppression") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.SilenceSuppression
-                        if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
-                        {
-                             pCallLogSessDstDspRXCodec->SilenceSuppression = true;
-                        }
-                        else
-                        {
-                             pCallLogSessDstDspRXCodec->SilenceSuppression = false;
-                        }
-                    }
-                    else if( strstr(ParamName, "Overruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Overruns
-                        pCallLogSessDstDspRXCodec->Overruns = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Underruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.ReceiveCodec.Underruns
-                        pCallLogSessDstDspRXCodec->Underruns = strtoul(pValue,&err, 10);
-                    }
-                    else
-                    {
-                        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                        return ANSC_STATUS_FAILURE;
-                    }
-                }
-                else if( strstr(ParamName, "TransmitCodec") )
-                {
-                    PDML_CALLLOG_SESSION_DSP_TXCODEC pCallLogSessDstDspTXCodec = &(pCallLogSessDstDsp->TransmitCodec);
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.
-                    if( strstr(ParamName, "TransmitCodec.Codec") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Codec
-                        strncpy(pCallLogSessDstDspTXCodec->Codec, pValue,strlen(pValue)+1);
-                    }
-                    else if( strstr(ParamName, "SilenceSuppression") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.SilenceSuppression
-                        if( strcmp(pValue, "true") == 0 || strcmp(pValue, "1") == 0 )
-                        {
-                             pCallLogSessDstDspTXCodec->SilenceSuppression = true;
-                        }
-                        else
-                        {
-                             pCallLogSessDstDspTXCodec->SilenceSuppression = false;
-                        }
-                    }
-                    else if( strstr(ParamName, "PacketizationPeriod") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.PacketizationPeriod
-                        pCallLogSessDstDspTXCodec->PacketizationPeriod = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Overruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Overruns
-                        pCallLogSessDstDspTXCodec->Overruns = strtoul(pValue,&err, 10);
-                    }
-                    else if( strstr(ParamName, "Underruns") )
-                    {
-                        //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.DSP.TransmitCodec.Underruns
-                        pCallLogSessDstDspTXCodec->Underruns = strtoul(pValue,&err, 10);
-                    }
-                    else
-                    {
-                        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                        return ANSC_STATUS_FAILURE;
-                    }
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else if( strstr(ParamName, "VoiceQuality") )
-            {
-                PDML_CALLLOG_SESSION_VOICEQUALITY pCallLogSessDstDspVQVoipQI = &(pCallLogSessDst->VoiceQuality);
-                //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.
-                if( strstr(ParamName, "WorstVoIPQualityIndicatorsValues") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorsValues
-                    strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorsValues, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "WorstVoIPQualityIndicatorTimestamps") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.WorstVoIPQualityIndicatorTimestamps
-                    strncpy(pCallLogSessDstDspVQVoipQI->WorstVoIPQualityIndicatorTimestamps, pValue,strlen(pValue)+1);
-                }
-                else if( strstr(ParamName, "VoIPQualityIndicator") )
-                {
-                    //VoiceService.{i}.CallLog.{i}.Session.{i}.Destination.VoiceQuality.VoIPQualityIndicator
-                    strncpy(pCallLogSessDstDspVQVoipQI->VoIPQualityIndicator, pValue,strlen(pValue)+1);
-                }
-                else
-                {
-                    AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                    return ANSC_STATUS_FAILURE;
-                }
-            }
-            else
-            {
-                AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-                return ANSC_STATUS_FAILURE;
-            }
-        }
-        else
-        {
-            AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
-            return ANSC_STATUS_FAILURE;
-        }
     }
     else
     {
         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
         return ANSC_STATUS_FAILURE;
     }
+    return ANSC_STATUS_SUCCESS;
 }
 
 ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue)

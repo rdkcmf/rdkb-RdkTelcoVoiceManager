@@ -40,6 +40,8 @@
 #define  TELCOVOICEMGR_DML_NUMBER_OF_SIP_CLIENTS           1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_CALLCONTROL_LINES     1
 #define  TELCOVOICEMGR_DML_NUMBER_OF_TERMINALS             1
+#define  TELCOVOICEMGR_DML_MAX_CALLLOG_ENTRY               10
+#define  TELCOVOICEMGR_DML_MAX_CALLLOG_SESSION             10
 #define  SYSEVENT_UPDATE_IFNAME             "telcovoicemgr_bound_ifname"
 #define  SYSEVENT_UPDATE_IPFAMILY           "telcovoicemgr_ipaddr_family"
 #define  MAX_INTERFACES                     10
@@ -185,8 +187,6 @@ typedef enum _PROTOCOL_TYPE
 
 typedef struct
 {
-    UINT  id;               /**< for internal use only */
-    BOOL  ResetStatistics;  /**< ResetStatistics */
     UINT  PacketsSent;      /**< Total number of RTP packets sent for this line. */
     UINT  PacketsReceived;  /**< Total number of RTP payload bytes received for this line. */
     UINT  BytesSent;        /**< Total number of RTP payload bytes sent for this line.  */
@@ -195,16 +195,19 @@ typedef struct
     UINT  Overruns;
     UINT  Underruns;
     UINT  IncomingCallsReceived;  /**< Total incoming calls received. */
-    UINT  IncomingCallsAnswered;  /**< Total incoming calls answered by the local user. */
+    UINT  IncomingCallsDropped;  /**<  Total incoming calls dropped */
     UINT  IncomingCallsConnected; /**< Total incoming calls that successfully completed call setup signalling. */
     UINT  IncomingCallsFailed;    /**< Total incoming calls that failed to successfully complete call setup signalling. */
+    UINT  IncomingTotalCallTime;  /**< Total incomming call time. */
     UINT  OutgoingCallsAttempted; /**< Total outgoing calls attempted. */
-    UINT  OutgoingCallsAnswered;  /**< Total outgoing calls answered by the remote user. */
     UINT  OutgoingCallsConnected; /**< Total outgoing calls that successfully completed call setup signalling. */
     UINT  OutgoingCallsFailed;    /**< Total outgoing calls that failed to successfully complete call setup signaling. */
-    UINT  CallsDropped;
-    UINT  TotalCallTime;
-    UINT  ServerDownTime;
+    UINT  OutgoingTotalCallTime;  /**< Total outgoing call time. */
+    UINT  OutgoingCallsDropped;
+} TELCOVOICEMGR_DML_VOICESERVICE_STATS;
+
+typedef struct
+{
     UINT  ReceivePacketLossRate;              /**< Current receive packet loss rate in percent,
                                                    calculated as defined in [section 6.4-RFC3550] */
     UINT  FarEndPacketLossRate;               /**< Current far end receive packet lost rate in percent,
@@ -226,7 +229,7 @@ typedef struct
     UINT  AverageRoundTripDelay;              /**< Average round trip delay in microseconds since the beginning of the current
                                                    call. Average of the RoundTripDelay statistic accumulated each time the delay
                                                    is calculated. */
-} TELCOVOICEMGR_DML_VOICESERVICE_STATS;
+} TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS;
 
 typedef struct _ethPriorityValStruct_t
 {
@@ -2020,6 +2023,7 @@ typedef  struct _DML_CALLCONTROL_LINE_CTRL_
  {
     DML_CALLCONTROL_LINE     dml;
     bool                     updated;
+    ULONG                    PreviousVisitTimeOfLine;
  } DML_CALLCONTROL_LINE_CTRL_T, *PDML_CALLCONTROL_LINE_CTRL_T;
 
 typedef  struct _DML_CALLCONTROL_LINE_LIST_

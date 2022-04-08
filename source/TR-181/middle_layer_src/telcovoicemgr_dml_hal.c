@@ -35,7 +35,9 @@
 
 static ANSC_STATUS voice_process_get_info(hal_param_t *get_param);
 static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_STATS *stVoiceStats);
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+static ANSC_STATUS get_call_log_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS *stCallLogStats);
+#endif
 #define HALINIT  "Devices.Services.VoiceHalInit"
 /*******************************************************************************
  *                        LOCAL FUNCTION TYPES
@@ -281,6 +283,99 @@ ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML
     FREE_JSON_OBJECT(jreply_msg);
     return rc;
 }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_STATUS TelcoVoiceHal_GetCallLogStats(const char *param_name, TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS *pCallLogStats)
+{
+    CHECK(param_name != NULL);
+    CHECK(pCallLogStats != NULL);
+
+    ANSC_STATUS rc = ANSC_STATUS_SUCCESS;
+
+    json_object *jreply_msg = NULL;
+    json_object *jrequest = create_json_request_message(GET_REQUEST_MESSAGE, param_name, NULL_TYPE , NULL);
+    CHECK(jrequest != NULL);
+
+    if (json_hal_client_send_and_get_reply(jrequest, &jreply_msg) != RETURN_OK)
+    {
+        CcspTraceError(("%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__));
+        FREE_JSON_OBJECT(jrequest);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
+        return ANSC_STATUS_FAILURE;
+    }
+
+    rc = get_call_log_stats(jreply_msg, pCallLogStats);
+    if (rc != ANSC_STATUS_SUCCESS)
+    {
+        CcspTraceError(("%s - %d Failed to get statistics data  \n", __FUNCTION__, __LINE__));
+    }
+
+    // Free json objects.
+    FREE_JSON_OBJECT(jrequest);
+    FREE_JSON_OBJECT(jreply_msg);
+    return rc;
+}
+static ANSC_STATUS get_call_log_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_CALLLOG_STATS *stCallLogStats)
+{
+    ANSC_STATUS rc = ANSC_STATUS_SUCCESS;
+    int total_param_count = 0;
+
+    total_param_count = json_hal_get_total_param_count(reply_msg);
+    hal_param_t resp_param;
+
+    /**
+     * Traverse through each index and retrieve value.
+     */
+    for (int i = 0; i < total_param_count; ++i)
+    {
+        if (json_hal_get_param(reply_msg, i, GET_RESPONSE_MESSAGE, &resp_param) != RETURN_OK)
+        {
+            CcspTraceError(("%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i));
+            continue;
+        }
+        if( strstr(resp_param.name, "AverageFarEndInterarrivalJitter") )
+        {
+            stCallLogStats->AverageFarEndInterarrivalJitter = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "AverageReceiveInterarrivalJitter") )
+        {
+            stCallLogStats->AverageReceiveInterarrivalJitter = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "AverageRoundTripDelay") )
+        {
+            stCallLogStats->AverageRoundTripDelay = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "FarEndInterarrivalJitter") )
+        {
+            stCallLogStats->FarEndInterarrivalJitter = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "FarEndPacketLossRate") )
+        {
+            stCallLogStats->FarEndPacketLossRate = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "ReceiveInterarrivalJitter") )
+        {
+            stCallLogStats->ReceiveInterarrivalJitter = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "ReceivePacketLossRate") )
+        {
+            stCallLogStats->ReceivePacketLossRate = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "RoundTripDelay") )
+        {
+            stCallLogStats->RoundTripDelay = atol(resp_param.value);
+        }
+        else
+        {
+            CcspTraceWarning(("%s::Unknown ParamName:%s\n", __FUNCTION__, resp_param.name));
+        }
+    }
+
+    return ANSC_STATUS_SUCCESS;
+}
+#endif
 
 
 static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICEMGR_DML_VOICESERVICE_STATS *stVoiceStats)
@@ -302,7 +397,19 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
             continue;
         }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-        if( strstr(resp_param.name, "RTP.BytesReceived") )
+        if( strstr(resp_param.name, "RTP.PacketsReceived") )
+        {
+            stVoiceStats->PacketsReceived = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "RTP.PacketsSent") )
+        {
+            stVoiceStats->PacketsSent = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "RTP.PacketsLost") )
+        {
+            stVoiceStats->PacketsLost = atol(resp_param.value);
+        }
+	    else if( strstr(resp_param.name, "RTP.BytesReceived") )
         {
             stVoiceStats->BytesReceived = atol(resp_param.value);
         }
@@ -310,10 +417,17 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
         {
             stVoiceStats->BytesSent = atol(resp_param.value);
         }
+        else if( strstr(resp_param.name, "DSP.Overruns") )
+        {
+            stVoiceStats->Overruns = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "DSP.Underruns") )
+        {
+            stVoiceStats->Underruns = atol(resp_param.value);
+        }
         else if( strstr(resp_param.name, "IncomingCalls.CallsConnected") )
         {
             stVoiceStats->IncomingCallsConnected = atol(resp_param.value);
-            stVoiceStats->IncomingCallsAnswered= atol(resp_param.value);
         }
         else if( strstr(resp_param.name, "IncomingCalls.CallsFailed") )
         {
@@ -322,6 +436,14 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
         else if( strstr(resp_param.name, "IncomingCalls.CallsReceived") )
         {
             stVoiceStats->IncomingCallsReceived= atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "IncomingCalls.CallsDropped") )
+        {
+            stVoiceStats->IncomingCallsDropped= atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "IncomingCalls.TotalCallTime") )
+        {
+            stVoiceStats->IncomingTotalCallTime= atol(resp_param.value);
         }
         else if( strstr(resp_param.name, "OutgoingCalls.CallsAttempted") )
         {
@@ -334,6 +456,14 @@ static ANSC_STATUS get_voice_line_stats(const json_object *reply_msg, TELCOVOICE
         else if( strstr(resp_param.name, "OutgoingCalls.CallsFailed") )
         {
             stVoiceStats->OutgoingCallsFailed = atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "OutgoingCalls.CallsDropped") )
+        {
+            stVoiceStats->OutgoingCallsDropped= atol(resp_param.value);
+        }
+        else if( strstr(resp_param.name, "OutgoingCalls.TotalCallTime") )
+        {
+            stVoiceStats->OutgoingTotalCallTime= atol(resp_param.value);
         }
 #else
         if( strstr(resp_param.name, "AverageFarEndInterarrivalJitter") )
@@ -602,6 +732,55 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceSe
 
     return ANSC_STATUS_SUCCESS;
 }
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+
+ANSC_STATUS TelcoVoiceMgrHal_GetCallLogData(PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService, char* ParamName)
+{
+    if (pDmlVoiceService == NULL)
+    {
+        fprintf(stderr,"%s - %d Invalid argument \n", __FUNCTION__, __LINE__);
+        return ANSC_STATUS_FAILURE;
+    }
+
+    int total_param_count = 0;
+    hal_param_t resp_param;
+    json_object *jreply_msg = NULL;
+    memset(&resp_param, 0, sizeof(resp_param));
+
+    json_object *jrequest = create_json_request_message(GET_REQUEST_MESSAGE, ParamName, NULL_TYPE , NULL);
+
+    CHECK(jrequest != NULL);
+
+    if (json_hal_client_send_and_get_reply(jrequest, &jreply_msg) != RETURN_OK)
+    {
+        fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
+        // Free json objects.
+        FREE_JSON_OBJECT(jrequest);
+        FREE_JSON_OBJECT(jreply_msg);
+        return ANSC_STATUS_FAILURE;
+    }
+
+    total_param_count = json_hal_get_total_param_count(jreply_msg);
+
+    for (int i = 0; i < total_param_count; ++i)
+    {
+        if (json_hal_get_param(jreply_msg, i, GET_RESPONSE_MESSAGE, &resp_param) != RETURN_OK)
+        {
+            fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
+            continue;
+        }
+        CcspTraceError(("CALLLOG :: Param :%s, Value: %s  \n",resp_param.name, resp_param.value));
+        Map_hal_dml_CallLog(pDmlVoiceService, resp_param.name, resp_param.value);
+    }
+
+    // Free json objects.
+    FREE_JSON_OBJECT(jrequest);
+    FREE_JSON_OBJECT(jreply_msg);
+
+    return ANSC_STATUS_SUCCESS;
+}
+#endif
 
 #ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCapabilities)

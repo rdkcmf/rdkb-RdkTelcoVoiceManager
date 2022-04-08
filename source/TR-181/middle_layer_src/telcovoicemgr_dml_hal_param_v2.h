@@ -72,6 +72,7 @@
 #define DML_VOICESERVICE_CALLLOG_PARAM_NAME                           DML_VOICESERVICE_PARAM_NAME"CallLog.%d."
 #define DML_VOICESERVICE_CALLLOG_SIGNALINGPERFORMANCE_PARAM_NAME      DML_VOICESERVICE_PARAM_NAME"CallLog.%d.SignalingPerformance.%d."
 #define DML_VOICESERVICE_CALLLOG_SESSION_PARAM_NAME                   DML_VOICESERVICE_PARAM_NAME"CallLog.%d.Session.%d."
+#define DML_VOICESERVICE_CALLLOG_SESSION_SOURCE_RTP_PARAM_NAME        DML_VOICESERVICE_PARAM_NAME"CallLog.%d.Session.%d.Source.RTP."
 #define DML_VOICESERVICE_VOIPPROF_PARAM_NAME                          DML_VOICESERVICE_PARAM_NAME"VoIPProfile.%d."
 #define DML_VOICESERVICE_CODECPROF_PARAM_NAME                         DML_VOICESERVICE_PARAM_NAME"CodecProfile.%d."
 #define DML_VOICESERVICE_TONE_DESC_PARAM_NAME                         DML_VOICESERVICE_PARAM_NAME"Tone.Description.%d."
@@ -154,7 +155,7 @@ ANSC_STATUS Map_hal_dml_H323(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
 ANSC_STATUS Map_hal_dml_Trunk(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
 ANSC_STATUS Map_hal_dml_CallControl(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
 ANSC_STATUS Map_hal_dml_Interwork(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
-ANSC_STATUS Map_hal_dml_CallLog(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
+ANSC_STATUS Map_hal_dml_CallLog(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService, char* ParamName, char* pValue);
 ANSC_STATUS Map_hal_dml_VoipProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
 ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
 ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue);
