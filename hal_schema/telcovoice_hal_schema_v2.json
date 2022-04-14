@@ -5057,7 +5057,7 @@
         },
         "value": {
           "type": "string",
-          "pattern": "^(GAP|CAT-iq|CAT-iq|CAT-iq|CAT-iq|CAT-iq)(,(GAP|CAT-iq|CAT-iq|CAT-iq|CAT-iq|CAT-iq))*$",
+          "pattern": "^(GAP|CAT-iq 1.0|CAT-iq 2.0|CAT-iq 2.1|CAT-iq 3.0|CAT-iq 4.0)(,(GAP|CAT-iq 1.0|CAT-iq 2.0|CAT-iq 2.1|CAT-iq 3.0|CAT-iq 4.0))*$",
           "maxLength": 256
         }
       }
