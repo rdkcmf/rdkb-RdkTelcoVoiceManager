@@ -2816,17 +2816,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(uint32_t uiService, uint32_t uiProf
 
 ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, int iValue)
 {
-    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
-    char strName[JSON_MAX_STR_ARR_SIZE]={0};
     if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
     {
         return ANSC_STATUS_DISCARD;
-    }
-    snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
-    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
-    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
-    {
-       return ANSC_STATUS_FAILURE;
     }
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RtpEthernetPriorityMark", iValue);
     return ANSC_STATUS_SUCCESS;
