@@ -210,8 +210,8 @@ static ANSC_STATUS voice_process_get_info(hal_param_t *get_param)
 {
     CHECK(get_param != NULL);
 
-    json_object *jreply_msg;
-    json_object *jrequest;
+    json_object *jreply_msg = NULL;
+    json_object *jrequest = NULL;
     hal_param_t resp_param;
     int rc = ANSC_STATUS_FAILURE;
 
@@ -224,7 +224,10 @@ static ANSC_STATUS voice_process_get_info(hal_param_t *get_param)
     {
         CcspTraceError(("%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__));
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return rc;
     }
 
@@ -260,7 +263,10 @@ ANSC_STATUS TelcoVoiceHal_GetLineStats(const char *param_name, TELCOVOICEMGR_DML
     {
         CcspTraceError(("%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__));
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return ANSC_STATUS_FAILURE;
     }
 
@@ -470,7 +476,10 @@ ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg)
     {
         CcspTraceError(("[%s][%d] RPC message failed \n", __FUNCTION__, __LINE__));
         FREE_JSON_OBJECT(jmsg);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return RETURN_ERR;
     }
     CHECK(jreply_msg);
@@ -568,7 +577,10 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceSe
         fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
         // Free json objects.
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return ANSC_STATUS_FAILURE;
     }
 
@@ -618,7 +630,10 @@ ANSC_STATUS TelcoVoiceMgrHal_GetCapabilities(PTELCOVOICEMGR_DML_CAPABILITIES pCa
         fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
         // Free json objects.
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return ANSC_STATUS_FAILURE;
     }
 
@@ -680,7 +695,10 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceProfile(DML_PROFILE_LIST_T* pVoiceProfileLi
         fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
         // Free json objects.
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return ANSC_STATUS_FAILURE;
     }
 
@@ -740,7 +758,10 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
         fprintf(stderr,"%s - %d Failed to get reply for the json request \n", __FUNCTION__, __LINE__);
         // Free json objects.
         FREE_JSON_OBJECT(jrequest);
-        FREE_JSON_OBJECT(jreply_msg);
+        if (jreply_msg)
+        {
+            FREE_JSON_OBJECT(jreply_msg);
+        }
         return ANSC_STATUS_FAILURE;
     }
 
