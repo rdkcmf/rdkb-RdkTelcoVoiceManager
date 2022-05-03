@@ -204,7 +204,7 @@ pErr TelcoVoiceMgr_Process_Webconfig_Request(void *Data)
         if( TRUE == pServiceCfg->IsRTPDSCPMarkPresent )
         {
             pVoiceProfile->RTPObj.DSCPMark  =  pServiceCfg->RTPDSCPMark;
-            (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", pVoiceProfile->RTPObj.DSCPMark);
+            (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RtpDSCPMark", pVoiceProfile->RTPObj.DSCPMark);
         }
 
         if( ( TRUE == pServiceCfg->IsRTPEthernetPriorityMarkPresent ) &&  ( TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uVsIndex, uVpIndex, pServiceCfg->RTPEthernetPriorityMark) == ANSC_STATUS_SUCCESS) )
