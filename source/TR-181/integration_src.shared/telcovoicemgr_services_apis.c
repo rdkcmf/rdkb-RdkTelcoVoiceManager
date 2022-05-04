@@ -2109,6 +2109,23 @@ ANSC_STATUS TelcoVoiceMgrDmlSetOutboundProxyPort( uint32_t uiService, uint32_t u
     return ANSC_STATUS_SUCCESS;
 }
 
+ANSC_STATUS TelcoVoiceMgrDmlSetSipDscpMark(uint32_t uiService, uint32_t uiProfile, ULONG uValue)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"DSCPMark");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uValue);
+    
+    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", uValue);
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
+    return ANSC_STATUS_SUCCESS;
+}
+
 /* TelcoVoiceMgrDmlSetSipEthernetPriorityMark : */
 /**
 * @description Set Sip Ethernet Priority Mark

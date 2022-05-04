@@ -1389,9 +1389,16 @@ BOOL SIP_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uVal
                 }
                 else if( AnscEqualString(ParamName, "DSCPMark", TRUE) )
                 {
-                        pVoiceProfile->SIPObj.DSCPMark  =  uValue;
-                        (void)storeObjectInteger(uVsIndex, uVpIndex, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", uValue);
-                        ret = TRUE;
+                    if(TelcoVoiceMgrDmlSetSipDscpMark(uVsIndex, uVpIndex, uValue) == ANSC_STATUS_SUCCESS)
+                    {
+                        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                        if(pTelcoVoiceMgrDmlData != NULL)
+                        {
+                            pVoiceProfile->SIPObj.DSCPMark  =  uValue;
+                            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                            ret = TRUE;
+                        }
+                    }
                 }
                 else if( AnscEqualString(ParamName, "UserAgentPort", TRUE) )
                 {
