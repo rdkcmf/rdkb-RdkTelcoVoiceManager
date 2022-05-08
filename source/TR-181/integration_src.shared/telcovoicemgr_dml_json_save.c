@@ -498,6 +498,7 @@ int len;
   { TT_VoiceServices, "VoiceServices", 13 },
   { TT_PhyInterface, "PhyInterface", 12 },
   { TT_DiagTests, "Tests", 5 },
+  { TT_XRdkDebug, "X_RDK_Debug", sizeof("X_RDK_Debug") - 1},
   { TT_VoiceProfile, "VoiceProfile", 12 },
   { TT_SIP, "SIP", 3 },
   { TT_RTP, "RTP", 3 },
@@ -620,6 +621,41 @@ int storeOneVoiceService(char *pParse, char *pNickName, int entry, cJSON *jsonOb
             }
             CcspTraceInfo(("Unreachable code reached !!!\n"));
             return (-1);
+        }
+        if(TT_XRdkDebug ==  getTextType(pParse))
+        {
+            pParse += (sizeof("X_RDK_Debug") - 1);   // X_RDK_Debug
+            pParse ++;  // pParse must now point to the leaf
+            leafObj = cJSON_GetObjectItemCaseSensitive(jsonObj, "X_RDK_Debug");
+            if (leafObj)
+            {
+                objType = getNextObj(pParse, &objLen);
+
+                /* Only LEAF is expected*/
+                if (LEAF_OBJ == objType)
+                {
+                    if ( 0 == replaceLeafValue(leafObj, pParse, pParam) )
+                    {
+                        CcspTraceInfo(("Save success for %s...\n", pParse));
+                        return 0;
+                    }
+                    else
+                    {
+                        CcspTraceInfo(("Save failed at parse point %s\n", pParse));
+                        return (-1);
+                    }
+                }
+                else
+                {
+                    CcspTraceInfo(("Invalid object type for %s\n", pParse));
+                    return (-1);
+                }
+            }
+            else
+            {
+                CcspTraceInfo(("Could not find json object: X_RDK_Debug\n"));
+                return (-1);
+            }
         }
 /* TODO wrong place  */
         if (TT_DiagTests == getTextType(pParse))

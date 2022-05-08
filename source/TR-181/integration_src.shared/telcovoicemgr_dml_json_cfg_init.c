@@ -524,6 +524,10 @@ static void jsonParseVoiceService(uint32_t index, cJSON *voiceService)
     {
         if (NULL != (vsItem = cJSON_GetObjectItemCaseSensitive(voiceService, serviceFuncs[j].obj)))
         {
+            CcspTraceInfo(("%s: Handling json config item:%s , type: %s\n", __FUNCTION__, serviceFuncs[j].obj,
+                                                                      cJSON_IsString(vsItem)?"String":
+                                                                       cJSON_IsArray(vsItem)?"Array":
+                                                                       cJSON_IsObject(vsItem)?"Object":"Unknown" ));
             if (cJSON_IsString(vsItem))
             {
                 if (NULL != vsItem->valuestring)      // Item has a string value, not another object
@@ -533,21 +537,18 @@ static void jsonParseVoiceService(uint32_t index, cJSON *voiceService)
                     /* This item is handled by a function, usually the next level parser */
                     (*serviceFuncs[j].handler)(index, vsItem);
             }
+            else if (cJSON_IsArray(vsItem) || cJSON_IsObject(vsItem))
+            {
+                if (NULL != serviceFuncs[j].handler)
+                    /* This item is handled by a function, usually the next level parser */
+                    (*serviceFuncs[j].handler)(index, vsItem);
+                /* Not a valid item - log error */
+            }
             else
             {
-                if (cJSON_IsArray(vsItem))
-                {
-                    if (NULL != serviceFuncs[j].handler)
-                        /* This item is handled by a function, usually the next level parser */
-                        (*serviceFuncs[j].handler)(index, vsItem);
-                    /* Not a valid item - log error */
-                }
-                else
-                {
-                    CcspTraceInfo(("Unhandled type tag %s in VoiceService: %s\n",
-                        cJSON_IsBool(vsItem) ? "boolean" : cJSON_IsNumber(vsItem) ? "number" :
-                        cJSON_IsArray(vsItem) ? "array" : "null/object/raw", serviceFuncs[j].obj));
-                }
+                CcspTraceInfo(("Unhandled type tag %s in VoiceService: %s\n",
+                    cJSON_IsBool(vsItem) ? "boolean" : cJSON_IsNumber(vsItem) ? "number" :
+                    cJSON_IsArray(vsItem) ? "array" : "null/object/raw", serviceFuncs[j].obj));
             }
         }
         else

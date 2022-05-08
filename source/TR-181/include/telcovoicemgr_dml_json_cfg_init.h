@@ -203,6 +203,7 @@ enum _TT {
     TT_PhyInterface, 
     TT_VoiceProfile, 
     TT_DiagTests,
+    TT_XRdkDebug,
     TT_SIP, 
     TT_RTP,
     TT_Line, 
