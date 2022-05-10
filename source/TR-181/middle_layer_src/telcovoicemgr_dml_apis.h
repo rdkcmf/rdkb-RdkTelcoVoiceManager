@@ -29,6 +29,10 @@
 
 #include "telcovoicemgr_telcovoice_apis.h"
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_HANDLE TelcoVoiceMgr_setCallControlLineEnable(BOOL bEnable);
+#endif
+
 typedef ANSC_HANDLE(*PFN_COSADM_CREATE)(VOID);
 
 typedef ANSC_STATUS(*PFN_COSADM_REMOVE)(ANSC_HANDLE hThisObject);

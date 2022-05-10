@@ -22,7 +22,10 @@
 #include "telcovoicemgr_dml_backendmgr.h"
 #include "telcovoicemgr_dml_hal.h"
 #include "voice_report.h"
-
+#ifdef RBUS_BUILD_FLAG_ENABLE
+#include "telcovoicemgr_rbus_handler_apis.h"
+#include "telcovoicemgr_dml_json_cfg_init.h"
+#endif //RBUS_BUILD_FLAG_ENABLE
 #ifdef _ANSC_LINUX
 #include <stdio.h>
 #include <unistd.h>
@@ -153,7 +156,7 @@ ANSC_STATUS TelcoVoiceMgrServicesInitialize(ANSC_HANDLE hThisObject)
         CcspTraceError(("TelcoVoiceMgrHal_GetInitData failed !!!!\n"));
         return returnStatus;
     }
- 
+
     //Register subscribe event callback and send data to hal
     returnStatus = TelcoVoiceMgr_Controller_Init();
     if(returnStatus != ANSC_STATUS_SUCCESS)
@@ -172,6 +175,19 @@ ANSC_STATUS TelcoVoiceMgrServicesInitialize(ANSC_HANDLE hThisObject)
         CcspTraceError(("DmlVoiceServiceReportInit failed !!!!\n"));
         return returnStatus;
     }
+#ifdef RBUS_BUILD_FLAG_ENABLE
+    //Starts the Rbus Initialize
+    returnStatus = TelcoVoiceMgr_Rbus_Init();
+    if(returnStatus == ANSC_STATUS_SUCCESS)
+    {
+        TelcoVoiceMgr_Rbus_SubscribeDML();
+    }
+    else
+    {
+        CcspTraceError(("%s %d - Rbus Init failed !\n", __FUNCTION__, __LINE__ ));
+    }
+#endif //RBUS_BUILD_FLAG_ENABLE
+
     return returnStatus;
 }
 
@@ -252,7 +268,7 @@ ANSC_STATUS TelcoVoiceMgrServicesRemove(ANSC_HANDLE hThisObject)
 
     TelcoVoiceMgrHal_InitData(bStatus);
 
-    //delete DML data 
+    //delete DML data
     TelcoVoiceMgrDmlDataDelete();
 
 
@@ -351,7 +367,7 @@ TelcoVoiceMgrTelcoVoiceInitialize
 {
     ANSC_STATUS                           returnStatus        = ANSC_STATUS_SUCCESS;
     PTELCOVOICEMGR_DATAMODEL_TELCOVOICE   pMyObject           = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)hThisObject;
- 
+
     /* Initialize WebConfig */
     TelcoVoiceMgrDmlTelcoVoiceWebConfigInit( );
 
@@ -390,7 +406,15 @@ TelcoVoiceMgrTelcoVoiceRemove
 {
     ANSC_STATUS                           returnStatus        = ANSC_STATUS_SUCCESS;
     PTELCOVOICEMGR_DATAMODEL_TELCOVOICE   pMyObject           = (PTELCOVOICEMGR_DATAMODEL_TELCOVOICE)hThisObject;
- 
+#ifdef RBUS_BUILD_FLAG_ENABLE
+    //Starts the Rbus Initialize
+    returnStatus = TelcoVoiceMgr_RbusExit();
+    if(returnStatus != ANSC_STATUS_SUCCESS)
+    {
+        CcspTraceError(("%s %d - Rbus Init failed !\n", __FUNCTION__, __LINE__ ));
+    }
+#endif //RBUS_BUILD_FLAG_ENABLE
+
     /* Remove self */
     AnscFreeMemory((ANSC_HANDLE)pMyObject);
 
@@ -418,3 +442,83 @@ BOOL TelcoVoiceMgrAnscValidateInputString(char *pString)
 
     return TRUE;
 }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_HANDLE TelcoVoiceMgr_setCallControlLineEnable(BOOL bEnable)
+{
+    ANSC_HANDLE ret = ANSC_STATUS_FAILURE;
+    char HalName[MAX_STR_LEN] = {0};
+    ULONG uVsIndex = 1;
+    ULONG uLineIndex = 1;
+
+    snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.CallControl.Line.%d.Enable",uVsIndex,uLineIndex);
+
+    if (TelcoVoiceMgrHal_SetParamBool(HalName,bEnable) == ANSC_STATUS_SUCCESS)
+    {
+        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlDataLock = TelcoVoiceMgrDmlGetDataLocked();
+        if(pTelcoVoiceMgrDmlDataLock == NULL)
+        {
+            CcspTraceError(("%s:%d:: TelcoVoiceMgrDmlGetDataLocked: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PTELCOVOICEMGR_DML_SERVICE pTVMDmlService = &(pTelcoVoiceMgrDmlDataLock->Service);
+        if(pTVMDmlService == NULL)
+        {
+            CcspTraceError(("%s:%d:: pTVMDmlService: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PDML_VOICE_SERVICE_LIST_T pTVMVoiceServiceList = &(pTVMDmlService->VoiceService);
+        if(pTVMVoiceServiceList == NULL)
+        {
+            CcspTraceError(("%s:%d:: pTVMVoiceServiceList: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PDML_VOICE_SERVICE_CTRL_T pTVMVoiceServiceCtrl = &(pTVMVoiceServiceList->pdata[uVsIndex - 1]);
+        if(pTVMVoiceServiceCtrl == NULL)
+        {
+            CcspTraceError(("%s:%d:: pTVMVoiceServiceCtrl: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PTELCOVOICEMGR_DML_VOICESERVICE pTVMVoiceServiceDml = &(pTVMVoiceServiceCtrl->dml);
+        if(pTVMVoiceServiceDml == NULL)
+        {
+            CcspTraceError(("%s:%d:: pTVMVoiceServiceDml: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PDML_CALLCONTROL_LINE_LIST_T pCallCtrlLineList = &(pTVMVoiceServiceDml->CallControl_obj.Line);
+        if(pCallCtrlLineList == NULL)
+        {
+            CcspTraceError(("%s:%d:: pCallCtrlLineList: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PDML_CALLCONTROL_LINE_CTRL_T pLineCtrl = &(pCallCtrlLineList->pdata[uLineIndex - 1]);
+        if(pLineCtrl == NULL)
+        {
+            CcspTraceError(("%s:%d:: pLineCtrl: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        PDML_CALLCONTROL_LINE pHEAD = &(pLineCtrl->dml);
+        if(pHEAD == NULL)
+        {
+            CcspTraceError(("%s:%d:: pHEAD: Failed\n", __FUNCTION__, __LINE__));
+            goto exit;
+        }
+
+        pHEAD->Enable = bEnable;
+
+        (void)storeObjectString(uVsIndex, 1, 1, uLineIndex, "Enable", bEnable == TRUE ?"Enabled" : "Disabled");
+
+        ret = ANSC_STATUS_SUCCESS;
+exit:
+        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlDataLock);
+
+    }
+        return ret;
+}
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2

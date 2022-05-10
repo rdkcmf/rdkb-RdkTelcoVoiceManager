@@ -28,7 +28,7 @@ ACLOCAL_AMFLAGS = -I m4
 hardware_platform = i686-linux-gnu
 
 noinst_LTLIBRARIES = libCcsptelcovoice_manager_middle_layer_src.la
-libCcsptelcovoice_manager_middle_layer_src_la_CPPFLAGS = -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/custom -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/include -I$(top_srcdir)/../CcspCommonLibrary/source/debug_api/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include/linux -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/package/slap/include -I$(top_srcdir)/../hal/include -I$(top_srcdir)/source/TR-181/board_sbapi -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/http/include -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/ansc/include -I$(top_srcdir)/source/TR-181/middle_layer_src -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/common/MessageBusHelper/include -I$(top_srcdir)/source/TR-181/include -I$(top_srcdir)/source/TelcoVOICEManager $(CPPFLAGS)
+libCcsptelcovoice_manager_middle_layer_src_la_CPPFLAGS = -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/custom -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/include -I$(top_srcdir)/../CcspCommonLibrary/source/debug_api/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/include/linux -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/include -I$(top_srcdir)/../CcspCommonLibrary/source/cosa/package/slap/include -I$(top_srcdir)/../hal/include -I$(top_srcdir)/source/TR-181/board_sbapi -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/http/include -I$(top_srcdir)/../CcspCommonLibrary/source/util_api/ansc/include -I$(top_srcdir)/source/TR-181/middle_layer_src -I$(top_srcdir)/../CcspCommonLibrary/source/ccsp/components/common/MessageBusHelper/include -I$(top_srcdir)/source/TR-181/include -I$(top_srcdir)/source/TelcoVOICEManager -I${PKG_CONFIG_SYSROOT_DIR}$(includedir)/rbus $(CPPFLAGS)
 
 libCcsptelcovoice_manager_middle_layer_src_la_SOURCES = telcovoicemgr_dml_plugin_main.c telcovoicemgr_dml_backendmgr.c telcovoicemgr_dml_apis.c telcovoicemgr_dml_hal.c telcovoicemgr_dml_data.c
 if VOICE_V2
@@ -42,6 +42,7 @@ else
 libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_dml_data_v1.c telcovoicemgr_dml_services_v1.c telcovoicemgr_dml_profile_v1.c telcovoicemgr_dml_line_v1.c telcovoicemgr_dml_tone_v1.c telcovoicemgr_dml_numberingplan_v1.c telcovoicemgr_dml_hal_param_v1.c telcovoicemgr_dml_capabilities_v1.c telcovoicemgr_dml_physical_interface_v1.c 
 endif
 libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_dml_telcovoice.c telcovoicemgr_dml_report.c
-libCcsptelcovoice_manager_middle_layer_src_la_LDFLAGS =  -lccsp_common -ljson_hal_client -ljson-c -lcjson
+libCcsptelcovoice_manager_middle_layer_src_la_SOURCES += telcovoicemgr_rbus_handler_apis.c
+libCcsptelcovoice_manager_middle_layer_src_la_LDFLAGS =  -lccsp_common -ljson_hal_client -ljson-c -lcjson -lrbus
 
 

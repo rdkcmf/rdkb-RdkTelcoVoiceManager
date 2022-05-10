@@ -3079,13 +3079,13 @@ typedef  struct _DML_VOICE_SERVICE_LIST_
 typedef  struct _TELCOVOICEMGR_DML_SERVICE
 {
     DML_VOICE_SERVICE_LIST_T    VoiceService;
-} TELCOVOICEMGR_DML_SERVICE;
+} TELCOVOICEMGR_DML_SERVICE,*PTELCOVOICEMGR_DML_SERVICE;
 
 typedef  struct _TELCOVOICEMGR_DML_DATA
 {
     TELCOVOICEMGR_DML_SERVICE  Service;
     pthread_mutex_t            mDataMutex;  //Mutex
-} TELCOVOICEMGR_DML_DATA;
+} TELCOVOICEMGR_DML_DATA,*PTELCOVOICEMGR_DML_DATA;
 
 ANSC_STATUS TelcoVoiceMgrSetSyseventData(char *eventName, char *eventValue);
 TELCOVOICEMGR_DML_DATA* TelcoVoiceMgrDmlGetDataLocked(void);
