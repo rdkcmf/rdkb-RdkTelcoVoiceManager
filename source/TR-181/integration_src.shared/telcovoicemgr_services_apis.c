@@ -2109,6 +2109,23 @@ ANSC_STATUS TelcoVoiceMgrDmlSetOutboundProxyPort( uint32_t uiService, uint32_t u
     return ANSC_STATUS_SUCCESS;
 }
 
+/* TelcoVoiceMgrDmlSetSipDscpMark : */
+/**
+* @description Set Sip Ethernet Priority Mark
+*
+* @param uint32_t uiService - input the voice service index
+* @param uint32_t uiProfile - input the Voice Profile Index
+* @param int uValue         - input the DSCP Mark
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
 ANSC_STATUS TelcoVoiceMgrDmlSetSipDscpMark(uint32_t uiService, uint32_t uiProfile, ULONG uValue)
 {
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
@@ -2116,13 +2133,14 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipDscpMark(uint32_t uiService, uint32_t uiProfil
 
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"DSCPMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uValue);
-    
-    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", uValue);
+
+    /* Validate and restart voice process */
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
     }
 
+    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", uValue);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2145,12 +2163,36 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipDscpMark(uint32_t uiService, uint32_t uiProfil
 
 ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, int iValue)
 {
+    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = NULL;
+    DML_VOICE_SERVICE_CTRL_T* pVoiceService = NULL;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
+
+    /* Validate parameter value */
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
+    /* We are already holding the dml lock */
+    pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetData();
+    pVoiceService = pTelcoVoiceMgrDmlData->Service.VoiceService.pdata[TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES - 1];
+    pDmlVoiceService = &(pVoiceService->dml);
+    pDmlVoiceService->X_RDK_Enable = VOICE_HAL_IP_LINK_STATE_DOWN;
+
+    /* Set the voice down to allow deregister before wan goes down */
+    TelcoVoiceMgrDmlSetVoiceProcessState(uiService,VOICE_SERVICE_DISABLE);
+    sleep(1);
+
     if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
     {
         return ANSC_STATUS_DISCARD;
     }
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "EthernetPriorityMark", iValue);
-
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2835,6 +2877,42 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(uint32_t uiService, uint32_t uiProf
     return ANSC_STATUS_SUCCESS;
 }
 
+/* TelcoVoiceMgrDmlSetRtpDscpMark : */
+/**
+* @description Set RTP DSCP Mark
+*
+* @param uint32_t uiService - input the voice service index
+* @param uint32_t uiProfile - input the Voice Profile Index
+* @param int uValue         - input the DSCP Mark
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+ANSC_STATUS TelcoVoiceMgrDmlSetRtpDscpMark(uint32_t uiService, uint32_t uiProfile, ULONG uValue)
+{
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"DSCPMark");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%lu",uValue);
+
+    /* Validate the Dscp value */
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_UNSIGNED_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
+    (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RtpDSCPMark", uValue);
+    return ANSC_STATUS_SUCCESS;
+}
+
+
 /* TelcoVoiceMgrDmlSetRtpEthernetPriorityMark : */
 /**
 * @description Set RTP Ethernet Priority Mark
@@ -2854,6 +2932,31 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(uint32_t uiService, uint32_t uiProf
 
 ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint32_t uiProfile, int iValue)
 {
+    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = NULL;
+    DML_VOICE_SERVICE_CTRL_T* pVoiceService = NULL;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+
+    char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
+    snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
+
+    /* Validate parameter value */
+    if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
+    {
+       return ANSC_STATUS_FAILURE;
+    }
+
+    /* We are already holding the dml lock */
+    pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetData();
+    pVoiceService = pTelcoVoiceMgrDmlData->Service.VoiceService.pdata[TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES - 1];
+    pDmlVoiceService = &(pVoiceService->dml);
+    pDmlVoiceService->X_RDK_Enable = VOICE_HAL_IP_LINK_STATE_DOWN;
+
+    /* Set the voice down to allow deregister before wan goes down */
+    TelcoVoiceMgrDmlSetVoiceProcessState(uiService,VOICE_SERVICE_DISABLE);
+    sleep(1);
+
     if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
     {
         return ANSC_STATUS_DISCARD;
