@@ -1003,6 +1003,11 @@ ANSC_STATUS TelcoVoiceMgr_WebConfig_Process_TelcoVoipParams(msgpack_object obj, 
                 strncpy(pWebConfig->spec,p->val.via.str.ptr, p->val.via.str.size);
                 pWebConfig->spec[p->val.via.str.size] = '\0';
                 CcspTraceInfo(("Spec :%s\n", pWebConfig->spec));
+                if(strcmp(pWebConfig->spec, CURRENT_DML_VERSION))
+                {
+                    CcspTraceInfo(("Version mismatch Error :: Current DML Version : %s , Spec :%s\n", CURRENT_DML_VERSION, pWebConfig->spec));
+                    return ANSC_STATUS_FAILURE;
+                }
             }
         }
         else if ( 0 == match(p, "VoiceServiceTable") )

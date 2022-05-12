@@ -1052,6 +1052,9 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(char* HalName, BOOL bValue)
     }
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_BOOLEAN, strValue) == ANSC_STATUS_SUCCESS)
     {
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2//should be remove if same architecture is used in v1
+        (void)storeObjectBool(HalName,bValue);
+#endif
         return ANSC_STATUS_SUCCESS;
     }
 
@@ -1066,7 +1069,10 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(char* HalName, INT iValue)
 
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_INTEGER, strValue) == ANSC_STATUS_SUCCESS)
     {
-        return ANSC_STATUS_SUCCESS;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2//should be remove if same architecture is used in v1
+        (void)storeObjectInteger(HalName,iValue);
+#endif
+    	return ANSC_STATUS_SUCCESS;
     }
 
     return ANSC_STATUS_FAILURE;
@@ -1080,7 +1086,10 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamULong(char* HalName, ULONG uValue)
 
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_UNSIGNED_INTEGER, strValue) == ANSC_STATUS_SUCCESS)
     {
-        return ANSC_STATUS_SUCCESS;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2//should be remove if same architecture is used in v1
+        (void)storeObjectInteger(HalName,uValue);
+#endif
+    	return ANSC_STATUS_SUCCESS;
     }
 
     return ANSC_STATUS_FAILURE;
@@ -1091,7 +1100,10 @@ ANSC_STATUS TelcoVoiceMgrHal_SetParamString(char* HalName, char* sValue)
 
     if (TelcoVoiceMgrHal_SetParam(HalName, PARAM_STRING, sValue) == ANSC_STATUS_SUCCESS)
     {
-        return ANSC_STATUS_SUCCESS;
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2//should be remove if same architecture is used in v1
+        (void)storeObjectString(HalName,sValue);
+#endif
+    return ANSC_STATUS_SUCCESS;
     }
 
     return ANSC_STATUS_FAILURE;

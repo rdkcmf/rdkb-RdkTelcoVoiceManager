@@ -606,8 +606,6 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_SetParamStringValue(ANSC_HANDLE hInsC
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, uLineIndex, 1, 1, "DirectoryNumber", pString);
-
             ret = TRUE;
         }
     }
@@ -798,8 +796,6 @@ BOOL TelcoVoiceMgrDml_CallControl_LineList_SetParamBoolValue(ANSC_HANDLE hInsCon
             pHEAD->Enable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, 1, 1, uLineIndex, "Enable", bValue == TRUE ?"Enabled" : "Disabled");
 
             ret = TRUE;
         }
@@ -7396,8 +7392,6 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCID", bValue ? bTrueStr : bFalseStr);
-
             ret = TRUE;
         }
     }
@@ -7413,8 +7407,6 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesHE", bValue ? bTrueStr : bFalseStr);
-
             ret = TRUE;
         }
     }
@@ -7429,8 +7421,6 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
             pHEAD->X_RDK_Central_COM_ConferenceCallingEnable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCCE", bValue ? bTrueStr : bFalseStr);
 
             ret = TRUE;
         }
@@ -7507,8 +7497,6 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesMWI",bValue ? bTrueStr : bFalseStr);
-
             ret = TRUE;
         }
     }
@@ -7583,8 +7571,6 @@ BOOL TelcoVoiceMgrDml_CallControl_CallingFeatures_SetList_SetParamBoolValue(ANSC
             pHEAD->CallWaitingEnable = bValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, 1, 1, uSetIndex, "CallingFeaturesCWI", bValue ? bTrueStr : bFalseStr);
 
             ret = TRUE;
         }

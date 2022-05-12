@@ -43,6 +43,11 @@
             <syntax>string</syntax>
             <writable>true</writable>
             </parameter>
+            <parameter>
+            <name>DatamodelVersion</name>
+            <type>string</type>
+            <syntax>string</syntax>
+            </parameter>
         </parameters>
     </object>
     <object>

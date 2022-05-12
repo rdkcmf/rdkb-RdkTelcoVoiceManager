@@ -50,6 +50,7 @@
 #define VOICE_HAL_EMERGENCY_DIGIT_MAP  "X_RDK-Central_COM_EmergencyDigitMap"
 #define VOICE_HAL_CUSTOM_DIGIT_MAP  "X_RDK-Central_COM_DigitMap"
 
+
 /* Forward declarations */
 static void jsonParseVoiceService(uint32_t index, cJSON *voiceService);
 static void jsonParseAllPhyInterfaces(uint32_t voiceService, cJSON *phyInterfaces);
@@ -76,6 +77,19 @@ static ANSC_STATUS initialise_line_calling_features(uint32_t uiService, uint32_t
 static json_object *jInitMsg = NULL;
 static hal_param_t initParam;
 
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+static int ReferToAnEncryptedParam(char *name);
+static int ReferToASignedInteger(char *name);
+static int isLeafItem(cJSON *item);
+static int getItemUidValue(cJSON *item);
+static ANSC_STATUS jsonCfgSet(cJSON *item, char *fullName);
+static ANSC_STATUS checkAndUpdateHookParam(char *fullName,cJSON *item);
+static ANSC_STATUS jsonCfgDecryptAndSavePassword(char *fullName,cJSON *item);
+static ANSC_STATUS jsonCfgSetInitMark(char *fullName,cJSON *item);
+static ANSC_STATUS jsonCfgSysEventSetVoiceToken(char *fullName,cJSON *item);
+#endif
 /* TelcoVoiceJsonCfgSetDmDefaults: */
 /**
 * @description Checks for the presence of a 'current.json' file.
@@ -230,6 +244,345 @@ int32_t verifyChecksumFile(const uint8_t *pcbuf, uint32_t confSize)
     }
 }
 
+
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+
+static struct
+{
+    char *obj;
+    int32_t (*func) (char* /*path */, cJSON * /*value*/);
+} hookFuncs[] =
+{
+    { "X_RDK_BoundIfName", jsonCfgSysEventSetVoiceToken },
+    { "X_RDK_IpAddressFamily", jsonCfgSysEventSetVoiceToken },
+    { "AuthPassword", jsonCfgDecryptAndSavePassword },
+    { "EthernetPriorityMark", jsonCfgSetInitMark },
+    { "DSCPMark",jsonCfgSetInitMark }
+};
+
+#define NUM_OF_HOOK_PARAM (sizeof(hookFuncs)/sizeof(hookFuncs[0]))
+
+static ANSC_STATUS checkAndUpdateHookParam(char *fullName,cJSON *item)
+{
+    if(item  == NULL|| fullName == NULL)
+    {
+        AnscTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    for (int j=0 ; j< NUM_OF_HOOK_PARAM ; j++)
+    {
+        if(strcmp(hookFuncs[j].obj,item->string)==0)
+        {
+            if (NULL != hookFuncs[j].func)
+                (void)(*hookFuncs[j].func)(fullName,item);
+        }
+    }
+    return ANSC_STATUS_SUCCESS;
+}
+
+static ANSC_STATUS jsonCfgDecryptAndSavePassword(char *fullName,cJSON *item)
+{
+    char *pOutBuffer = NULL; uint32_t inLen, outLen;
+    if(!cJSON_IsString(item) || item->valuestring == NULL)
+    {
+        AnscTraceError(("%s:%d:: Invalid item [%s]\n", __FUNCTION__, __LINE__,item->string));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    CcspTraceInfo(("Voice config Decrypt %s value \n", item->string));
+
+    inLen = strlen(item->valuestring);
+    outLen = (1 + inLen/2);
+    /* The decrypted pwd is half the length of the encrypted one plus \0 */
+    pOutBuffer = malloc(outLen);
+    if(NULL == pOutBuffer)
+    {
+        AnscTraceError(("%s:%d::Memory allocation failed\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+
+    }
+    if(jsonPwdDecode(item->valuestring, inLen+1, pOutBuffer, outLen)==0){
+        free(item->valuestring);
+        item->valuestring=strdup(pOutBuffer);
+    }
+    free(pOutBuffer);
+    return ANSC_STATUS_SUCCESS;
+}
+
+static ANSC_STATUS jsonCfgSysEventSetVoiceToken(char *fullName,cJSON *item)
+{
+    char eventName[JSON_MAX_STR_ARR_SIZE]={0};
+    if(!cJSON_IsString(item) || item->valuestring == NULL)
+    {
+        AnscTraceError(("%s:%d:: Invalid item [%s]\n", __FUNCTION__, __LINE__,item->string));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if(strcmp(item->string,"X_RDK_BoundIfName")==0)
+    {
+        snprintf(eventName,sizeof(eventName)-1,"%s",SYSEVENT_UPDATE_IFNAME);
+    }
+    else if(strcmp(item->string,"X_RDK_IpAddressFamily")==0)
+    {
+        snprintf(eventName,sizeof(eventName)-1,"%s",SYSEVENT_UPDATE_IPFAMILY);
+    }
+
+    CcspTraceInfo(("Voice config Set Sysevent update  %s \n", item->string));
+
+    if (TelcoVoiceMgrSetSyseventData(eventName, item->valuestring)==ANSC_STATUS_FAILURE)
+    {
+        CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
+    }
+
+    return ANSC_STATUS_SUCCESS;
+}
+
+static ANSC_STATUS jsonCfgSetInitMark(char *fullName,cJSON *item)
+{
+    int service=0;
+    int profile=0;
+    PROTOCOL_TYPE protocol;
+
+    if(fullName == NULL)
+    {
+        AnscTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    if(strstr(fullName,"SIP"))
+    {
+        sscanf(fullName, SIP_TABLE_NAME, &service,&profile);
+        protocol=SIP;
+    }
+    else if(strstr(fullName,"VoIPProfile"))
+    {
+        sscanf(fullName, RTP_TABLE_NAME, &service,&profile);
+        protocol=RTP;
+    }
+    if(service <=0 || profile<=0)
+    {
+        AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, fullName));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    CcspTraceInfo(("Voice config update %s %s \n",protocol==SIP?"SIP":"RTP", item->string));
+
+    if(cJSON_IsNumber(item))
+    {
+        TelcoVoiceMgrInitMark(service, profile, (uint32_t)item->valueint , protocol, item->string);
+    }
+    return ANSC_STATUS_SUCCESS;
+}
+
+static int ReferToAnEncryptedParam(char *name)
+{
+    if(name == NULL)
+    {
+        AnscTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    if(strcmp(name,"AuthPassword")==0)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+static int ReferToASignedInteger(char *name)
+{
+    if(name == NULL)
+    {
+        AnscTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if(strcmp(name,"VLANIDMark")==0
+        || strcmp(name,"EthernetPriorityMark")==0
+        || strcmp(name,"MaxOutboundChannelCount")==0
+        || strcmp(name,"MaxInboundChannelCount")==0
+        || strcmp(name,"MinJitter")==0
+        || strcmp(name,"MaxJitter")==0
+        || strcmp(name,"MeanJitter")==0
+        || strcmp(name,"PacketDelayVariation")==0
+        || strcmp(name,"BufferDelay")==0
+        || strcmp(name,"ReceiveInterarrivalJitter")==0
+        || strcmp(name,"FarEndInterarrivalJitter")==0
+        || strcmp(name,"AverageReceiveInterarrivalJitter")==0
+        || strcmp(name,"AverageFarEndInterarrivalJitter")==0
+        || strcmp(name,"RoundTripDelay")==0
+        || strcmp(name,"AverageRoundTripDelay")==0
+        || strcmp(name,"FaxAndModemRedundancy")==0
+        || strcmp(name,"ModemRedundancy")==0
+        || strcmp(name,"DTMFRedundancy")==0
+        || strcmp(name,"VoiceRedundancy")==0
+        || strcmp(name,"DTMFRedundancy")==0
+        )
+    {
+        return 1;
+    }
+    return 0;
+}
+
+static int isLeafItem(cJSON *item)
+{
+    int ret;
+    if(item == NULL)
+        ret = 0;
+    else if (item->child != NULL)
+        ret = 0;
+    else
+        ret = 1;
+
+    return ret;
+}
+
+static int getItemUidValue(cJSON *item)
+{
+    int uid =0;
+    cJSON *tmpItem=NULL;
+    if (!cJSON_IsObject(item))
+    {
+        return uid;
+    }
+    if (NULL != (tmpItem = cJSON_GetObjectItemCaseSensitive(item, "@uid")))
+    {
+        if(cJSON_IsNumber(tmpItem))
+        {
+            uid=tmpItem->valueint;
+        }
+    }
+    return uid;
+}
+
+static ANSC_STATUS jsonCfgSet(cJSON *item, char *fullName)
+{
+    hal_param_t initParam;
+    memset(&initParam, 0, sizeof(initParam));
+    ANSC_STATUS rc = ANSC_STATUS_FAILURE;
+
+    if(cJSON_IsNull(item)|| cJSON_IsInvalid(item) || (fullName == NULL))
+    {
+        AnscTraceError(("%s:%d:: Invalid item \n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+
+    }
+    if(strcmp(item->string,"@uid")==0)
+    {
+        /*skip this param*/
+        return ANSC_STATUS_SUCCESS;
+    }
+    snprintf(initParam.name, sizeof(initParam.name)-1,"%s", fullName);
+    //1-check specific hook
+    (void)checkAndUpdateHookParam(fullName,item);
+    //2- prepare value before sending to vendor side
+    if(cJSON_IsString(item))
+    {
+        initParam.type = PARAM_STRING;
+        snprintf(initParam.value, sizeof(initParam.value)-1, "%s", item->valuestring);
+    }
+    else if(cJSON_IsBool(item))
+    {
+        initParam.type = PARAM_BOOLEAN;
+        snprintf(initParam.value, sizeof(initParam.value)-1, "%s", cJSON_IsFalse(item) ? "false" : "true");
+    }
+    else if(cJSON_IsNumber(item))
+    {
+        if(ReferToASignedInteger(item->string))
+        {
+            initParam.type = PARAM_INTEGER;
+        }
+        else
+        {
+            initParam.type = PARAM_UNSIGNED_INTEGER;
+        }
+        snprintf(initParam.value, sizeof(initParam.value), "%d", (uint32_t)item->valueint);
+    }
+
+    //3- send request to vendor side
+    if(TelcoVoiceMgrHal_SetParam(initParam.name, initParam.type, initParam.value)==ANSC_STATUS_SUCCESS)
+    {
+        if(!ReferToAnEncryptedParam(item->string))
+            fprintf(stderr,"\n%s(%d) - [SET] :: Name : [%s] : Type[%d] : value[%s]", __func__, __LINE__,initParam.name,initParam.type,initParam.value);
+        return ANSC_STATUS_SUCCESS;
+    }
+
+    return ANSC_STATUS_FAILURE;
+}
+
+
+/* parseAndSetJsonCfg: */
+/**
+* @description  Called by the code that initializes datamodel from the JSON file,
+*           this function  is call with the root cJSON object(which is formally an N-tree),
+*           it trivially walk the lists, recursively, and create  voice_hal request for all leaf item.
+*           send the set request to vendor with the right ParamName and the value.
+*           This function is not available from the CCSP layer.
+* @param cJSON 	*item 	- input cJSON structure to parse
+* @param char	*prefix - input start/old prefix
+* @param uint32_t 	 IsArray  - input,
+*
+* @return Nothing
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+void parseAndSetJsonCfg(cJSON *item,char*prefix)
+{
+    if(prefix==NULL || item==NULL)
+    {
+        CcspTraceError(("%s: NULL prefix or cJSON item \n", __FUNCTION__));
+        return ;
+    }
+    while (item)
+    {
+        if(isLeafItem(item))
+        {
+            //send parameter to vendor side
+            char pathName[JSON_MAX_STR_ARR_SIZE]={0};
+            snprintf(pathName,sizeof(pathName)-1,"%s.%s", prefix, item->string);
+            (void)jsonCfgSet(item,pathName);
+        }
+        else
+        {
+            char newprefix[JSON_MAX_STR_ARR_SIZE]={0};
+            //found new prefix
+            if(item->string)
+            {
+                snprintf(newprefix,sizeof(newprefix)-1,"%s.%s", prefix, item->string);
+            }
+            else
+            {
+                //if here, item is an instance of an array
+                int uid=getItemUidValue(item);
+                if(uid>0)
+                {
+                    snprintf(newprefix, sizeof(newprefix)-1,"%s.%d", prefix,uid);
+                }
+                else
+                {
+                    CcspTraceError(("%s: Wrong value (%d) of item @uid \n", __FUNCTION__,uid));
+                    return ;
+                }
+            }
+            //parse deeper
+            parseAndSetJsonCfg(item->child,newprefix);
+        }
+        //get next
+        if(item->next)
+        {
+            item = item->next;
+        }
+        else
+        {
+            item=NULL;
+        }
+    }
+    return ;
+}
+#endif
 /* voiceHalInitDmDefaults: */
 /**
 * @description Sets the initial value of DM configuration items in the voiceApp.
@@ -320,6 +673,11 @@ static int32_t voiceHalInitDmDefaults()
         return -1;
     }
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+   parseAndSetJsonCfg(services,"Device");
+#else //FEATURE_RDKB_VOICE_DM_TR104_V2
+
     if (NULL != (voiceService = cJSON_GetObjectItemCaseSensitive(services, "VoiceService")))
     {
         numVoiceServices = (uint32_t)cJSON_GetArraySize(voiceService);
@@ -348,12 +706,14 @@ static int32_t voiceHalInitDmDefaults()
         cJSON_Delete(config);
         return -1;
     }
+#endif
 
     CcspTraceInfo(("Parse done successfully\n"));
     /* All done, tidy up */
     stopJsonRead();
     cJSON_Delete(config);
     CcspTraceInfo(("%s: JSON parsed successfully!\n", __FUNCTION__));
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2//should be remove if same architecture is used in v2
     if(TelcoVoiceMgrHal_SendJsonRequest(jInitMsg) == ANSC_STATUS_SUCCESS)
     {
        CcspTraceInfo(("%s: VOICE HAL Initialised successfully with Json defaults !!\n", __FUNCTION__));
@@ -362,7 +722,7 @@ static int32_t voiceHalInitDmDefaults()
     {
        CcspTraceInfo(("%s: VOICE HAL Initialisation failed !!\n", __FUNCTION__));
     }
-
+#endif
     return 0;
 }
 
@@ -1073,7 +1433,12 @@ int32_t jsonDecryptAndSavePassword(uint32_t service, uint32_t profile, uint32_t 
     outLen = (1 + inLen/2);
     /* The decrypted pwd is half the length of the encrypted one plus \0 */
     pOutBuffer = malloc(outLen);
+    if(NULL == pOutBuffer)
+    {
+        AnscTraceError(("%s:%d::Memory allocation failed\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
 
+    }
     jsonPwdDecode(valuestring, inLen+1, pOutBuffer, outLen);
     res = jsonCfgSetAuthCredentials(service, profile, line, VOICE_HAL_AUTH_PWD, pOutBuffer);
     free(pOutBuffer);

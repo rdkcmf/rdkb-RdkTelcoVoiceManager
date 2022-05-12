@@ -51,6 +51,12 @@
 
 #define TELCOVOICEDATA_SUBDOC_COUNT     1   
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+#define CURRENT_DML_VERSION  "TR104V2"
+#else
+#define CURRENT_DML_VERSION  "TR104V1"
+#endif
+
  /***********************************
      Actual definition declaration
  ************************************/

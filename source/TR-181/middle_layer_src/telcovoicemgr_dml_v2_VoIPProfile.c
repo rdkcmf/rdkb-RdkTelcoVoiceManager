@@ -323,8 +323,6 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_SetParamUlongValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "ZDigitTimer", uValue);
-
             ret = TRUE;
         }
     }
@@ -339,8 +337,6 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_SetParamUlongValue(ANSC_HANDLE hInsContext
             pHEAD->X_RDK_Central_COM_SDigitTimer = uValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "SDigitTimer", uValue);
 
             ret = TRUE;
         }
@@ -605,8 +601,6 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_SetParamStringValue(ANSC_HANDLE hInsContex
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, uProfileIndex, 1,1, "EmDigitMap", pString);
-
             ret = TRUE;
         }
     }
@@ -621,8 +615,6 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_SetParamStringValue(ANSC_HANDLE hInsContex
             AnscCopyString(pHEAD->X_RDK_Central_COM_DigitMap,pString);
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, uProfileIndex, 1,1, "CustomDigitMap", pString);
 
             ret = TRUE;
         }
@@ -1235,8 +1227,6 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamUlongValue(ANSC_HANDLE hInsCon
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "DSCPMark", uValue);
-
             ret = TRUE;
         }
     }
@@ -1456,9 +1446,10 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue(ANSC_HANDLE hInsConte
 
         TELCOVOICEMGR_UNLOCK()
 
-        (void)storeObjectInteger(uVsIndex, uProfileIndex, 1, 1, "RtpEthernetPriorityMark", iValue);
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.VoIPProfile.%d.RTP.EthernetPriorityMark",uVsIndex,uProfileIndex);
+        (void)storeObjectInteger(HalName,iValue);
 
-        ret = TRUE;
+         ret = TRUE;
     }
     else
     {

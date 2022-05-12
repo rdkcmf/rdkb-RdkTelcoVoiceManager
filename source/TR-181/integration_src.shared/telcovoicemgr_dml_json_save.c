@@ -200,6 +200,19 @@ int storeAllVoiceProfiles(char *pParse, char *pNickName, int entry, cJSON *jsonO
 int storeOneVoiceService(char *pParse, char *pNickName, int entry, cJSON *jsonObj, PVOICE_HAL_SAVE_PARAMS pParam);
 int storeAllVoiceServices(char *pParse, char *pNickName, int entry, cJSON *jsonObj, PVOICE_HAL_SAVE_PARAMS pParam);
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+OBJECT_TYPE getNextObjType(char *fullName);
+cJSON* get_array_item_by_uid(const cJSON *array, uint32_t uid);
+int updateVoiceServicesCfg(char *fullName,cJSON **config, PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam);
+int deleteVoiceServicesCfg(char *fullName,cJSON **config);
+#endif
+
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
+uint32_t replaceLeafValue(cJSON *pNode, char *pLeafName, PVOICE_HAL_SAVE_PARAMS pParam);
+#else
+uint32_t replaceLeafValue(cJSON *pNode, char *pLeafName, PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam);
+#endif
 /***********************************
  * These functions are called by voice_hal_setXxxx()
  * to update the value in current.json
@@ -209,6 +222,8 @@ int storeAllVoiceServices(char *pParse, char *pNickName, int entry, cJSON *jsonO
  ************************************/
 static bool inInitFunc = false;
 
+
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 int storeObjectString(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine,uint32_t phyIndex, char *nickName, const char *value)
 {
     VOICE_HAL_SAVE_PARAMS pParam;
@@ -232,6 +247,46 @@ int storeObjectBool(uint32_t uiService, uint32_t uiProfile, uint32_t uiLine,uint
     pParam.boolean = value;
     return storeObject(nickName, 1,1,1,1, &pParam);
 }
+#else
+int storeObjectString(char *fullName, const char *value)
+{
+	VOICE_HAL_SAVE_TYPE_AND_PARAMS pParam;
+	if (inInitFunc) return 0;    // A little white lie.
+        if(value == NULL|| fullName == NULL)
+        {
+          return 0;
+        }
+	pParam.param.pValString = value;
+	pParam.type = PARAM_TYPE_STRING;
+	return storeObject(fullName,&pParam);
+}
+
+int storeObjectInteger(char *fullName,int32_t value)
+{
+	VOICE_HAL_SAVE_TYPE_AND_PARAMS pParam;
+	if (inInitFunc) return 0;    // A little white lie.
+        if(fullName == NULL)
+        {
+          return 0;
+        }
+	pParam.param.integer = value;
+	pParam.type = PARAM_TYPE_INT;
+	return storeObject(fullName,&pParam);
+}
+
+int storeObjectBool(char *fullName, bool value)
+{
+	VOICE_HAL_SAVE_TYPE_AND_PARAMS pParam;
+	if (inInitFunc) return 0;    // A little white lie.
+        if(fullName == NULL)
+        {
+          return 0;
+        }
+	pParam.param.boolean = value;
+	pParam.type = PARAM_TYPE_BOOLEAN;
+	return storeObject(fullName,&pParam);
+}
+#endif
 /*
  * Called by the code that reads the current JSON values, to prevent 
  * the voice_hal_setXxxx() code from trying to write the new value
@@ -257,7 +312,7 @@ void dumpJSON_QQQCMS(cJSON *debugConfig)
 }
 #endif
 /*******  END OF DEBUG ONLY  ********/
-
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
 /*
  * cJSON *pNode                     the JSON node containing the leaf value to change
  * char *pLeafName                  the name of the leaf
@@ -291,10 +346,426 @@ uint32_t replaceLeafValue(cJSON *pNode, char *pLeafName, PVOICE_HAL_SAVE_PARAMS 
         return (-1);  // No leaf in strucucture??
     }
 }
+#else
+/*
+ * cJSON *pNode                     :the JSON node containing the leaf value to change
+ * char *pLeafName                  :the name of the leaf
+ * PVOICE_HAL_SAVE_TYPE_AND_PARAMS  pParam   :the new value of the leaf and value type
+ */
+uint32_t replaceLeafValue(cJSON *pNode, char *pLeafName, PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam)
+{
+    cJSON *pLeaf = NULL, *pNewValue = NULL;
+    if ( NULL != (pLeaf = cJSON_GetObjectItem(pNode, pLeafName) ))
+    {
+        // Need pLeaf to get the JSON type that we are about to replace
+        if (cJSON_IsBool(pLeaf))
+        {
+            pNewValue = cJSON_CreateBool(pParam->param.boolean);
+        }
+        if (cJSON_IsString(pLeaf))
+        {
+            pNewValue = cJSON_CreateString(pParam->param.pValString);
+        }
+        if (cJSON_IsNumber(pLeaf))
+        {
+            pNewValue = cJSON_CreateNumber(pParam->param.integer);
+        }
+        cJSON_ReplaceItemInObject(pNode, pLeafName, pNewValue);
+        return 0;
+    }
+    else
+    {
+        switch(pParam->type)
+        {
+            case PARAM_TYPE_STRING:
+            {
+                pNewValue = cJSON_CreateString(pParam->param.pValString);
+                break;
+            }
+            case PARAM_TYPE_UNSIGNEDINT:
+            {
+                pNewValue = cJSON_CreateNumber(pParam->param.unsignedInt);
+                break;
+            }
+            case PARAM_TYPE_INT:
+            {
+                pNewValue = cJSON_CreateNumber(pParam->param.integer);
+                break;
+            }
+            case PARAM_TYPE_BOOLEAN:
+            {
+                pNewValue = cJSON_CreateBool(pParam->param.boolean);
+                break;
+            }
+            default:return (-1);
+        }
+        cJSON_AddItemToObject(pNode, pLeafName, pNewValue);
+        return (0);
+    }
+}
+#endif
 
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+
+OBJECT_TYPE getNextObjType(char *fullName)
+{
+	char str[JSON_MAX_STR_ARR_SIZE] =  {0};
+	strncpy(str, fullName, (sizeof(str)-1));
+	char delim[] = ".";
+	char *ptr = strtok(str, delim);
+	char *tmpptr;
+	OBJECT_TYPE ret =_UNKNOWN_;
+
+	if (ptr == NULL)
+    {
+		 CcspTraceInfo(("\n fullName is empty \n"));
+		 return ret;
+    }
+
+	(void)strtol(ptr, &tmpptr, 10);
+	if (*tmpptr == '\0')
+	{
+		ptr = strtok(NULL, delim);
+		if(ptr == NULL)
+		{
+			ret =_LEAF_UID_;
+		}
+		else
+		{
+			ret = _OBJ_UID_;
+		}
+	}
+	else
+	{
+		ptr = strtok(NULL, delim);
+		if(ptr != NULL)
+		{
+			(void)strtol(ptr, &tmpptr, 10);
+			if (*tmpptr == '\0')
+			{
+				ret = _ARRAY_;
+			}
+			else
+			{
+				ret = _OBJECT_;
+			}
+		}
+		else
+		{
+			ret = _LEAF_ ;
+		}
+	}
+    return ret;
+}
+
+cJSON* get_array_item_by_uid(const cJSON *array, uint32_t uid)
+{
+    cJSON *current_child = NULL;
+    cJSON *tmpItem=NULL;
+    if (!cJSON_IsArray(array))
+    {
+        return NULL;
+    }
+
+    current_child = array->child;
+    while ((current_child != NULL))
+    {
+        if (NULL != (tmpItem = cJSON_GetObjectItemCaseSensitive(current_child, "@uid")))
+		{
+			if(cJSON_IsNumber(tmpItem) && tmpItem->valueint==uid)
+			{
+				break;
+			}
+		}
+        current_child = current_child->next;
+    }
+    return current_child;
+}
+
+
+
+/* updateVoiceServicesCfg: */
+/**
+ * @description Update The value of the config item in the cJSON list
+ *
+ * @param char *fullName: the full name of the item to be updated
+ * @param cJSON **config: full config item of current JSON file
+ * @param PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam: one of these is the value to be stored (string, number, bool)
+ *
+ * @return 0 on succes, -1 on failure
+ *
+ * @execution Synchronous.
+ * @sideeffect Updates NVRAM.
+ *
+ */
+
+int updateVoiceServicesCfg (char *fullName,cJSON **config, PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam)
+{
+	CcspTraceInfo(("Save '%s' in JSON file??? \n",fullName));
+	char str[JSON_MAX_STR_ARR_SIZE] =  {0};
+	strncpy(str, fullName, (sizeof(str)-1));
+	cJSON *tmpItem=NULL;
+	char delim[] = ".";
+	char *rest;
+	char *ptr = strtok_r(str, delim,&rest);/*The first string of fullName is Device*/
+	cJSON *currObj=*config;
+
+	while(ptr != NULL)
+	{
+		switch(getNextObjType(rest))
+		{
+		case _ARRAY_:
+			/* get next object name*/
+			ptr = strtok_r(NULL, delim,&rest);
+			if(NULL == (tmpItem = cJSON_GetObjectItemCaseSensitive(currObj, ptr)))
+			{
+				/*create array if does not exist */
+				if (NULL != (tmpItem=cJSON_CreateArray()))
+					cJSON_AddItemToObject(currObj, ptr, tmpItem);
+				currObj = cJSON_GetObjectItemCaseSensitive(currObj, ptr);
+			}
+			else
+			{
+				currObj=tmpItem;
+			}
+			if(NULL == currObj)
+			{
+				CcspTraceInfo(("No '%s' array in JSON file???\n",ptr));
+				return (-1);
+			}
+			break;
+
+		case _OBJECT_:
+			/* get next object name*/
+			ptr = strtok_r(NULL, delim,&rest);
+			if(NULL == (tmpItem = cJSON_GetObjectItemCaseSensitive(currObj, ptr)))
+			{
+				/*create object if does not exist */
+				if(NULL!=(tmpItem = cJSON_CreateObject()))
+				{
+					cJSON_AddItemToObject(currObj,  ptr, tmpItem);
+				}
+				currObj = cJSON_GetObjectItemCaseSensitive(currObj, ptr);
+			}
+			else
+			{
+				currObj=tmpItem;
+			}
+			if(NULL == currObj)
+			{
+				CcspTraceInfo(("No '%s' object in JSON file???\n",ptr));
+				return (-1);
+			}
+			break;
+
+		case _OBJ_UID_:
+			/* get next object uid*/
+			ptr = strtok_r(NULL, delim,&rest);
+			if(NULL == (currObj=get_array_item_by_uid(currObj, (uint32_t)atoi(ptr))))
+			{
+				CcspTraceInfo(("No '%s' instance in JSON file???\n",ptr));
+				return (-1);
+			}
+			break;
+
+		case _LEAF_: //repalce or add leaf item value
+			/* get leaf object name*/
+			ptr = strtok_r(NULL, delim,&rest);
+			(void)replaceLeafValue(currObj, ptr, pParam);
+			return 0;
+
+		case _LEAF_UID_:/* used to add object entry in json file*/
+			/* get leaf uid*/
+			ptr = strtok_r(NULL, delim,&rest);
+			if(cJSON_IsArray(currObj))
+			{
+				tmpItem=get_array_item_by_uid(currObj, (uint32_t)atoi(ptr));
+				if(tmpItem==NULL)
+				{
+					if(NULL!=(tmpItem = cJSON_CreateObject()))
+					{
+						cJSON_AddItemToArray(currObj, tmpItem);
+						cJSON_AddItemToObject(tmpItem, "@uid", cJSON_CreateNumber(atoi(ptr)));
+					}
+				}
+			}
+			return 0;
+
+		default:
+			return -1;
+		}
+	}
+	return 0;
+}
+
+
+/* deleteVoiceServicesCfg: */
+/**
+ * @description delete object entries from cJSON list
+ * @param char *fullName: the full name of the item to be stored
+ * @param cJSON **config: full config item of current JSON file
+ *
+ * @return 0 on succes, -1 on failure
+ *
+ * @execution Synchronous.
+ * @sideeffect Updates NVRAM.
+ *
+ */
+
+int deleteVoiceServicesCfg(char *fullName,cJSON **config)
+{
+	CcspTraceInfo(("Delete '%s'in JSON file???\n",fullName));
+	char str[JSON_MAX_STR_ARR_SIZE] =  {0};
+	strncpy(str, fullName, (sizeof(str)-1));
+	char delim[] = ".";
+	char *rest;
+	char *ptr = strtok_r(str, delim,&rest);
+	cJSON *tmpItem=NULL;
+	cJSON *currObj=*config;
+
+	while(ptr != NULL)
+	{
+
+		switch(getNextObjType(rest))
+		{
+		case _ARRAY_:
+			/* get next obj name*/
+			ptr = strtok_r(NULL, delim,&rest);
+			/*get next obj by name from json config*/
+			if(NULL == (currObj = cJSON_GetObjectItemCaseSensitive(currObj, ptr)))
+			{
+				CcspTraceInfo(("No '%s' array in JSON file???\n",ptr));
+				return 0;
+			}
+			break;
+
+		case _OBJECT_:
+			/* get next obj name*/
+			ptr = strtok_r(NULL, delim,&rest);
+			if(NULL == (currObj = cJSON_GetObjectItemCaseSensitive(currObj, ptr)))
+			{
+				CcspTraceInfo(("No '%s' object in JSON file???\n",ptr));
+				return 0;
+			}
+			break;
+
+		case _OBJ_UID_:
+			/* get next uid*/
+			ptr = strtok_r(NULL, delim,&rest);
+
+			if(NULL == (currObj=get_array_item_by_uid(currObj, (uint32_t)atoi(ptr))))
+			{
+				CcspTraceInfo(("No '%s' instance in JSON file???\n",ptr));
+				return 0;
+			}
+			break;
+
+		case _LEAF_UID_:
+			/* get next uid*/
+			ptr = strtok_r(NULL, delim,&rest);
+			tmpItem=cJSON_DetachItemViaPointer(currObj,get_array_item_by_uid(currObj, (uint32_t)atoi(ptr)));
+			cJSON_Delete(tmpItem);
+			return 0;
+		default:
+			return -1;
+		}
+	}
+	return 0;
+}
+
+
+/* deleteObject: */
+/**
+ * @description delete the array item in the current JSON file
+ *              (current.json), then writes it back to NVRAM
+ * @param char *fullName: full path of the item to be deleted
+ *
+ * @return 0 on succes, -1 on failure
+ *
+ * @execution Synchronous.
+ * @sideeffect Updates NVRAM.
+ *
+ */
+uint32_t deleteObject(char *fullName)
+{
+    cJSON *config = NULL, *currObj = NULL;
+    uint32_t currentDMSize, i, entry, readBytes, objLen; void* pJsonConfig = NULL; FILE* fp;
+
+    //   cmsLog_debug("%s:%s \n", __FILE__, __FUNCTION__);
+    /* Initialise the cJSON parser with the 'current' set of voice data
+     * Find the size of file, allocate memory, read it, parse it.
+     * Then the original memory can be deleted
+     */
+    /* First, get the size of the file for JSON current values */
+    /* Open the file in read-only mode */
+    if (NULL == (fp = fopen(VOICE_CONFIG_CURRENT_PATH VOICE_CONFIG_CURRENT_NAME, "r")))
+    {
+        /* RDK log error and give up */
+        CcspTraceError(("Failed to open JSON current file %s\n",
+            VOICE_CONFIG_DEFAULT_PATH VOICE_CONFIG_CURRENT_NAME));
+        return (-1);
+    }
+
+    fseek(fp, 0, SEEK_END); /*Move file pointer to the end of file.*/
+    currentDMSize = ftell(fp);
+    pJsonConfig = malloc(currentDMSize+10); /*Get the current position of the file pointer and get some memory.*/
+    if (NULL == pJsonConfig)
+    {
+        CcspTraceError(("Failed to get memory for JSON file\n"));
+        fclose(fp);  // close the file
+        return (-1);  // No memory, so give up
+    }
+    memset(pJsonConfig, (int)0, currentDMSize+3);
+    fseek(fp, 0, SEEK_SET);
+    if (0 == (readBytes = fread(pJsonConfig, 1, currentDMSize, fp)))  // Any error here will be picked up later
+    {
+        free(pJsonConfig);
+        fclose(fp);
+        return (-1);
+    }
+    fclose(fp);
+    if (NULL == (config = cJSON_Parse(pJsonConfig)))
+    {
+        /* No current nvram file,or it's corrupt - give up */
+        cJSON_Delete(config);
+        free(pJsonConfig);
+        return (-1);
+    }
+    /* Don't need the in-memory copy of the fle - it's all in the JSON structure 'config' */
+    free(pJsonConfig);
+
+    if(deleteVoiceServicesCfg(fullName,&config)==0)
+    {
+        saveCurrentFile(config);
+        cJSON_Delete(config);
+        return 0;
+    }
+
+    cJSON_Delete(config);
+    return (-1);
+}
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
 /* storeObjects: */
 /**
- * @description Stores the updated value of the config item in the cuurnet JSON file
+ * @description Stores the updated value of the config item in the current JSON file
+ *              (current.json), then writes it back to NVRAM
+ * @param char *fullName: the full name of the item to be stored 
+ * @param PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam: one of these is the value to be stored (string, number, bool)
+ *
+ * @return 0 on succes, -1 on failure
+ *
+ * @execution Synchronous.
+ * @sideeffect Updates NVRAM.
+ *
+ */
+uint32_t storeObject(char *fullName,PVOICE_HAL_SAVE_TYPE_AND_PARAMS pParam)
+#else
+/* storeObjects: */
+/**
+ * @description Stores the updated value of the config item in the current JSON file
  *              (current.json), then writes it back to NVRAM
  * @param char *nName: the short name of the item to be stored 
  * @param uint32_t vp: voice profile index - always 1
@@ -311,6 +782,7 @@ uint32_t replaceLeafValue(cJSON *pNode, char *pLeafName, PVOICE_HAL_SAVE_PARAMS 
  *
  */
 uint32_t storeObject(char *nName, uint32_t vs,  uint32_t vp, uint32_t li,  uint32_t pi, PVOICE_HAL_SAVE_PARAMS pParam)
+#endif
 {
     cJSON *config = NULL, *currObj = NULL;
     uint32_t currentDMSize, i, entry, readBytes, objLen; void* pJsonConfig = NULL; FILE* fp;
@@ -358,6 +830,20 @@ uint32_t storeObject(char *nName, uint32_t vs,  uint32_t vp, uint32_t li,  uint3
     }
     /* Don't need the in-memory copy of the fle - it's all in the JSON structure 'config' */
     free(pJsonConfig);
+
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+/* TR104V2 functionalities */
+
+    if(updateVoiceServicesCfg(fullName,&config,pParam)==0)
+    {
+        saveCurrentFile(config);
+        cJSON_Delete(config);
+        return 0;
+    }
+
+#else //FEATURE_RDKB_VOICE_DM_TR104_V2
+
     /*
      * Start looking for the value to replace. First check that we have a valid nick name stirng
      */
@@ -430,6 +916,7 @@ uint32_t storeObject(char *nName, uint32_t vs,  uint32_t vp, uint32_t li,  uint3
             return (-1);    // Badly formed DM name ?? 
         break;
     }
+#endif
     CcspTraceInfo(("Unrecognised type: %s\n", pParse));
     cJSON_Delete(config);
     return (-1);

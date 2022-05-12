@@ -540,8 +540,6 @@ BOOL TelcoVoiceMgrDml_SIP_ClientList_SetParamStringValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uClientIndex, "URI",pString);
-
             ret = TRUE;
         }
     }
@@ -572,39 +570,22 @@ BOOL TelcoVoiceMgrDml_SIP_ClientList_SetParamStringValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, 1, 1, uClientIndex, "AuthUserName",pString);
-
             ret = TRUE;
         }
     }
     else if( AnscEqualString(ParamName, "AuthPassword", TRUE) )
     {
-        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.SIP.Client.%d.AuthPassword",uVsIndex,uClientIndex);
-
-        if (TelcoVoiceMgrHal_SetParamString(HalName,pString) == ANSC_STATUS_SUCCESS)
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uVsIndex,
+                                        TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE,
+                                        uClientIndex,
+                                        VOICE_HAL_AUTH_PWD,
+                                        pString))
         {
             TELCOVOICEMGR_LOCK_OR_EXIT()
 
             AnscCopyString(pHEAD->AuthPassword,pString);
 
             TELCOVOICEMGR_UNLOCK()
-
-            char *pOutBuf = NULL;
-            uint32_t inLen = strlen(pString);
-            uint32_t outLen = 1 + 2*inLen;
-            /* Encrypt the password before storing in NVRAM */
-            pOutBuf = malloc(outLen);
-            if(pOutBuf)
-            {
-                jsonPwdEncode(pString, inLen, pOutBuf, outLen);
-                (void)storeObjectString(uVsIndex, 1, 1, uClientIndex, "AuthPassword",pOutBuf);
-                free(pOutBuf);
-            }
-            else
-            {
-                CcspTraceError(("%s pOutBuf NULL, Set failed\n", __FUNCTION__));
-                return ANSC_STATUS_FAILURE;
-            }
 
             ret = TRUE;
         }
@@ -3118,8 +3099,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamUlongValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "RegistrarServerPort", uValue);
-
             ret = TRUE;
         }
     }
@@ -3182,7 +3161,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamUlongValue(ANSC_HANDLE hInsContext
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "ProxyServerPort", uValue);
             ret = TRUE;
         }
     }
@@ -3197,8 +3175,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamUlongValue(ANSC_HANDLE hInsContext
             pHEAD->OutboundProxyPort = uValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "OutboundProxyPort", uValue);
 
             ret = TRUE;
         }
@@ -3291,8 +3267,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamUlongValue(ANSC_HANDLE hInsContext
             pHEAD->DSCPMark = uValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectInteger(uVsIndex, uNetworkIndex, 1, 1, "DSCPMark", uValue);
 
             ret = TRUE;
         }
@@ -3565,9 +3539,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                    uNetworkIndex, "ConferencingURI", pString);
-
             ret = TRUE;
         }
     }
@@ -3597,9 +3568,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
             AnscCopyString(pHEAD->UserAgentDomain,pString);
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                    uNetworkIndex, "UserAgentDomain", pString);
 
             ret = TRUE;
         }
@@ -3646,9 +3614,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                    uNetworkIndex, "RegistrarServer", pString);
-
             ret = TRUE;
         }
     }
@@ -3679,8 +3644,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                    uNetworkIndex, "ProxyServer", pString);
             ret = TRUE;
         }
     }
@@ -3695,9 +3658,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamStringValue(ANSC_HANDLE hInsContex
             AnscCopyString(pHEAD->OutboundProxy,pString);
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,
-                                    uNetworkIndex, "OutboundProxy", pString);
 
             ret = TRUE;
         }
@@ -3958,9 +3918,10 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
         pHEAD->EthernetPriorityMark = iValue;
 
         TELCOVOICEMGR_UNLOCK()
-
-        (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "EthernetPriorityMark", iValue);
-
+        
+        snprintf(HalName, MAX_STR_LEN, "Device.Services.VoiceService.%d.SIP.Network.%d.EthernetPriorityMark",uVsIndex,uNetworkIndex);
+        (void)storeObjectInteger(HalName,iValue);
+        
         ret = TRUE;
     }
     else
@@ -4136,8 +4097,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamBoolValue(ANSC_HANDLE hInsContext,
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "PRACKRequired",
-                  bValue ? bTrueStr : bFalseStr);
             ret = TRUE;
         }
     }
@@ -4152,9 +4111,6 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamBoolValue(ANSC_HANDLE hInsContext,
             pHEAD->X_RDK_Central_COM_NetworkDisconnect = bValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uNetworkIndex, "NetworkDisconnect",
-                  bValue ? bTrueStr : bFalseStr);
 
             ret = TRUE;
         }

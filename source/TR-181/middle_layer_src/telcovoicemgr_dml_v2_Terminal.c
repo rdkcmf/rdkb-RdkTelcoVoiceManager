@@ -1282,8 +1282,6 @@ BOOL TelcoVoiceMgrDml_TerminalList_AudioList_VoiceProcessing_SetParamIntValue(AN
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, uTermIndex, uAudioIndex, "TxGain", iValue);
-
             ret = TRUE;
         }
     }
@@ -1298,8 +1296,6 @@ BOOL TelcoVoiceMgrDml_TerminalList_AudioList_VoiceProcessing_SetParamIntValue(AN
             pHEAD->ReceiveGain = iValue;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectInteger(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, uTermIndex, uAudioIndex, "RxGain", iValue);
 
             ret = TRUE;
         }
@@ -3662,8 +3658,6 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamStringValue(ANSC_HANDLE hIn
 
             TELCOVOICEMGR_UNLOCK()
 
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, 
-                                    uTerminalIndex, "TestSelector", pString);
             ret = TRUE;
         }
     }
@@ -3873,9 +3867,6 @@ BOOL TelcoVoiceMgrDml_TerminalList_DiagTests_SetParamUlongValue(ANSC_HANDLE hIns
             pHEAD->DiagnosticsState = DIAG_STATE_COMPLETE;
 
             TELCOVOICEMGR_UNLOCK()
-
-            (void)storeObjectString(uVsIndex, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, 
-                                    uTerminalIndex, "DiagnosticsState", enumValue[uValue]);
 
             ret = TRUE;
         }

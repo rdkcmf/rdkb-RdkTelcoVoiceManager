@@ -1257,7 +1257,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLoopCurrentDisabled(uint32_t uiService, BOOL bSta
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    (void)storeObjectBool(strName, bStatus);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DisLoopCurrentReg", strValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1292,7 +1296,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetBoundIfname(uint32_t uiService, char *BoundIfname
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    (void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-BoundIfName", BoundIfname);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     if(TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IFNAME, BoundIfname) != ANSC_STATUS_SUCCESS)
     {
         return ANSC_STATUS_FAILURE;
@@ -1331,7 +1339,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetIpAddressFamily(uint32_t uiService, char *IpAddre
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    (void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Set-IpAddressFamily", IpAddressFamily);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     if(TelcoVoiceMgrSetSyseventData(SYSEVENT_UPDATE_IPFAMILY, IpAddressFamily) != ANSC_STATUS_SUCCESS)
     {
         CcspTraceWarning(("%s :: sysevent_set Failed\n", __FUNCTION__));
@@ -1426,7 +1438,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetCCTKTraceGroup(uint32_t uiService, char *CCTKTrac
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+    (void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "TraceGroup", CCTKTraceGroup);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1461,7 +1478,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetCCTKTraceLevel(uint32_t uiService, char *CCTKTrac
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "TraceLevel", CCTKTraceLevel);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1496,7 +1517,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetModuleLogLevel(uint32_t uiService, char *logLevel
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ModuleLogLevels", logLevels);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1531,7 +1556,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLogServer(uint32_t uiService, char* pLogServer)
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServer", pLogServer);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1562,7 +1591,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLogServerPort(uint32_t uiService, ULONG uLSPort)
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uLSPort);
+#else
     (void)storeObjectInteger(uiService,TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "LogServerPort", uLSPort);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1894,8 +1927,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDirectoryNumber(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DirectoryNumber", pDirName);
-
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -1939,8 +1975,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineEnable(uint32_t uiService, uint32_t uiProfile
     {
        return ANSC_STATUS_FAILURE;
     }
-    (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "Enable", uLineEnable == TRUE ?
-        "Enabled" : "Disabled");
+    (void)storeObjectBool(strName, uLineEnable);
 #else
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"Enable");
 
@@ -2213,7 +2248,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetOutboundProxy(uint32_t uiService, uint32_t uiProf
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "OutboundProxy", pProxyName);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2245,7 +2284,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetOutboundProxyPort( uint32_t uiService, uint32_t u
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uValue);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "OutboundProxyPort", uValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2280,7 +2323,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipDscpMark(uint32_t uiService, uint32_t uiProfil
        return ANSC_STATUS_FAILURE;
     }
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DSCPMark", uValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2344,7 +2389,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
     {
         return ANSC_STATUS_DISCARD;
     }
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "EthernetPriorityMark", iValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2850,7 +2897,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetProxyServer(uint32_t uiService, uint32_t uiProfil
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ProxyServer", pProxyServer);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2882,7 +2933,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetProxyServerPort(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uValue);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ProxyServerPort", uValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2919,7 +2974,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRegistrarServer(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RegistrarServer", pRegServer);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2951,7 +3010,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRegistrarServerPort(uint32_t uiService, uint32_t 
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uValue);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE,"RegistrarServerPort", uValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -2988,7 +3051,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetUserAgentDomain(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "UserAgentDomain", pUsrAgent);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3025,7 +3092,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetConferencingURI(uint32_t uiService, uint32_t uiPr
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ConferencingURI", pConfURI);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3065,8 +3136,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetNetworkDisconnect(uint32_t uiService, uint32_t ui
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectBool(strName, bValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "NetworkDisconnect",
         bValue ? bTrueStr : bFalseStr);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3105,8 +3180,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetPrackRequired(uint32_t uiService, uint32_t uiProf
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectBool(strName, bValue);
+#else
     (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "PRACKRequired",
         bValue ? bTrueStr : bFalseStr);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3141,7 +3220,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpDscpMark(uint32_t uiService, uint32_t uiProfil
        return ANSC_STATUS_FAILURE;
     }
 
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RtpDSCPMark", uValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3207,7 +3288,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
     {
         return ANSC_STATUS_DISCARD;
     }
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RtpEthernetPriorityMark", iValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3373,17 +3456,23 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDigitMap(uint32_t uiService, uint32_t uiProfile, 
     if(!strcmp(typeOfDigitMap, "X_RDK-Central_COM_DigitMap"))
     {
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,PROFILE_TABLE_NAME"%s",uiService, uiProfile, "X_RDK-Central_COM_DigitMap");
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
        (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CustomDigitMap", pDigitMap);
+#endif
     }
     else if(!strcmp(typeOfDigitMap, "X_RDK-Central_COM_EmergencyDigitMap"))
     {
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,PROFILE_TABLE_NAME"%s",uiService, uiProfile, "X_RDK-Central_COM_EmergencyDigitMap");
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
        (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "EmDigitMap", pDigitMap);
+#endif
     }
     else if(!strcmp(typeOfDigitMap, "DigitMap"))
     {
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,PROFILE_TABLE_NAME"%s",uiService, uiProfile, "DigitMap");
+#ifndef FEATURE_RDKB_VOICE_DM_TR104_V2
        (void)storeObjectString(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE,TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "DigitMap", pDigitMap);
+#endif
     }
     else
     {
@@ -3395,7 +3484,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDigitMap(uint32_t uiService, uint32_t uiProfile, 
     {
        return ANSC_STATUS_FAILURE;
     }
-    return ANSC_STATUS_SUCCESS;
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+	return ANSC_STATUS_SUCCESS;
 }
 
 /* TelcoVoiceMgrDmlSetDigitTimer: */
@@ -3424,7 +3517,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSDigitTimer(uint32_t uiService, uint32_t uiProfil
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uDgtTimer);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "SDigitTimer", uDgtTimer);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3455,8 +3552,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetZDigitTimer(uint32_t uiService, uint32_t uiProfil
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, uDgtTimer);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "ZDigitTimer", uDgtTimer);
-
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3650,8 +3750,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetReceiveGain(uint32_t uiService, uint32_t uiProfil
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, iGain);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "RxGain", iGain);
-
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3688,8 +3791,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTransmitGain(uint32_t uiService, uint32_t uiProfi
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectInteger(strName, iGain);
+#else
     (void)storeObjectInteger(uiService, uiProfile, TELCOVOICEMGR_DML_NUMBER_OF_LINE, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "TxGain", iGain);
-
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3723,9 +3829,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME,uiService,uiProfile,"CallWaitingEnable");
 #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"CallWaitingEnable");
-#endif
+
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCWI",
         bStatus ? bTrueStr : bFalseStr);
+#endif
     }
     else if(eFeature == VOICE_CALLING_FEATURE_MSG_WAIT_INDICATOR)
     {
@@ -3733,9 +3840,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"MWIEnable");
 #else
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"MWIEnable");
-#endif
+
         (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesMWI",
          bStatus ? bTrueStr : bFalseStr);
+#endif
     }
     else if(eFeature == VOICE_CALLING_FEATURE_CONF_CALL)
     {
@@ -3743,9 +3851,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_ConferenceCallingEnable");
 #else
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_ConferenceCallingEnable");
-#endif
+
         (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCCE",
          bStatus ? bTrueStr : bFalseStr);
+#endif
+
     }
     else if(eFeature == VOICE_CALLING_FEATURE_HOLD)
     {
@@ -3753,9 +3863,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_HoldEnable");
 #else
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_HoldEnable");
-#endif
         (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesHE",
          bStatus ? bTrueStr : bFalseStr);
+#endif
+
     }
     else if(eFeature == VOICE_CALLING_FEATURE_CALLER_ID)
     {
@@ -3763,9 +3874,10 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,"X_RDK-Central_COM_PhoneCallerIDEnable");
 #else
         snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_CALING_FEATURE_TABLE_NAME"%s",uiService,uiProfile,uiLine,"X_RDK-Central_COM_PhoneCallerIDEnable");
-#endif
         (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "CallingFeaturesCID",
          bStatus ? bTrueStr : bFalseStr);
+#endif
+
     }
     else
     {
@@ -3784,6 +3896,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineCallingFeatures(uint32_t uiService, uint32_t 
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectBool(strName, bStatus);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3822,8 +3937,8 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiLine,"AuthUserName");
 #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthUserName");
-#endif
        (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "AuthUserName",pBuffer);
+#endif
     }
     else if(eAuthCredential == VOICE_HAL_AUTH_PWD)
     {
@@ -3831,7 +3946,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiLine,"AuthPassword");
 #else
        snprintf(strName,JSON_MAX_STR_ARR_SIZE,LINE_SIP_TABLE_NAME"%s",uiService,uiProfile,uiLine,"AuthPassword");
-#endif
+
         inLen = strlen(pBuffer);
         outLen = 1 + 2*inLen;
         /* Encrypt the password before storing in NVRAM */
@@ -3847,6 +3962,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
             CcspTraceError(("%s pOutBuf NULL, Set failed\n", __FUNCTION__));
             return ANSC_STATUS_FAILURE;
         }
+#endif
     }
     else
     {
@@ -3858,6 +3974,35 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSIPAuthCredentials(uint32_t uiService, uint32
     {
        return ANSC_STATUS_FAILURE;
     }
+
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+
+    if(eAuthCredential == VOICE_HAL_AUTH_UNAME)
+    {
+       (void)storeObjectString(strName,strValue);
+    }
+    else if(eAuthCredential == VOICE_HAL_AUTH_PWD)
+    {
+
+    inLen = strlen(pBuffer);
+    outLen = 1 + 2*inLen;
+    /* Encrypt the password before storing in NVRAM */
+    pOutBuf = malloc(outLen);
+    if(pOutBuf)
+    {
+        jsonPwdEncode(pBuffer, inLen, pOutBuf, outLen);
+        (void)storeObjectString(strName,pOutBuf);
+        free(pOutBuf);
+    }
+    else
+    {
+        CcspTraceError(("%s pOutBuf NULL, Set failed\n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    }
+#endif
+
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3900,8 +4045,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetLineSipURI(uint32_t uiService, uint32_t uiProfile
     {
        return ANSC_STATUS_FAILURE;
     }
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, strValue);
+#else
     (void)storeObjectString(uiService, uiProfile, uiLine, TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE, "URI",pSipURI);
-
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3947,8 +4095,12 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestState(uint32_t uiService, uint32_t uiPhyInter
     {
        return ANSC_STATUS_FAILURE;
     }
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, testState);
+#else
     (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "DiagnosticsState", testState);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -3988,7 +4140,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetTestSelector(uint32_t uiService, uint32_t uiPhyIn
     {
        return ANSC_STATUS_FAILURE;
     }
-
+#ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+	(void)storeObjectString(strName, testSelector);
+#else
     (void)storeObjectString(uiService, TELCOVOICEMGR_DML_NUMBER_OF_VOICE_PROFILE, TELCOVOICEMGR_DML_NUMBER_OF_LINE, uiPhyInterface, "TestSelector", testSelector);
+#endif //FEATURE_RDKB_VOICE_DM_TR104_V2
+
     return ANSC_STATUS_SUCCESS;
 }
