@@ -91,7 +91,7 @@ static void TelcoVoiceMgr_Rbus_EventReceiveHandler(rbusHandle_t handle, rbusEven
          TelcoVoiceMgr_setCallControlLineEnable(false);
 #endif
         }
-        else
+        else if(strstr(newValue,"1"))
         {
          CcspTraceInfo(("%s:%d ***Enable Voice Stack*** No Remote-LTE Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
