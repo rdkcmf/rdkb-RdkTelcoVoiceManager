@@ -38,7 +38,10 @@ static ANSC_STATUS TelcoVoiceMgr_subscribe_hal_events(void)
             if ( pDmlVoiceService )
             {
                 snprintf(strName, BUF_LEN_256, FIREWALL_RULE_DATA, pDmlVoiceService->InstanceNumber);
-                ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName, JSON_SUBSCRIBE_ON_CHANGE);
+                /* ifacemgr_telcovoice have to wait until the firewall restart process is completed and hence
+                    need to register the call back with JSON_SUBSCRIBE_ON_CHANGE_SYNC_TIMEOUT */
+                ret = TelcoVoiceMgrHal_EventSubscribe(&eventcb_FirewallRuleData, strName,
+                                                                     JSON_SUBSCRIBE_ON_CHANGE_SYNC_TIMEOUT);
                 if(ret != ANSC_STATUS_SUCCESS) break;
             }
         } 
