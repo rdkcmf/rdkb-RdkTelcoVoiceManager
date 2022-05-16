@@ -908,6 +908,144 @@ ANSC_STATUS TelcoVoiceMgrDmlIterateEnabledInterfaces(ANSC_STATUS (*pAction)(char
     return ANSC_STATUS_FAILURE;
 }
 
+/* TelcoVoiceMgrDmlGetMarkingEthPriorityMark: */
+/**
+* @description Get ethernet priority mark for an interface in WAN data model.
+*
+* @param char*      pIfRecordName -  (*pAction)(char *aIfRecordName, void *) - Action function pointer.
+* @param void*      pArgs - Action specific parameters.
+*                   PROTOCOL_TYPE protocol , Protocol specifier(SIP/RTP);
+*                   int32_t       iEthPriorityMark, buffer for output value.
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+* 
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+static ANSC_STATUS TelcoVoiceMgrDmlGetMarkingEthPriorityMark(char *pIfRecordName, void *pArgs)
+{
+    int iLoopCount = 0;
+    char paramName[512] = {0};
+    char aParamValue[256] = {0};
+    char aAliasValue[16] = {0};
+    char aMrkRecordList[MAX_MARK_ENTRY][256] = {0};
+    int numMarkingRecords = 0;
+    int iNewInstanceNumber = -1;
+
+    char aEthPriority[4] = {0};
+
+    if(!pArgs || !pIfRecordName)
+    {
+        return ANSC_STATUS_FAILURE;
+    }
+    ethPriorityValStruct_t *pValStruct = (ethPriorityValStruct_t *)pArgs;
+
+    switch(pValStruct->protocol)
+    {
+        case SIP:
+            strncpy(aAliasValue, PARAM_VALUE_SIP_ALIAS, sizeof(aAliasValue));
+        break;
+        case RTP:
+            strncpy(aAliasValue, PARAM_VALUE_RTP_ALIAS, sizeof(aAliasValue));
+        break;
+        default:
+            return ANSC_STATUS_FAILURE;
+    }
+    if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetWanMarkingRecordNames(
+                                 pIfRecordName,aMrkRecordList, &numMarkingRecords))
+    {
+        //Got WAN Marking table entries for interface, Now iterate through marking entries.
+        for(iLoopCount = 0; iLoopCount < numMarkingRecords; iLoopCount ++)
+        {
+            memset(paramName, 0, sizeof(paramName));
+            memset(aParamValue, 0, sizeof(aParamValue));
+            snprintf(paramName, sizeof(paramName), "%s%s", aMrkRecordList[iLoopCount],
+                                                                        PARAM_NAME_MARK_ALIAS);
+            // Now check for alias passed as argument(voicesip1/voicertp1).
+            if (ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetParamValue(WAN_COMPONENT_NAME,
+                                                                WAN_DBUS_PATH, paramName, aParamValue))
+            {
+                if(!strncmp(aAliasValue, aParamValue, sizeof(aAliasValue)))
+                {   // Found an entry with the alias voicesip1/voicertp1
+                    memset(paramName, 0, sizeof(paramName));
+                    snprintf(paramName, sizeof(paramName), "%s%s", aMrkRecordList[iLoopCount],
+                                                                        PARAM_NAME_ETHERNET_PRIORITY_MARK);
+                    if(ANSC_STATUS_SUCCESS == TelcoVoiceMgrDmlGetParamValue(WAN_COMPONENT_NAME, WAN_DBUS_PATH,
+                                                                                  paramName, aParamValue))
+                    {
+                        pValStruct->iEthPriorityMark = atoi(aParamValue);
+                        pValStruct->iUpdateStatus = TRUE;
+                        return ANSC_STATUS_SUCCESS;
+                    }
+                    CcspTraceError(("%s:%d:: Could not read ethernet priority for %s....\n",
+                                                                                __FUNCTION__, __LINE__, aAliasValue));
+                    return ANSC_STATUS_FAILURE;
+                }
+            }
+            else
+            {
+                CcspTraceError(("%s:%d:: Could not read alias for %s....\n",
+                                                                                __FUNCTION__, __LINE__, aAliasValue));
+                return ANSC_STATUS_FAILURE;
+            }
+        }
+
+        // Reaching here means we could not find the required alias entry for this interface
+        pValStruct->iEthPriorityMark = -1;
+        pValStruct->iUpdateStatus = TRUE;
+        return ANSC_STATUS_SUCCESS;
+
+    }
+    CcspTraceError(("%s:%d:: Could not retrieve table entries for %s....\n",
+                                                        __FUNCTION__, __LINE__, aAliasValue));
+    return ANSC_STATUS_FAILURE;
+}
+
+/* TelcoVoiceMgrDmlGetWanEthernetPriorityMark: */
+/**
+* @description Set ethernet priority mark for interfaces in WAN data model
+*              interface table.
+*
+* @param PROTOCOL_TYPE protocol - protocol specifier, SIP/RTP
+* @param int32_t       *iValue  - pointer for output value.
+*
+* @return The status of the operation.
+* @retval ANSC_STATUS_SUCCESS if successful.
+* @retval ANSC_STATUS_FAILURE if any error is detected
+*
+* @execution Synchronous.
+* @sideeffect None.
+*
+*/
+
+ANSC_STATUS TelcoVoiceMgrDmlGetWanEthernetPriorityMark(PROTOCOL_TYPE protocol, int32_t *iValue)
+{
+    ethPriorityValStruct_t valStruct;
+    if(!iValue)
+    {
+        CcspTraceError(("%s:%d:: invalid parameter....\n", __FUNCTION__, __LINE__));
+        return ANSC_STATUS_FAILURE;
+    }
+    valStruct.protocol = protocol;
+    valStruct.iUpdateStatus = FALSE;
+    if( TelcoVoiceMgrDmlIterateEnabledInterfaces(
+                TelcoVoiceMgrDmlGetMarkingEthPriorityMark, (void *)&valStruct) == ANSC_STATUS_SUCCESS)
+    {
+        if(TRUE == valStruct.iUpdateStatus)
+        {
+            *iValue = valStruct.iEthPriorityMark;
+            CcspTraceInfo(("%s:%d:: Read success, Protocol[%d],iValue[%d]..\n", __FUNCTION__, __LINE__,protocol,*iValue));
+            return ANSC_STATUS_SUCCESS;
+        }
+    }
+    RDK_LOG(RDK_LOG_DEBUG, "LOG.RDK.TELCOVOICEMANAGER", "Could not get Wan Ethernet Priority Mark..\n");
+    return ANSC_STATUS_FAILURE;
+}
+
 /* TelcoVoiceMgrDmlSetWanEthernetPriorityMark: */
 /**
 * @description Set ethernet priority mark for interfaces in WAN data model
@@ -2166,18 +2304,30 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = NULL;
     DML_VOICE_SERVICE_CTRL_T* pVoiceService = NULL;
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    int32_t iEthValue = 0;
 
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue))
+    {
+        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark..\n", __FUNCTION__, __LINE__, iEthValue));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if(iEthValue == iValue)
+    {
+        CcspTraceInfo(("%s:%d:: No change in value(%d)..\n", __FUNCTION__, __LINE__, iEthValue));
+        return ANSC_STATUS_SUCCESS;
+    }
     /* Validate parameter value */
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
     }
-
+    CcspTraceInfo(("%s:%d:: Changing value from %d -> %d..\n", __FUNCTION__, __LINE__, iEthValue, iValue));
     /* We are already holding the dml lock */
     pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetData();
     pVoiceService = pTelcoVoiceMgrDmlData->Service.VoiceService.pdata[TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES - 1];
@@ -2935,18 +3085,31 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
     TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = NULL;
     DML_VOICE_SERVICE_CTRL_T* pVoiceService = NULL;
     PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    int32_t iEthValue = 0;
 
     char strValue[JSON_MAX_VAL_ARR_SIZE]={0};
     char strName[JSON_MAX_STR_ARR_SIZE]={0};
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue))
+    {
+        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark..\n", __FUNCTION__, __LINE__, iEthValue));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    if(iEthValue == iValue)
+    {
+        CcspTraceInfo(("%s:%d:: No change in value(%d)..\n", __FUNCTION__, __LINE__, iEthValue));
+        return ANSC_STATUS_SUCCESS;
+    }
+
     /* Validate parameter value */
     if (TelcoVoiceMgrHal_SetParam(strName,PARAM_INTEGER,strValue) != ANSC_STATUS_SUCCESS)
     {
        return ANSC_STATUS_FAILURE;
     }
-
+    CcspTraceInfo(("%s:%d:: Changing value from %d -> %d..\n", __FUNCTION__, __LINE__, iEthValue, iValue));
     /* We are already holding the dml lock */
     pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetData();
     pVoiceService = pTelcoVoiceMgrDmlData->Service.VoiceService.pdata[TELCOVOICEMGR_DML_NUMBER_OF_VOICE_SERVICES - 1];
