@@ -1713,6 +1713,8 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetDnsServers(char *dns_server_address)
 
 ANSC_STATUS TelcoVoiceMgrDmlFactoryReset(uint32_t uiService, TELCOVOICEMGR_VOICE_ENABLE_ENUM VoiceState)
 {
+    char strName[JSON_MAX_STR_ARR_SIZE]={0};
+
 
     if(TelcoVoiceMgrDmlSetVoiceProcessState(uiService, VOICE_SERVICE_DISABLE) != ANSC_STATUS_SUCCESS)
     {
@@ -1725,6 +1727,11 @@ ANSC_STATUS TelcoVoiceMgrDmlFactoryReset(uint32_t uiService, TELCOVOICEMGR_VOICE
         CcspTraceInfo(("%s %d - Error in initialising datamodels on factory reset. \n", __FUNCTION__, __LINE__ ));
         return ANSC_STATUS_FAILURE;
     }
+
+    /* Platform specific operations for factory reset */
+    snprintf(strName,JSON_MAX_STR_ARR_SIZE, VOICE_SERVICE_TABLE_NAME"%s",uiService,"X_RDK_FactoryReset");
+    TelcoVoiceMgrHal_SetParam(strName, PARAM_BOOLEAN, "true");
+
     if(VoiceState != VOICE_SERVICE_DISABLE)
     {
         if(TelcoVoiceMgrDmlSetVoiceProcessState(uiService, VOICE_SERVICE_ENABLE) != ANSC_STATUS_SUCCESS)
