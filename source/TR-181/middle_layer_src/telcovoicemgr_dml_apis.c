@@ -443,6 +443,30 @@ BOOL TelcoVoiceMgrAnscValidateInputString(char *pString)
     return TRUE;
 }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+
+ANSC_HANDLE TelcoVoiceMgr_getCallControlLineEnable(BOOL *bEnable)
+{
+    ANSC_HANDLE ret = ANSC_STATUS_FAILURE;
+    hal_param_t req_param;
+    ULONG uVsIndex = 1;
+    ULONG uLineIndex = 1;
+    memset(&req_param, 0, sizeof(req_param));
+    snprintf(req_param.name, sizeof(req_param.name), "Device.Services.VoiceService.%d.CallControl.Line.%d.Enable", uVsIndex, uLineIndex);
+    if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+    {
+       if(strcmp(req_param.value, "true") == 0 || strcmp(req_param.value, "1") == 0)
+       {
+           *bEnable = true;
+       }
+       else
+       {
+           *bEnable = false;
+       }
+        ret = ANSC_STATUS_SUCCESS;
+    }
+    return ret;
+}
+
 ANSC_HANDLE TelcoVoiceMgr_setCallControlLineEnable(BOOL bEnable)
 {
     ANSC_HANDLE ret = ANSC_STATUS_FAILURE;
@@ -511,8 +535,6 @@ ANSC_HANDLE TelcoVoiceMgr_setCallControlLineEnable(BOOL bEnable)
         }
 
         pHEAD->Enable = bEnable;
-
-        (void)storeObjectString(uVsIndex, 1, 1, uLineIndex, "Enable", bEnable == TRUE ?"Enabled" : "Disabled");
 
         ret = ANSC_STATUS_SUCCESS;
 exit:

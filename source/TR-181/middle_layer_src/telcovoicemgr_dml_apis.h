@@ -30,6 +30,7 @@
 #include "telcovoicemgr_telcovoice_apis.h"
 
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
+ANSC_HANDLE TelcoVoiceMgr_getCallControlLineEnable(BOOL *bEnable);
 ANSC_HANDLE TelcoVoiceMgr_setCallControlLineEnable(BOOL bEnable);
 #endif
 

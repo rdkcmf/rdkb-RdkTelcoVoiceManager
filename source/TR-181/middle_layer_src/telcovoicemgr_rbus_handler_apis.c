@@ -68,6 +68,8 @@ static void TelcoVoiceMgr_Rbus_EventReceiveHandler(rbusHandle_t handle, rbusEven
 
     const char* eventName = event->name;
     rbusValue_t valBuff = rbusObject_GetValue(event->data, NULL );
+    static bool prevLineEnableValue = FALSE;
+    static char prevWanInterface[BUF_LEN_256] = {0};
 
     if((valBuff == NULL) || (eventName == NULL))
     {
@@ -86,16 +88,29 @@ static void TelcoVoiceMgr_Rbus_EventReceiveHandler(rbusHandle_t handle, rbusEven
         newValue = rbusValue_GetString(valBuff,NULL);
         if(strstr(newValue,REMOTE_LTE_ENABLED))
         {
-         CcspTraceInfo(("%s:%d ***Disable Voice Stack*** Remote-LTE Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
+            CcspTraceInfo(("%s:%d ***Disable Voice Stack*** Remote-LTE Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-         TelcoVoiceMgr_setCallControlLineEnable(false);
+            TelcoVoiceMgr_getCallControlLineEnable(&prevLineEnableValue);
+            TelcoVoiceMgr_setCallControlLineEnable(false);
+            snprintf(prevWanInterface, BUF_LEN_256, "%s", REMOTE_LTE_ENABLED);
 #endif
         }
         else if(strstr(newValue,"1"))
         {
-         CcspTraceInfo(("%s:%d ***Enable Voice Stack*** No Remote-LTE Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
+            CcspTraceInfo(("%s:%d ***Enable Voice Stack*** No Remote-LTE Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
-         TelcoVoiceMgr_setCallControlLineEnable(true);
+            if(prevWanInterface != NULL)
+            {
+                if(strstr(prevWanInterface,REMOTE_LTE_ENABLED))
+                {
+                    /* Check the previous user configured value before enabling line*/
+                    if(prevLineEnableValue)
+                    {
+                        TelcoVoiceMgr_setCallControlLineEnable(true);
+                    }
+                    memset(&prevWanInterface, 0, sizeof(prevWanInterface));
+                }
+            }
 #endif
         }
         CcspTraceInfo(("%s:%d Received [%s:%s]\n",__FUNCTION__, __LINE__,eventName, newValue));
