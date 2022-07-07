@@ -31,7 +31,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifdef RBUS_BUILD_FLAG_ENABLE
+#if defined(RBUS_BUILD_FLAG_ENABLE) || defined(_HUB4_PRODUCT_REQ_)
 #include <rbus.h>
 #include "telcovoicemgr_rbus_handler_apis.h"
 #include "telcovoicemgr_dml_apis.h"
@@ -189,5 +189,61 @@ ANSC_STATUS TelcoVoiceMgr_RbusExit()
     rbus_close(rbusHandle);
     return ANSC_STATUS_SUCCESS;
 }
+#endif // RBUS_BUILD_FLAG_ENABLE _HUB4_PRODUCT_REQ_
 
-#endif //RBUS_BUILD_FLAG_ENABLE
+#ifdef _HUB4_PRODUCT_REQ_
+BOOL TelcoVoiceMgr_Rbus_discover_components(char const *pModuleList)
+{
+    rbusError_t rc = RBUS_ERROR_SUCCESS;
+    int componentCnt = 0;
+    char **pComponentNames;
+    BOOL ret = FALSE;
+    char ModuleList[1024] = {0};
+    char const *rbusModuleList[7];
+    int count = 0;
+    const char delimit[2] = " ";
+    char *token;
+
+    strcpy(ModuleList,pModuleList);
+
+    /* get the first token */
+    token = strtok(ModuleList, delimit);
+
+    /* walk through other tokens */
+    while( token != NULL ) {
+        printf( " %s\n", token );
+        rbusModuleList[count]=token;
+        count++;
+        token = strtok(NULL, delimit);
+    }
+
+    for(int i=0; i<count;i++)
+    {
+        CcspTraceInfo(("TelcoVoiceMgr_Rbus_discover_components rbusModuleList[%s]\n", rbusModuleList[i]));
+    }
+
+    rc = rbus_discoverComponentName (rbusHandle, count, rbusModuleList, &componentCnt, &pComponentNames);
+
+    if(RBUS_ERROR_SUCCESS != rc)
+    {
+        CcspTraceInfo(("Failed to discover components. Error Code = %d\n", rc));
+        return ret;
+    }
+
+    for (int i = 0; i < componentCnt; i++)
+    {
+        free(pComponentNames[i]);
+    }
+
+    free(pComponentNames);
+
+    if(componentCnt == count)
+    {
+        ret = TRUE;
+    }
+
+    CcspTraceInfo( ("TelcoVoiceMgr_Rbus_discover_components (%d-%d)ret[%s]\n",componentCnt,count,(ret)?"TRUE":"FALSE"));
+
+    return ret;
+}
+#endif //_HUB4_PRODUCT_REQ_

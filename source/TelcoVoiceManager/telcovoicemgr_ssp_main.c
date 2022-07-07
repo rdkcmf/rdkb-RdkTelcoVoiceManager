@@ -67,6 +67,9 @@
 
 
 #include "webconfig_framework.h"
+#ifdef _HUB4_PRODUCT_REQ_
+#include "telcovoicemgr_rbus_handler_apis.h"
+#endif
 #ifdef INCLUDE_BREAKPAD
 const int kExceptSig[] = {
   SIGSEGV, SIGABRT, SIGFPE, SIGILL, SIGBUS, SIGTRAP
@@ -81,6 +84,50 @@ extern char* pComponentName;
 char g_Subsystem[32]         = {0};
 extern ANSC_HANDLE bus_handle;
 bool     bTelcoVoiceManagerRunning = TRUE;
+
+#ifdef _HUB4_PRODUCT_REQ_
+typedef struct
+{
+    char binaryLocation[64];
+    char rbusName[64];
+}Rbus_Module;
+
+int IsFileExists(char *file_name)
+{
+    struct stat file;
+
+    return (stat(file_name, &file));
+}
+
+static void waitUntilSystemReady()
+{
+    int wait_time = 0;
+    char pModule[1024] = {0};
+    Rbus_Module pModuleNames[] = {{"/usr/bin/PsmSsp",    "rbusPsmSsp"},
+                                  {"/usr/bin/CcspPandMSsp",  "CcspPandMSsp"}};
+
+    int elementCnt = ARRAY_SZ(pModuleNames);
+    for(int i=0; i<elementCnt;i++)
+    {
+        if (IsFileExists(pModuleNames[i].binaryLocation) == 0)
+        {
+            strcat(pModule,pModuleNames[i].rbusName);
+            strcat(pModule," ");
+        }
+    }
+
+    /* Check RBUS is ready. This needs to be continued upto 3 mins (180s) */
+    while(wait_time <= 90)
+    {
+        if(TelcoVoiceMgr_Rbus_discover_components(pModule)){
+            break;
+        }
+
+        wait_time++;
+        sleep(2);
+    }
+}
+#endif
 
 int  cmd_dispatch(int  command)
 {
@@ -169,7 +216,7 @@ static void _print_stack_backtrace(void)
 }
 
 #if defined(_ANSC_LINUX)
-static void daemonize(void) 
+static void daemonize(void)
 {
     int fd;
     switch (fork())
@@ -196,19 +243,19 @@ static void daemonize(void)
 #ifndef  _DEBUG
     //redirect fd's 0,1,2 to /dev/null
     fd = open("/dev/null", O_RDONLY);
-    if (fd != 0) 
+    if (fd != 0)
     {
         dup2(fd, 0);
         close(fd);
     }
     fd = open("/dev/null", O_WRONLY);
-    if (fd != 1) 
+    if (fd != 1)
     {
         dup2(fd, 1);
         close(fd);
     }
     fd = open("/dev/null", O_WRONLY);
-    if (fd != 2) 
+    if (fd != 2)
     {
         dup2(fd, 2);
         close(fd);
@@ -222,28 +269,28 @@ void sig_handler(int sig, siginfo_t* info, void* uc)
 void sig_handler(int sig)
 #endif
 {
-    if ( sig == SIGUSR1 ) 
+    if ( sig == SIGUSR1 )
     {
       #ifndef INCLUDE_BREAKPAD
         signal(SIGUSR1, sig_handler); /* reset it to this function */
       #endif
         CcspTraceInfo(("SIGUSR1 received!\n"));
     }
-    else if ( sig == SIGUSR2 ) 
+    else if ( sig == SIGUSR2 )
     {
       #ifndef INCLUDE_BREAKPAD
         signal(SIGUSR2, sig_handler); /* reset it to this function */
       #endif
         CcspTraceInfo(("SIGUSR2 received!\n"));
     }
-    else if ( sig == SIGCHLD ) 
-    {    
+    else if ( sig == SIGCHLD )
+    {
       #ifndef INCLUDE_BREAKPAD
         signal(SIGCHLD, sig_handler); /* reset it to this function */
       #endif
         CcspTraceInfo(("SIGCHLD received!\n"));
     }
-    else if ( sig == SIGPIPE ) 
+    else if ( sig == SIGPIPE )
     {
       #ifndef INCLUDE_BREAKPAD
         signal(SIGPIPE, sig_handler); /* reset it to this function */
@@ -257,7 +304,7 @@ void sig_handler(int sig)
       #endif
         CcspTraceWarning(("SIGALRM received!\n"));
     }
-    else 
+    else
     {
         /* get stack trace first */
         _print_stack_backtrace();
@@ -345,7 +392,7 @@ int main(int argc, char* argv[])
         fclose(fd);
     }
 #ifdef INCLUDE_BREAKPAD
-  //auto constructor will call breakpad_ExceptionHandler 
+  //auto constructor will call breakpad_ExceptionHandler
   //backing up the old signal handlers
   for (int i = 0; i < kNumHandSig; ++i) {
        if (sigaction(kExceptSig[i], NULL, &old_handlers[i]) == -1) {
@@ -428,6 +475,9 @@ int main(int argc, char* argv[])
 
     CcspTraceInfo(("RDKB_SYSTEM_BOOT_UP_LOG : TelcoVoiceMgr Initialized Successfully\n"));
 
+#ifdef _HUB4_PRODUCT_REQ_
+    waitUntilSystemReady();
+#endif
     if ( bRunAsDaemon )
     {
         while(1)

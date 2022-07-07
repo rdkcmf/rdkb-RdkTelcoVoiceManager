@@ -35,16 +35,21 @@
 
 #ifndef _TELCOVOICEMGR_RBUS_H_
 #define _TELCOVOICEMGR_RBUS_H_
-#ifdef RBUS_BUILD_FLAG_ENABLE
+#if defined(RBUS_BUILD_FLAG_ENABLE) || defined(_HUB4_PRODUCT_REQ_)
 #include "ansc_platform.h"
 
 #define WANMGR_CONFIG_WAN_INTERFACEAVAILABLESTATUS   "Device.X_RDK_WanManager.InterfaceAvailableStatus"
 #define WANMGR_CONFIG_WAN_INTERFACEACTIVESTATUS      "Device.X_RDK_WanManager.InterfaceActiveStatus"
 #define REMOTE_LTE_ENABLED                           "REMOTE_LTE,1"
+#define  ARRAY_SZ(x) (sizeof(x) / sizeof((x)[0]))
 
 ANSC_STATUS TelcoVoiceMgr_Rbus_Init();
 ANSC_STATUS TelcoVoiceMgr_Rbus_Exit();
 void TelcoVoiceMgr_Rbus_SubscribeDML(void);
 void TelcoVoiceMgr_Rbus_UnSubscribeDML(void);
-#endif //RBUS_BUILD_FLAG_ENABLE
+#endif // RBUS_BUILD_FLAG_ENABLE _HUB4_PRODUCT_REQ_
+
+#ifdef _HUB4_PRODUCT_REQ_
+BOOL TelcoVoiceMgr_Rbus_discover_components(char const *pModuleList);
+#endif //_HUB4_PRODUCT_REQ_
 #endif
