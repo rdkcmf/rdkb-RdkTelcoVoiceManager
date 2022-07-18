@@ -266,11 +266,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
 
             if( pDmlPOTSObj )
             {
-                pDmlPOTSObj->FXS.ulQuantity = 1;
+                pDmlPOTSObj->FXS.ulQuantity = TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE;
 
                 if ( pDmlPOTSObj->FXS.ulQuantity != 0 )
                 {
-                    for (uIndex = 0; uIndex < TELCOVOICE_DATA_MAX; uIndex++)
+                    for (uIndex = 0; uIndex < TELCOVOICEMGR_DML_NUMBER_OF_PHY_INTERFACE; uIndex++)
                     {
                         pDmlPOTSObj->FXS.pdata[uIndex] = (DML_POTS_FXS_CTRL_T*) AnscAllocateMemory(sizeof(DML_POTS_FXS_CTRL_T));
                         DML_POTS_FXS_CTRL_T* pPOTSFxs = pDmlPOTSObj->FXS.pdata[uIndex];
