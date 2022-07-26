@@ -140,17 +140,17 @@ static ANSC_STATUS generate_voice_firewall_sysevent_string(char* firewallData,
     char tmpDscpMarkBuffer[BUF_LEN_512] = {0};
     char tmpOutBoundProxyBuffer[BUF_LEN_512] = {0};
     char tmpRtpPinholeBuffer[BUF_LEN_512] = {0};
-    uint16_t len = 0;
+
+    uint16_t skbLen = 0;
+    uint16_t dscpLen = 0;
+    uint16_t pinholeLen = 0;
+    uint16_t outbtLen = 0;
 
     if(!firewallData || !ethernetPriorityBuffer || !dscpBuffer || !sipOutBoundProxyBuffer ||!rtpPinholeBuffer)
     {
         CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
-    memset(tmpSkbMarkBuffer, 0, sizeof(tmpSkbMarkBuffer));
-    memset(tmpDscpMarkBuffer, 0, sizeof(tmpDscpMarkBuffer));
-    memset(tmpOutBoundProxyBuffer, 0, sizeof(tmpOutBoundProxyBuffer));
-    memset(tmpRtpPinholeBuffer, 0, sizeof(tmpRtpPinholeBuffer));
 
     snprintf(buffer, sizeof(buffer), "%s", firewallData);
     pToken = strtok_r(buffer, ";", &endStr);
@@ -185,26 +185,23 @@ static ANSC_STATUS generate_voice_firewall_sysevent_string(char* firewallData,
                         {
                             if(tmpSkbMarkBuffer[0] == '\0')
                             {
-                                snprintf((char*)&tmpSkbMarkBuffer[0], (sizeof(tmpSkbMarkBuffer)), "%s,%s,%lu;", ipAddr, port, sipSkbMark);
-                                snprintf((char*)&tmpDscpMarkBuffer[0], (sizeof(tmpDscpMarkBuffer)), "%s,%s,%lu;", ipAddr, port, sipDscpMark);
-                                snprintf((char*)&tmpOutBoundProxyBuffer[0], (sizeof(tmpOutBoundProxyBuffer)), "%s", ipAddr);
+                                skbLen = snprintf((char*)&tmpSkbMarkBuffer[0], (sizeof(tmpSkbMarkBuffer)), "%s,%s,%lu;", ipAddr, port, sipSkbMark);
+                                dscpLen = snprintf((char*)&tmpDscpMarkBuffer[0], (sizeof(tmpDscpMarkBuffer)), "%s,%s,%lu;", ipAddr, port, sipDscpMark);
+                                outbtLen = snprintf((char*)&tmpOutBoundProxyBuffer[0], (sizeof(tmpOutBoundProxyBuffer)), "%s", ipAddr);
                             }
                             else
                             {
-                                len = strlen(tmpSkbMarkBuffer);
-                                if(len < sizeof(tmpSkbMarkBuffer))
+                                if(skbLen < sizeof(tmpSkbMarkBuffer))
                                 {
-                                   snprintf((char*)&tmpSkbMarkBuffer[len], (sizeof(tmpSkbMarkBuffer) - len), "%s,%s,%lu;", ipAddr, port, sipSkbMark);
+                                   skbLen += snprintf((char*)&tmpSkbMarkBuffer[skbLen], (sizeof(tmpSkbMarkBuffer) - skbLen), "%s,%s,%lu;", ipAddr, port, sipSkbMark);
                                 }
-                                len =  strlen(tmpDscpMarkBuffer);
-                                if(len < sizeof(tmpDscpMarkBuffer))
+                                if(dscpLen < sizeof(tmpDscpMarkBuffer))
                                 {
-                                   snprintf((char*)&tmpDscpMarkBuffer[len], (sizeof(tmpDscpMarkBuffer) - len), "%s,%s,%lu;", ipAddr, port, sipDscpMark);
+                                   dscpLen += snprintf((char*)&tmpDscpMarkBuffer[dscpLen], (sizeof(tmpDscpMarkBuffer) - dscpLen), "%s,%s,%lu;", ipAddr, port, sipDscpMark);
                                 }
-                                len =  strlen(tmpOutBoundProxyBuffer);
-                                if(len < sizeof(tmpOutBoundProxyBuffer))
+                                if(outbtLen < sizeof(tmpOutBoundProxyBuffer))
                                 {
-                                   snprintf((char*)&tmpOutBoundProxyBuffer[len], (sizeof(tmpOutBoundProxyBuffer) - len), ",%s", ipAddr);
+                                   outbtLen += snprintf((char*)&tmpOutBoundProxyBuffer[outbtLen], (sizeof(tmpOutBoundProxyBuffer) - outbtLen), ",%s", ipAddr);
                                 }
                             }
                         }
@@ -212,26 +209,23 @@ static ANSC_STATUS generate_voice_firewall_sysevent_string(char* firewallData,
                         {
                             if(tmpSkbMarkBuffer[0] == '\0')
                             {
-                                snprintf((char*)&tmpSkbMarkBuffer[0], (sizeof(tmpSkbMarkBuffer)), "%s,%s,%lu;", ipAddr, port, rtpSkbMark);
-                                snprintf((char*)&tmpDscpMarkBuffer[0], (sizeof(tmpDscpMarkBuffer)), "%s,%s,%lu;", ipAddr, port, rtpDscpMark);
-                                snprintf((char*)&tmpRtpPinholeBuffer[0], (sizeof(tmpRtpPinholeBuffer)), "%s,%s;", ipAddr, port);
+                                skbLen = snprintf((char*)&tmpSkbMarkBuffer[0], (sizeof(tmpSkbMarkBuffer)), "%s,%s,%lu;", ipAddr, port, rtpSkbMark);
+                                dscpLen = snprintf((char*)&tmpDscpMarkBuffer[0], (sizeof(tmpDscpMarkBuffer)), "%s,%s,%lu;", ipAddr, port, rtpDscpMark);
+                                pinholeLen = snprintf((char*)&tmpRtpPinholeBuffer[0], (sizeof(tmpRtpPinholeBuffer)), "%s,%s;", ipAddr, port);
                             }
                             else
                             {
-                                len = strlen(tmpSkbMarkBuffer);
-                                if(len < sizeof(tmpSkbMarkBuffer))
+                                if(skbLen < sizeof(tmpSkbMarkBuffer))
                                 {
-                                   snprintf((char*)&tmpSkbMarkBuffer[len], (sizeof(tmpSkbMarkBuffer) - len), "%s,%s,%lu;", ipAddr, port, rtpSkbMark);
+                                   skbLen += snprintf((char*)&tmpSkbMarkBuffer[skbLen], (sizeof(tmpSkbMarkBuffer) - skbLen), "%s,%s,%lu;", ipAddr, port, rtpSkbMark);
                                 }
-                                len =  strlen(tmpDscpMarkBuffer);
-                                if(len < sizeof(tmpDscpMarkBuffer))
+                                if(dscpLen < sizeof(tmpDscpMarkBuffer))
                                 {
-                                   snprintf((char*)&tmpDscpMarkBuffer[len], (sizeof(tmpDscpMarkBuffer) - len), "%s,%s,%lu;", ipAddr, port, rtpDscpMark);
+                                   dscpLen += snprintf((char*)&tmpDscpMarkBuffer[dscpLen], (sizeof(tmpDscpMarkBuffer) - dscpLen), "%s,%s,%lu;", ipAddr, port, rtpDscpMark);
                                 }
-                                len =  strlen(tmpRtpPinholeBuffer);
-                                if(len < sizeof(tmpRtpPinholeBuffer))
+                                if(pinholeLen < sizeof(tmpRtpPinholeBuffer))
                                 {
-                                   snprintf((char*)&tmpRtpPinholeBuffer[len], (sizeof(tmpRtpPinholeBuffer) - len), "%s,%s;", ipAddr, port);
+                                   pinholeLen += snprintf((char*)&tmpRtpPinholeBuffer[pinholeLen], (sizeof(tmpRtpPinholeBuffer) - pinholeLen), "%s,%s;", ipAddr, port);
                                 }
                             }
                         }
@@ -241,10 +235,10 @@ static ANSC_STATUS generate_voice_firewall_sysevent_string(char* firewallData,
         }
         pToken = strtok_r(NULL, ";", &endStr);
     }
-    snprintf(ethernetPriorityBuffer, size, "%s", tmpSkbMarkBuffer);
-    snprintf(dscpBuffer, size, "%s", tmpDscpMarkBuffer);
-    snprintf(sipOutBoundProxyBuffer, size, "%s", tmpOutBoundProxyBuffer);
-    snprintf(rtpPinholeBuffer, size, "%s", tmpRtpPinholeBuffer);  
+    memcpy(ethernetPriorityBuffer, tmpSkbMarkBuffer, skbLen);
+    memcpy(dscpBuffer, tmpDscpMarkBuffer, dscpLen);
+    memcpy(sipOutBoundProxyBuffer, tmpOutBoundProxyBuffer, outbtLen);
+    memcpy(rtpPinholeBuffer, tmpRtpPinholeBuffer, pinholeLen);
     return ANSC_STATUS_SUCCESS;
 }
 
@@ -266,11 +260,11 @@ static ANSC_STATUS generate_voice_firewall_sysevent_string(char* firewallData,
 */
 static ANSC_STATUS set_iptable_rules_for_rtp(char *inputBuffer, UINT rtpDscpValue, UINT rtpSkbMark, TELCOVOICEMGR_VOICE_IP_ADD_FAMILY ipAddrFamily, char *action)
 {
-    char buffer[BUF_LEN_512] = {0};
-    char ipTableRule[BUF_LEN_512] = {0};
-    char addr[IP_ADDR_LENGTH] = {0};
-    char port[BUF_LEN_16] = {0};
-    char ipTableVersion[BUF_LEN_16] = {0};
+    char buffer[BUF_LEN_512];
+    char ipTableRule[BUF_LEN_2048];
+    char addr[IP_ADDR_LENGTH];
+    char port[BUF_LEN_16];
+    char ipTableVersion[BUF_LEN_16];
     char *pToken = NULL;
 
     if(!inputBuffer || !action)
@@ -280,16 +274,16 @@ static ANSC_STATUS set_iptable_rules_for_rtp(char *inputBuffer, UINT rtpDscpValu
     }
 
     if(ipAddrFamily == VOICE_HAL_AF_INET_V4)
-        snprintf(ipTableVersion, sizeof(ipTableVersion), "%s", "iptables");
+        strncpy(ipTableVersion, "iptables", sizeof(ipTableVersion));
     else if(ipAddrFamily == VOICE_HAL_AF_INET_V6)
-        snprintf(ipTableVersion, sizeof(ipTableVersion), "%s", "ip6tables");
+        strncpy(ipTableVersion, "ip6tables", sizeof(ipTableVersion));
     else
     {
         CcspTraceWarning(("%s Invalid Iptable Version\n", __FUNCTION__));
         return ANSC_STATUS_FAILURE;
     }
 
-    snprintf(buffer, sizeof(buffer), "%s", inputBuffer);
+    strncpy(buffer, inputBuffer, sizeof(buffer));
     pToken = strtok(buffer, ",");
     while( pToken != NULL )
     {
@@ -303,13 +297,13 @@ static ANSC_STATUS set_iptable_rules_for_rtp(char *inputBuffer, UINT rtpDscpValu
 
             if(!strcmp(action, ADD_RULE))
             {
+                snprintf((char*)&ipTableRule[0],sizeof(ipTableRule),
+                                "%s -t mangle -A VOICE_MANGLE -d %s -p udp -m udp --sport %s -j MARK --set-xmark %lu/%lu;\
+                                %s -t mangle -A VOICE_MANGLE -d %s -p udp -m udp --sport %s -j DSCP --set-dscp %lu\n",
+                                ipTableVersion, addr, port, rtpSkbMark, rtpSkbMark,
+                                ipTableVersion, addr, port, rtpDscpValue);
+                system(ipTableRule);
                 snprintf((char*)&ipTableRule[0],sizeof(ipTableRule),"%s -I VOICE 1 -s %s -i %s -p udp -m udp --dport %s -j ACCEPT\n", ipTableVersion, addr, PHY_WAN_IF_NAME, port);
-                system(ipTableRule);
-
-                snprintf((char*)&ipTableRule[0],sizeof(ipTableRule),"%s -t mangle -A VOICE_MANGLE -d %s -p udp -m udp --sport %s -j DSCP --set-dscp %lu\n", ipTableVersion, addr, port, rtpDscpValue);
-                system(ipTableRule);
-
-                snprintf((char*)&ipTableRule[0],sizeof(ipTableRule),"%s -t mangle -A VOICE_MANGLE -d %s -p udp -m udp --sport %s -j MARK --set-xmark %lu/%lu\n", ipTableVersion, addr, port, rtpSkbMark, rtpSkbMark);
                 system(ipTableRule);
             }
             else if(!strcmp(action, DELETE_RULE))
@@ -2583,6 +2577,50 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetMarking(uint32_t uiService,  uint32_t uiPr
     return ANSC_STATUS_SUCCESS;
 }
 
+ANSC_STATUS TelcoVoiceMgrDmlGetSeparateRuleLists(char *prevRtpRuleData, char*currRtpRuleData,
+                                                        char *deleteList, char *addList, char *presentList, int listSize)
+{
+    char *pToken = NULL;
+    int len = 0;
+    int pLen = 0;
+    char tempBuff[BUF_LEN_512] = {0};
+    if(!(prevRtpRuleData && currRtpRuleData && deleteList && addList))
+    {
+        CcspTraceWarning(("%s Null Value passed, set failed\n", __FUNCTION__));
+        return ANSC_STATUS_FAILURE;
+    }
+
+    // Prepare list of rules to be deleted
+    strncpy(tempBuff, prevRtpRuleData, sizeof(tempBuff));
+    pToken = strtok(tempBuff, ";");
+    while( pToken != NULL )
+    {
+        if(!strstr(currRtpRuleData, pToken))
+        {
+            len += snprintf((char *)&deleteList[len], listSize, "%s;" , pToken);
+        }
+        else{
+            pLen += snprintf((char *)&presentList[pLen], listSize, "%s;" , pToken);
+        }
+        pToken = strtok(NULL, ";");
+    }
+
+    // Prepare list of rules to be added newly
+    strncpy(tempBuff, currRtpRuleData, sizeof(tempBuff));
+    pToken = strtok(tempBuff, ";");
+    len = 0;
+    while( pToken != NULL )
+    {
+        if(!strstr(prevRtpRuleData, pToken))
+        {
+            len += snprintf((char *)&addList[len], listSize, "%s;" , pToken);
+            pLen += snprintf((char *)&presentList[pLen], listSize, "%s;" , pToken);
+        }
+        pToken = strtok(NULL, ";");
+    }
+    return ANSC_STATUS_SUCCESS;
+}
+
 /* TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData : */
 /**
 * @description Set Firewall Rule Data to sysevent
@@ -2604,6 +2642,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, U
     char sipOutBoundProxyBuffer[BUF_LEN_512] = {0};
     char rtpPinholeBuffer[BUF_LEN_512] = {0};
     static char prevRtpRuleData[BUF_LEN_512] = {0};
+    char addList[BUF_LEN_512] = {0};
+    char deleteList[BUF_LEN_512] = {0};
+    char presentList[BUF_LEN_512] = {0};
     static uint prevRtpDscpMark = 0;
     static uint prevRtpSkbMark = 0;
     ULONG  uVpIndex = 0;
@@ -2709,14 +2750,32 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, U
             /* Delete old rule and add new one for RTP*/
             if(prevRtpRuleData[0] != '\0')
             {
-                set_iptable_rules_for_rtp(prevRtpRuleData, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
+                strncpy(deleteList, prevRtpRuleData, sizeof(deleteList));
+                strncpy(addList, rtpPinholeBuffer, sizeof(addList));
+                if (prevRtpDscpMark == rtpDscpMark && prevRtpSkbMark == rtpSkbMark)
+                {
+                    memset(addList, 0, sizeof(addList));
+                    memset(deleteList, 0, sizeof(deleteList));
+                    TelcoVoiceMgrDmlGetSeparateRuleLists(prevRtpRuleData, rtpPinholeBuffer, deleteList, addList, presentList, sizeof(addList));
+                }
+                if(deleteList[0] != '\0')
+                {
+                    set_iptable_rules_for_rtp(deleteList, prevRtpDscpMark, prevRtpSkbMark, previpAddressFamily, DELETE_RULE);
+                }
+                if(addList[0] != '\0')
+                {
+                    set_iptable_rules_for_rtp(addList, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V6, ADD_RULE);
+                }
+            }
+            else if (rtpPinholeBuffer[0] != '\0')
+            {
+                //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
+                set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V6, ADD_RULE);
+                strncpy(presentList, rtpPinholeBuffer, sizeof(presentList));
             }
 
-            //For RTP events, set sysevent and apply iptable rules from here, do not restart firewall.
-            set_iptable_rules_for_rtp(rtpPinholeBuffer, rtpDscpMark, rtpSkbMark, VOICE_HAL_AF_INET_V6, ADD_RULE);
-
-            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, rtpPinholeBuffer, 0);
-            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, rtpPinholeBuffer));
+            sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, presentList, 0);
+            CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, presentList));
 
             if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
@@ -2725,7 +2784,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, U
                 firewall_restart_for_voice(UTOPIA_FIREWALL_RESTART_TIMEOUT_MS);
             }
             /* Save previous data and delete old rules in next iteration.*/
-            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", rtpPinholeBuffer);
+            snprintf(prevRtpRuleData,sizeof(prevRtpRuleData), "%s", presentList);
             prevRtpDscpMark = rtpDscpMark;
             prevRtpSkbMark = rtpSkbMark;
             previpAddressFamily = VOICE_HAL_AF_INET_V6;
