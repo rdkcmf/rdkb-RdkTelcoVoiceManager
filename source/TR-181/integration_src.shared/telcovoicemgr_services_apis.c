@@ -2777,6 +2777,11 @@ ANSC_STATUS TelcoVoiceMgrDmlSetX_RDK_FirewallRuleData(char * FirewallRuleData, U
             sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_VOICE_IPV6_RTPLIST, presentList, 0);
             CcspTraceInfo(("[%s:%d] SYSEVENT_VOICE_IPV6_RTPLIST %s\n", __FUNCTION__, __LINE__, presentList));
 
+            if(FirewallRuleData[0] == 0)
+            { // Need to restart the firewall to remove the SIP rules in case of clearing the data model.
+                prevRtpRuleData[0] = 0;
+            }
+
             if((rtpPinholeBuffer[0] == '\0') && (prevRtpRuleData[0] == '\0'))
             {
                 //Restart firewall for only SIP events.

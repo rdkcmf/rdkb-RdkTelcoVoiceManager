@@ -1146,6 +1146,13 @@ static void parse_and_update_rule(char *firewall_rule_data, char *new_event_val,
     if((firewall_rule_data ==  NULL) || (new_event_val == NULL))
     {
       CcspTraceError(("[%s: %d] Null Param Passed\n", __FUNCTION__, __LINE__));
+      return;
+    }
+    if(0 == new_event_val[0])
+    {
+        CcspTraceInfo(("[%s: %d] Flushing all the rules...\n", __FUNCTION__, __LINE__));
+        memset(firewall_rule_data, 0, firewall_rule_data_size);
+        return;
     }
     snprintf(buffer, sizeof(buffer), "%s", new_event_val);
     pToken = strtok_r(buffer, ";", &endStr);
