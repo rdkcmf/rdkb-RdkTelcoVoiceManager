@@ -3939,9 +3939,15 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
     }
     else if( AnscEqualString(ParamName, "EthernetPriorityMark", TRUE) )
     {
-        if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
+        int iEthValue = -1;
+        if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue) == ANSC_STATUS_SUCCESS) &&
+            (iEthValue != -1) && (iEthValue != iValue))
         {
-            return ANSC_STATUS_DISCARD;
+            if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
+            {
+                CcspTraceInfo(("%s %d: Update Wanmgr: iValue[%d] Failed\n", __func__, __LINE__,iValue));
+                return ANSC_STATUS_DISCARD;
+            }
         }
         TELCOVOICEMGR_LOCK_OR_EXIT()
 

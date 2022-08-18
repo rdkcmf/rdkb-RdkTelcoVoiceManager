@@ -805,6 +805,7 @@ static ANSC_STATUS TelcoVoiceMgrDmlSetMarkingEthPriorityMark(char *pIfRecordName
                                 return ANSC_STATUS_FAILURE;
                             }
                         }
+                        CcspTraceError(("%s ####WanMgr refresh####\n",__FUNCTION__));
                         // Successfully updated/deteled marking entry, now do wan refresh.
                         memset(paramName, 0, sizeof(paramName));
                         snprintf(paramName, sizeof(paramName), "%s%s", pIfRecordName,
@@ -987,7 +988,7 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetMarkingEthPriorityMark(char *pIfRecordName
                 return ANSC_STATUS_FAILURE;
             }
         }
-
+        CcspTraceInfo(("%s %d: No entry found\n", __func__, __LINE__));
         // Reaching here means we could not find the required alias entry for this interface
         pValStruct->iEthPriorityMark = -1;
         pValStruct->iUpdateStatus = TRUE;
@@ -1032,7 +1033,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetWanEthernetPriorityMark(PROTOCOL_TYPE protocol, i
         if(TRUE == valStruct.iUpdateStatus)
         {
             *iValue = valStruct.iEthPriorityMark;
-            CcspTraceInfo(("%s:%d:: Read success, Protocol[%d],iValue[%d]..\n", __FUNCTION__, __LINE__,protocol,*iValue));
+            CcspTraceInfo(("%s:%d:: DML Data from WanMgr, Protocol[%s],iValue[%d]\n", __FUNCTION__, __LINE__,(protocol==0)?"SIP":"RTP",*iValue));
             return ANSC_STATUS_SUCCESS;
         }
     }
@@ -2312,9 +2313,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
-    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue))
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue) || (iEthValue == -1))
     {
-        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark..\n", __FUNCTION__, __LINE__, iEthValue));
+        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark[%d]..\n", __FUNCTION__, __LINE__, iEthValue));
         return ANSC_STATUS_FAILURE;
     }
 
@@ -2442,11 +2443,17 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
             }
             else if(!strcmp(paramName, PARAM_NAME_ETHERNET_PRIORITY_MARK))
             {
-               if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
-               {
-                  returnStatus = ANSC_STATUS_DISCARD;
-                  goto EXIT;
-               }
+                int getValue = -1;
+                if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &getValue) == ANSC_STATUS_SUCCESS) &&
+                    (getValue != -1) && getValue != iValue)
+                {
+                    if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
+                    {
+                        CcspTraceInfo(("%s %d: Update Wanmgr: iValue[%d] Failed\n", __func__, __LINE__, iValue));
+                        returnStatus = ANSC_STATUS_DISCARD;
+                        goto EXIT;
+                    }
+                }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
                pDmlSipNetwork->EthernetPriorityMark = iValue;
 #else
@@ -2476,11 +2483,16 @@ ANSC_STATUS TelcoVoiceMgrInitMark(uint32_t uiService, uint32_t uiProfile, int iV
             }
             else if(!strcmp(paramName, PARAM_NAME_ETHERNET_PRIORITY_MARK))
             {
-               if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
-               {
-                  returnStatus = ANSC_STATUS_DISCARD;
-                  goto EXIT;
-               }
+                int getValue = -1;
+                if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &getValue) == ANSC_STATUS_SUCCESS) && (getValue != -1) && getValue != iValue)
+                {
+                    if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
+                    {
+                        CcspTraceInfo(("%s %d: Update Wanmgr: iValue[%d] Failed\n", __func__, __LINE__, iValue));
+                        returnStatus = ANSC_STATUS_DISCARD;
+                        goto EXIT;
+                    }
+                }
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
                pDmlVoiceProfile->RTP.EthernetPriorityMark = iValue;
 #else
@@ -3163,9 +3175,9 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
-    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue))
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue) || (iEthValue == -1))
     {
-        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark..\n", __FUNCTION__, __LINE__, iEthValue));
+        CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark[%d]..\n", __FUNCTION__, __LINE__, iEthValue));
         return ANSC_STATUS_FAILURE;
     }
 
@@ -3271,7 +3283,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
 
                 if ( pDmlSipNetwork )
                 {
-                    CcspTraceWarning(("%s:%d:: Sip Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlSipNetwork->EthernetPriorityMark));
+                    CcspTraceWarning(("%s:%d:: Sip Ethernet Priority (DML): %d\n", __FUNCTION__, __LINE__, pDmlSipNetwork->EthernetPriorityMark));
                     *pValue = pDmlSipNetwork->EthernetPriorityMark;
                     returnStatus = ANSC_STATUS_SUCCESS;
                     goto EXIT;
@@ -3298,7 +3310,7 @@ ANSC_STATUS TelcoVoiceMgrDmlGetEthernetPriorityMark(uint32_t uiService, uint32_t
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2
             if(pDmlVoiceProfile->RTP.EthernetPriorityMark != NULL)
             {
-                CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority: %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->RTP.EthernetPriorityMark));
+                CcspTraceWarning(("%s:%d:: Rtp Ethernet Priority (DML): %d\n", __FUNCTION__, __LINE__, pDmlVoiceProfile->RTP.EthernetPriorityMark));
                 *pValue = pDmlVoiceProfile->RTP.EthernetPriorityMark;
                 returnStatus = ANSC_STATUS_SUCCESS;
                 goto EXIT;
