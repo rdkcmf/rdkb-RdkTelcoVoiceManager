@@ -93,8 +93,10 @@ extern bool bTelcoVoiceManagerRunning;
 extern int sysevent_voice_fd;
 extern token_t sysevent_voice_token;
 static pthread_t sysevent_tid;
-static int sysevent_fd = -1;
+static int sysevent_rw_fd = -1;
 static token_t sysevent_token = -1;
+static int sysevent_listen_notfiy_fd = -1;
+static token_t sysevent_notify_token = -1;
 static char ipAddrFamily[IP_ADDR_FAMILY_LENGTH] = {0};
 static char lanIpAddr[IP_ADDR_FAMILY_LENGTH] = {0};
 static char boundIfName[BOUND_IF_NAME_LENGTH] = {0};
@@ -170,17 +172,22 @@ void voicemgr_create_nw_monitor()
 
 int voicemgr_sysevent_init()
 {
-    sysevent_fd =  sysevent_open("127.0.0.1", SE_SERVER_WELL_KNOWN_PORT, SE_VERSION, "voip", &sysevent_token);
-    if (sysevent_fd < 0)
+    sysevent_rw_fd =  sysevent_open("127.0.0.1", SE_SERVER_WELL_KNOWN_PORT, SE_VERSION, "voip", &sysevent_token);
+    if (sysevent_rw_fd < 0)
+        return -1;
+    // Using a separate fd for listening to sysevent notifications to avoid sysevent read issues that may occur
+    // while using the same fd for notification as well as sysevent get/set.
+    sysevent_listen_notfiy_fd =  sysevent_open("127.0.0.1", SE_SERVER_WELL_KNOWN_PORT, SE_VERSION, "voip_notify", &sysevent_notify_token);
+    if (sysevent_listen_notfiy_fd < 0)
         return -1;
     return 0;
 }
 
 void voicemgr_sysevent_close()
 {
-    if (0 <= sysevent_fd)
+    if (0 <= sysevent_rw_fd)
     {
-        sysevent_close(sysevent_fd, sysevent_token);
+        sysevent_close(sysevent_rw_fd, sysevent_token);
     }
 }
 
@@ -194,24 +201,24 @@ static void *voice_manager_nw_monitor(void *data)
     async_id_t firewallstatus_asyncid;
 
     /*LAN Events*/
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_LAN_STATUS, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_LAN_STATUS,  &lan_connection_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_LAN_STATUS, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_LAN_STATUS,  &lan_connection_asyncid);
 
     /*WAN Events*/
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_IPV4_CONNECTION_STATE, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_IPV4_CONNECTION_STATE,  &ipv4_connection_asyncid);
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_IPV6_CONNECTION_STATE, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_IPV6_CONNECTION_STATE,  &ipv6_connection_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_IPV4_CONNECTION_STATE, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_IPV4_CONNECTION_STATE,  &ipv4_connection_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_IPV6_CONNECTION_STATE, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_IPV6_CONNECTION_STATE,  &ipv6_connection_asyncid);
 
     /*TELCO VOICE MANAGER Events*/
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IFNAME, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IFNAME,  &ifname_asyncid);
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IPFAMILY, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_UPDATE_IPFAMILY,  &ipfamily_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_UPDATE_IFNAME, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_UPDATE_IFNAME,  &ifname_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_UPDATE_IPFAMILY, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_UPDATE_IPFAMILY,  &ipfamily_asyncid);
 
     /*Firewall Status*/
-    sysevent_set_options(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_STATUS, TUPLE_FLAG_EVENT);
-    sysevent_setnotification(sysevent_fd, sysevent_token, SYSEVENT_FIREWALL_STATUS,  &firewallstatus_asyncid);
+    sysevent_set_options(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_FIREWALL_STATUS, TUPLE_FLAG_EVENT);
+    sysevent_setnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, SYSEVENT_FIREWALL_STATUS,  &firewallstatus_asyncid);
 
     pthread_detach(pthread_self());
 
@@ -223,7 +230,7 @@ static void *voice_manager_nw_monitor(void *data)
         int vallen  = sizeof(val);
 
         CcspTraceWarning(("Waiting for new wan event . . . !\n"));
-        int err = sysevent_getnotification(sysevent_fd, sysevent_token, name, &namelen, val, &vallen, &getnotification_asyncid); //blocking api
+        int err = sysevent_getnotification(sysevent_listen_notfiy_fd, sysevent_notify_token, name, &namelen, val, &vallen, &getnotification_asyncid); //blocking api
         if (0 != err)
         {
             if (!bTelcoVoiceManagerRunning)
@@ -318,7 +325,7 @@ static void event_set_lan_status (void)
     char lanStatus[BOUND_IF_NAME_LENGTH] = {0};
     char ipAddr[48] = {0};
 
-    if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_LAN_STATUS, lanStatus, sizeof(lanStatus)) != 0)
+    if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_LAN_STATUS, lanStatus, sizeof(lanStatus)) != 0)
     {
         CcspTraceError(("Failed to get lan status from sysevent \n"));
     }
@@ -328,7 +335,7 @@ static void event_set_lan_status (void)
         {
             if (!strcmp(ipAddrFamily, STR_IPV4))
             {
-                if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_LAN_ADDRESS, ipAddr, sizeof(ipAddr)) == 0)
+                if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_LAN_ADDRESS, ipAddr, sizeof(ipAddr)) == 0)
                 {
                     CcspTraceInfo(("LAN - ipv4 address from sysevent : %s \n", ipAddr));
                     CcspTraceWarning(("Voice Manager: LAN up !\n"));
@@ -366,7 +373,7 @@ static void event_set_wan_status (void)
 
     if (!strcmp(ipAddrFamily, STR_IPV4))
     {
-        if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_IPV4_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
+        if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_IPV4_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
         {
             CcspTraceError(("Failed to get wan ipv6 connection state sysevent \n"));
         }
@@ -374,11 +381,11 @@ static void event_set_wan_status (void)
         {
             if (!strcmp(conState, "up"))
             {
-                if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_CURRENT_WAN_IFNAME, ifName, sizeof(ifName)) == 0)
+                if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_CURRENT_WAN_IFNAME, ifName, sizeof(ifName)) == 0)
                 {
                     char sysevent_param_name[32] = {0};
                     snprintf(sysevent_param_name, sizeof(sysevent_param_name), SYSEVENT_IPV4_IP_ADDRESS, ifName);
-                    if (sysevent_get(sysevent_fd, sysevent_token, sysevent_param_name, ipAddr, sizeof(ipAddr)) == 0)
+                    if (sysevent_get(sysevent_rw_fd, sysevent_token, sysevent_param_name, ipAddr, sizeof(ipAddr)) == 0)
                     {
                         CcspTraceInfo(("%s:: WAN IPv4 Address updated! { %s }\n", __FUNCTION__, ipAddr));
                         CcspTraceNotice(("TELCOVOICEMANAGER_IPV4_WANUP :: Voice Manager: IPV4 WAN up\n"));
@@ -421,7 +428,7 @@ static void event_set_wan_status (void)
     }
     else if (!strcmp(ipAddrFamily, STR_IPV6))
     {
-        if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_IPV6_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
+        if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_IPV6_CONNECTION_STATE, conState, sizeof(conState)) != 0 )
         {
             CcspTraceError(("Failed to get wan ipv6 connection state sysevent \n"));
         }
@@ -429,7 +436,7 @@ static void event_set_wan_status (void)
         {
             if (!strcmp(conState, "up"))
             {
-                if (sysevent_get(sysevent_fd, sysevent_token, SYSEVENT_IPV6_PREFIX, ipAddr, sizeof(ipAddr)) == 0)
+                if (sysevent_get(sysevent_rw_fd, sysevent_token, SYSEVENT_IPV6_PREFIX, ipAddr, sizeof(ipAddr)) == 0)
                 {
                     char *ipv6_addr;
                     CcspTraceInfo(("%s:: IPv6 Prefix Address ----> { %s}\n", __FUNCTION__, ipAddr));
