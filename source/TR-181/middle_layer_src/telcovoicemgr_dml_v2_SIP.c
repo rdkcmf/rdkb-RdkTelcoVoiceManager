@@ -3943,6 +3943,10 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
         if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue) == ANSC_STATUS_SUCCESS) &&
                                                                                (iEthValue != iValue))
         {
+	    /* Set voice down to allow deregister before wan goes down */
+            CcspTraceWarning(("%s:%s changed, disable voice \n", __func__,ParamName));
+            TelcoVoiceMgrDmlSetVoiceProcessState(uVsIndex,VOICE_SERVICE_DISABLE);
+            sleep(1);
             if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
             {
                 CcspTraceInfo(("%s %d: Update Wanmgr: iValue[%d] Failed\n", __func__, __LINE__,iValue));

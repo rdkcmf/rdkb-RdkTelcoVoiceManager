@@ -1440,6 +1440,10 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue(ANSC_HANDLE hInsConte
         if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue) == ANSC_STATUS_SUCCESS) &&
                                                                                (iEthValue != iValue))
         {
+            /* Set voice down to allow deregister before wan goes down */
+            CcspTraceWarning(("%s:%s changed, disable voice \n", __func__,ParamName));
+            TelcoVoiceMgrDmlSetVoiceProcessState(uVsIndex,VOICE_SERVICE_DISABLE);
+            sleep(1);
             if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
             {
                 CcspTraceInfo(("%s %d: Update Wanmgr: iValue[%d] Failed\n", __func__, __LINE__,iValue));
