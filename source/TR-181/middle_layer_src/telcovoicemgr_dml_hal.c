@@ -618,7 +618,7 @@ ANSC_STATUS TelcoVoiceMgrHal_SendJsonRequest(json_object *jmsg)
     {
         if (status)
         {
-            CcspTraceInfo(("%s - %d Set request is successful ", __FUNCTION__, __LINE__));
+            CcspTraceInfo(("%s - %d Set request is successful \n", __FUNCTION__, __LINE__));
             rc = RETURN_OK;
         }
         else

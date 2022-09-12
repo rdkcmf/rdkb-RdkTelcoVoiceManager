@@ -536,9 +536,9 @@ static ANSC_STATUS TelcoVoiceMgrDmlGetWanMarkingRecordNames(char *pWanIfEntryNam
 static ANSC_STATUS TelcoVoiceMgrDmlGetParamValue(char *pComponent, char *pBus, char *pParamName, char *pReturnVal)
 {
     CCSP_MESSAGE_BUS_INFO *bus_info = (CCSP_MESSAGE_BUS_INFO *)bus_handle;
-    parameterValStruct_t **retVal;
+    parameterValStruct_t **retVal = NULL;
     char *ParamName[1];
-    int ret = 0, nval;
+    int ret = 0, nval = 0;
 
     ParamName[0] = pParamName;
 
