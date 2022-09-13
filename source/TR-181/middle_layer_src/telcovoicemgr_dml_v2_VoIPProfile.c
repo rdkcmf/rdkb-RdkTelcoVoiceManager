@@ -1438,7 +1438,7 @@ BOOL TelcoVoiceMgrDml_VoipProfileList_RTP_SetParamIntValue(ANSC_HANDLE hInsConte
     {
         int iEthValue = -1;
         if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue) == ANSC_STATUS_SUCCESS) &&
-            (iEthValue != -1) && (iEthValue != iValue))
+                                                                               (iEthValue != iValue))
         {
             if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(RTP, iValue) != ANSC_STATUS_SUCCESS)
             {

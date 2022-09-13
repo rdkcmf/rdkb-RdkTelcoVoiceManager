@@ -2313,7 +2313,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uint32_t uiService, uint3
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,SIP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
-    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue) || (iEthValue == -1))
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue))
     {
         CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark[%d]..\n", __FUNCTION__, __LINE__, iEthValue));
         return ANSC_STATUS_FAILURE;
@@ -3175,7 +3175,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uint32_t uiService, uint3
     snprintf(strName,JSON_MAX_STR_ARR_SIZE,RTP_TABLE_NAME"%s",uiService,uiProfile,"EthernetPriorityMark");
     snprintf(strValue,JSON_MAX_VAL_ARR_SIZE,"%d",iValue);
 
-    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue) || (iEthValue == -1))
+    if(ANSC_STATUS_SUCCESS != TelcoVoiceMgrDmlGetWanEthernetPriorityMark(RTP, &iEthValue))
     {
         CcspTraceError(("%s:%d:: Couldnot read wan ethernet priority mark[%d]..\n", __FUNCTION__, __LINE__, iEthValue));
         return ANSC_STATUS_FAILURE;

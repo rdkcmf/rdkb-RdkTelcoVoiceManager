@@ -3941,7 +3941,7 @@ BOOL TelcoVoiceMgrDml_SIP_NetworkList_SetParamIntValue(ANSC_HANDLE hInsContext, 
     {
         int iEthValue = -1;
         if ((TelcoVoiceMgrDmlGetWanEthernetPriorityMark(SIP, &iEthValue) == ANSC_STATUS_SUCCESS) &&
-            (iEthValue != -1) && (iEthValue != iValue))
+                                                                               (iEthValue != iValue))
         {
             if (TelcoVoiceMgrDmlSetWanEthernetPriorityMark(SIP, iValue) != ANSC_STATUS_SUCCESS)
             {
