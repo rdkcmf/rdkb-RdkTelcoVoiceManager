@@ -974,7 +974,7 @@ ANSC_STATUS TelcoVoiceMgrHal_GetPhyInterface(DML_PHYINTERFACE_LIST_T* pPhyInterf
 ANSC_STATUS TelcoVoiceMgrHal_SetParam(char *pName, eParamType pType, char *pValue)
 {
 
-    json_object *jrequest;
+    json_object *jrequest = NULL;
     int rc = ANSC_STATUS_FAILURE;
     jrequest = create_json_request_message(SET_REQUEST_MESSAGE, pName, pType, pValue);
     CHECK(jrequest != NULL);
