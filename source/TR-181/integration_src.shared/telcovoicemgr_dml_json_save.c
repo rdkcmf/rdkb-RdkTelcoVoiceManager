@@ -40,7 +40,7 @@ code or tables extracted from it, as desired without restriction.
 #include <fcntl.h>
 
 
-#define CRC32_INIT_VALUE 0xffffffff /* Initial CRC32 checksum value */
+#define CRC32_INIT_VALUE 0xffffffffu /* Initial CRC32 checksum value */
 
 static unsigned int Crc32_table[256] = {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
@@ -1068,7 +1068,7 @@ uint32_t checksum(const uint8_t *pdata, uint32_t size)
     {
         crc = (crc >> 8) ^ Crc32_table[(crc ^ *pdata++) & 0xff];
     }
-    return crc;
+    return crc ^ CRC32_INIT_VALUE;
 }
 
 /* writeChecksumFile: */
