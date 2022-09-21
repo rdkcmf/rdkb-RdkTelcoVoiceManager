@@ -1166,7 +1166,7 @@
                         </parameter>
                         <parameter>
                             <name>TestSelector</name>
-                            <type>string: Hazard Potential(0),Foreign_Voltage(1),Resistive_Faults(2),Off-hook(3), REN(4)</type>
+                            <type>string: Hazard Potential(0),Foreign Voltage(1),Resistive Faults(2),Off-hook(3), REN(4)</type>
                             <syntax>uint32/mapped</syntax>
                             <writable>true</writable>
                         </parameter>
