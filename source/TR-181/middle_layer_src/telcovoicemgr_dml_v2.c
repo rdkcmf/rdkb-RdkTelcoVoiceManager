@@ -199,6 +199,7 @@ ANSC_HANDLE VoiceService_GetEntry(ANSC_HANDLE hInsContext, ULONG nIndex, ULONG* 
 BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex = 0;
     TELCOVOICEMGR_VOICE_STATUS_ENUM voiceStatus;
 
     if(ParamName == NULL || puLong == NULL)
@@ -212,27 +213,32 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
     PDML_VOICE_SERVICE_CTRL_T pHEADCtrl = (PDML_VOICE_SERVICE_CTRL_T)hInsContext;
 
     PTELCOVOICEMGR_DML_VOICESERVICE pHEAD = &(pHEADCtrl->dml);
+    uVsIndex = pHEAD->InstanceNumber;
+
+    TELCOVOICEMGR_UNLOCK()
 
     if( AnscEqualString(ParamName, "X_RDK_Status", TRUE) )
     {
-        if(TelcoVoiceMgrDmlGetVoiceProcessStatus(pHEAD->InstanceNumber, &voiceStatus) == ANSC_STATUS_SUCCESS)
+        if(TelcoVoiceMgrDmlGetVoiceProcessStatus(uVsIndex, &voiceStatus) == ANSC_STATUS_SUCCESS)
         {
+            TELCOVOICEMGR_LOCK_OR_EXIT()
             pHEAD->X_RDK_Status = voiceStatus;
             *puLong = pHEAD->X_RDK_Status;
             ret = TRUE;
+            TELCOVOICEMGR_UNLOCK()
         }
     }
     else if( AnscEqualString(ParamName, "X_RDK_Enable", TRUE) )
     {
+        TELCOVOICEMGR_LOCK_OR_EXIT()
         *puLong = pHEAD->X_RDK_Enable;
         ret = TRUE;
+        TELCOVOICEMGR_UNLOCK()
     }
     else
     {
         CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
     }
-
-    TELCOVOICEMGR_UNLOCK()
 
     return ret;
 }

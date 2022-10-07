@@ -549,6 +549,7 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
 {
     DML_VOICE_SERVICE_CTRL_T* pTelcoVoiceMgrCtrl = (DML_VOICE_SERVICE_CTRL_T*) hInsContext;
     BOOL ret = FALSE;
+    ULONG uVsIndex = 0;
     TELCOVOICEMGR_VOICE_STATUS_ENUM voiceStatus;
 
     if(pTelcoVoiceMgrCtrl != NULL)
@@ -563,22 +564,32 @@ BOOL VoiceService_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, U
                 TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData); 
                 return ret;
             }
+            uVsIndex = pVoiceService->InstanceNumber;
+            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
             if( AnscEqualString(ParamName, "X_RDK_Enable", TRUE))
             {
-                *pValue = pVoiceService->X_RDK_Enable;
-                ret = TRUE;
+                TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                if(pTelcoVoiceMgrDmlData != NULL)
+                {
+                    *pValue = pVoiceService->X_RDK_Enable;
+                    ret = TRUE;
+                    TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                }
             }
             else if( AnscEqualString(ParamName, "X_RDK_Status", TRUE))
             {
-                if(TelcoVoiceMgrDmlGetVoiceProcessStatus(pVoiceService->InstanceNumber, &voiceStatus) == ANSC_STATUS_SUCCESS)
+                if(TelcoVoiceMgrDmlGetVoiceProcessStatus(uVsIndex, &voiceStatus) == ANSC_STATUS_SUCCESS)
                 {
-                    pVoiceService->X_RDK_Status = voiceStatus;
-                    *pValue = pVoiceService->X_RDK_Status;
-                    ret = TRUE;
+                    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                    if(pTelcoVoiceMgrDmlData != NULL)
+                    {
+                        pVoiceService->X_RDK_Status = voiceStatus;
+                        *pValue = pVoiceService->X_RDK_Status;
+                        ret = TRUE;
+                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                    }
                 }
             }
-
-            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData); 
        }
     }
 

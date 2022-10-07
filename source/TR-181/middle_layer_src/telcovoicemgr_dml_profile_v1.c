@@ -1389,15 +1389,15 @@ BOOL SIP_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uVal
                 }
                 else if( AnscEqualString(ParamName, "DSCPMark", TRUE) )
                 {
-                    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
-                    if(pTelcoVoiceMgrDmlData != NULL)
+                    if(TelcoVoiceMgrDmlSetSipDscpMark(uVsIndex, uVpIndex, uValue) == ANSC_STATUS_SUCCESS)
                     {
-                        if(TelcoVoiceMgrDmlSetSipDscpMark(uVsIndex, uVpIndex, uValue) == ANSC_STATUS_SUCCESS)
+                        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                        if(pTelcoVoiceMgrDmlData != NULL)
                         {
                             pVoiceProfile->SIPObj.DSCPMark  =  uValue;
+                            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                             ret = TRUE;
                         }
-                        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                     }
                 }
                 else if( AnscEqualString(ParamName, "UserAgentPort", TRUE) )
@@ -1539,13 +1539,19 @@ BOOL SIP_SetParamIntValue(ANSC_HANDLE hInsContext, char* ParamName, int iValue)
             {
                 uVsIndex = pDmlVoiceService->InstanceNumber;
                 uVpIndex = pVoiceProfile->InstanceNumber;
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
 
                 if( AnscEqualString(ParamName, "EthernetPriorityMark", TRUE) )
                 {
                     if(TelcoVoiceMgrDmlSetSipEthernetPriorityMark(uVsIndex,uVpIndex,iValue) == ANSC_STATUS_SUCCESS)
                     {
-                        pVoiceProfile->SIPObj.EthernetPriorityMark  =  iValue;
-                        ret =  TRUE;
+                       TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                       if(pTelcoVoiceMgrDmlData != NULL)
+                       {
+                            pVoiceProfile->SIPObj.EthernetPriorityMark  =  iValue;
+                            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                            ret =  TRUE;
+                       }
                     }
                 }
                 else if( AnscEqualString(ParamName, "VLANIDMark", TRUE) )
@@ -1558,7 +1564,11 @@ BOOL SIP_SetParamIntValue(ANSC_HANDLE hInsContext, char* ParamName, int iValue)
                     ret =  FALSE;
                 }
             }
-            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+            else
+            {
+                CcspTraceWarning(("%s::Invalid Object pDmlVoiceService\n", __FUNCTION__));
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+            }
         }
     }
 
@@ -1850,17 +1860,24 @@ BOOL RTP_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uVal
             if (!pVoiceProfile)
             {
                 CcspTraceError(("%s: NULL Pointer\n", __FUNCTION__));
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                 ret = FALSE;
             }
             else
             {
                 pDmlVoiceService = pVoiceProfile->pParentVoiceService;
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                 if( AnscEqualString(ParamName, "DSCPMark", TRUE) )
                 {
                     if(TelcoVoiceMgrDmlSetRtpDscpMark(uVsIndex, uVpIndex, uValue) == ANSC_STATUS_SUCCESS)
                     {
-                        pVoiceProfile->RTPObj.DSCPMark  =  uValue;
-                        ret = TRUE;
+                        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                        if(pTelcoVoiceMgrDmlData != NULL)
+                        {
+                            pVoiceProfile->RTPObj.DSCPMark  =  uValue;
+                            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                            ret = TRUE;
+                        }
                     }
                 }
                 else
@@ -1868,7 +1885,6 @@ BOOL RTP_SetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG uVal
                     CcspTraceWarning(("%s::Unknown ParamName :%s\n", __FUNCTION__, ParamName));
                 }
             }
-            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
         }
     }
 
@@ -1981,22 +1997,28 @@ BOOL RTP_SetParamIntValue(ANSC_HANDLE hInsContext, char* ParamName, int iValue)
             if (!pVoiceProfile)
             {
                 CcspTraceError(("%s: NULL Pointer\n", __FUNCTION__));
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
             }
             else
             {
                 pDmlVoiceService = pVoiceProfile->pParentVoiceService;
                 uVsIndex = pDmlVoiceService->InstanceNumber;
                 uVpIndex = pVoiceProfile->InstanceNumber;
+                TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
                 if( AnscEqualString(ParamName, "EthernetPriorityMark", TRUE) )
                 {
                     if(TelcoVoiceMgrDmlSetRtpEthernetPriorityMark(uVsIndex,uVpIndex, iValue) == ANSC_STATUS_SUCCESS)
                     {
-                        pVoiceProfile->RTPObj.EthernetPriorityMark  =  iValue;
-                        ret = TRUE;
+                        TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrDmlData = TelcoVoiceMgrDmlGetDataLocked();
+                        if(pTelcoVoiceMgrDmlData != NULL)
+                        {
+                            pVoiceProfile->RTPObj.EthernetPriorityMark  =  iValue;
+                            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
+                            ret = TRUE;
+                        }
                     }
                 }
             }
-            TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrDmlData);
         }
     }
 
