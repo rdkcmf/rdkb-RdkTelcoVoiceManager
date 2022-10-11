@@ -9,7 +9,7 @@
                 "Alias":"VOICESERVICE1",
                 "X_RDK_BoundIfName": "Any_WAN",
                 "X_RDK_IpAddressFamily": "IPv6",
-                "X_RDK_DisableLoopCurrentUntilRegistered": "true",
+                "X_RDK_DisableLoopCurrentUntilRegistered":true,
                 "X_RDK_Debug":
                 {
                     "CCTKTraceGroup": "None",
@@ -47,7 +47,7 @@
                             "Network":"Device.Services.VoiceService.1.SIP.Network.1.",
                             "AuthPassword": "370014171C0F11125B220719021620",
                             "AuthUserName": "defaultauthname",
-                            "URI": "defaultuser",
+                            "RegisterURI": "defaultuser",
                             "MaxSessions":5
                         },
                         {
@@ -57,7 +57,7 @@
                             "Network":"Device.Services.VoiceService.1.SIP.Network.1.",
                             "AuthPassword": "370014171C0F11125B220719021620",
                             "AuthUserName": "defaultauthname",
-                            "URI": "defaultuser",
+                            "RegisterURI": "defaultuser",
                             "MaxSessions":5
                         }
                     ],
@@ -75,10 +75,10 @@
                             "RegistrarServerPort": 5060,
                             "UserAgentDomain": "defaultDomain",
                             "X_RDK-Central_COM_ConferencingURI": "defaultConfUri",
-                            "X_RDK-Central_COM_NetworkDisconnect": "true",
+                            "X_RDK-Central_COM_NetworkDisconnect":true,
                             "DSCPMark": 26,
                             "EthernetPriorityMark": 0,
-                            "X_RDK_PRACKRequired": "true"
+                            "X_RDK_PRACKRequired":true
                         }
                     ]
                 },
@@ -131,8 +131,8 @@
                                 "MWIEnable":true,
                                 "VMWIEnable":true,
                                 "X_RDK-Central_COM_ConferenceCallingEnable":true,
-                                "X_RDK-Central_COM_HoldEnable": "true",
-                                "X_RDK-Central_COM_PhoneCallerIDEnable": "true"
+                                "X_RDK-Central_COM_HoldEnable":true,
+                                "X_RDK-Central_COM_PhoneCallerIDEnable":true
                             },
                             {
                                 "@uid":2,
@@ -144,8 +144,8 @@
                                 "MWIEnable":true,
                                 "VMWIEnable":true,
                                 "X_RDK-Central_COM_ConferenceCallingEnable":true,
-                                "X_RDK-Central_COM_HoldEnable": "true",
-                                "X_RDK-Central_COM_PhoneCallerIDEnable": "true"
+                                "X_RDK-Central_COM_HoldEnable":true,
+                                "X_RDK-Central_COM_PhoneCallerIDEnable":true
                             },
                             {
                                 "@uid":3,
@@ -157,8 +157,8 @@
                                 "MWIEnable":true,
                                 "VMWIEnable":true,
                                 "X_RDK-Central_COM_ConferenceCallingEnable":true,
-                                "X_RDK-Central_COM_HoldEnable": "true",
-                                "X_RDK-Central_COM_PhoneCallerIDEnable": "true"
+                                "X_RDK-Central_COM_HoldEnable":true,
+                                "X_RDK-Central_COM_PhoneCallerIDEnable":true
                             }
                         ]
                     }
