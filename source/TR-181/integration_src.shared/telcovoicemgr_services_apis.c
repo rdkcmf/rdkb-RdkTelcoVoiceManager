@@ -80,7 +80,7 @@
 #define SYSEVENT_IPV4_DNS_PRIMARY "ipv4_%s_dns_0"
 #define SYSEVENT_IPV4_DNS_SECONDARY "ipv4_%s_dns_1"
 #define SYSEVENT_FIELD_IPV6_DNS_SECONDARY "ipv6_dns_1"
-#define UTOPIA_FIREWALL_RESTART_TIMEOUT_MS  3000 /* ms */
+#define UTOPIA_FIREWALL_RESTART_TIMEOUT_MS  5000 /* ms */
 
 #define ADD_RULE     "Add_Rule"
 #define DELETE_RULE  "Delete_Rule"
