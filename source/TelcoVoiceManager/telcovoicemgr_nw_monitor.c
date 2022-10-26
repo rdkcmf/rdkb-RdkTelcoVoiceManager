@@ -316,6 +316,10 @@ static void voice_event_handler(char *pEvtName, char *pEvtValue)
         {
             firewall_status = FIREWALLSTATUS_STARTED;
         }
+        else if( !strcmp(pEvtValue, "starting") )
+        {
+            firewall_status = FIREWALLSTATUS_STARTING;
+        }
     }
 
 }
@@ -503,13 +507,14 @@ int firewall_restart_for_voice(unsigned long timeout_ms)
     struct timeval ttimeout;
     struct timeval tend;
     struct timeval tnow;
+    bool firewall_restart_initiated = false;
 
     gettimeofday(&tstart, NULL);
     ttimeout.tv_sec  = (timeout_ms/1000);
     ttimeout.tv_usec = (timeout_ms % 1000) * 1000;
     timeradd (&tstart, &ttimeout, &tend);
 
-    firewall_status = FIREWALLSTATUS_STARTING;
+    firewall_status = FIREWALLSTATUS_STOPPED;
     if (sysevent_set(sysevent_voice_fd, sysevent_voice_token, SYSEVENT_FIREWALL_RESTART, NULL, 0))
     {
         CcspTraceWarning(("%s :: SYSEVENT_FIREWALL_RESTART failed \n", __FUNCTION__));
@@ -518,7 +523,11 @@ int firewall_restart_for_voice(unsigned long timeout_ms)
     gettimeofday(&tnow, NULL);
     while (timercmp (&tnow, &tend, <))
     {
-        if ( firewall_status == FIREWALLSTATUS_STARTED )
+        if ( firewall_status == FIREWALLSTATUS_STARTING )
+        {
+            firewall_restart_initiated = true;
+        }
+        if ( firewall_restart_initiated && firewall_status == FIREWALLSTATUS_STARTED )
         {
             CcspTraceInfo (( "%s %d - firewall restart process finished\n", __FUNCTION__, __LINE__ ));
             return ANSC_STATUS_SUCCESS;
