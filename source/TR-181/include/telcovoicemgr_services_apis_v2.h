@@ -2434,6 +2434,7 @@ typedef struct _DML_CALLLOG_SESSION_VOICEQUALITY
     CHAR        VoIPQualityIndicator[STR_LEN_256];
     CHAR        WorstVoIPQualityIndicatorsValues[STR_LEN_256];
     CHAR        WorstVoIPQualityIndicatorTimestamps[STR_LEN_256];
+    UINT        X_RDK_MOS;
 } DML_CALLLOG_SESSION_VOICEQUALITY,*PDML_CALLLOG_SESSION_VOICEQUALITY;
 
 typedef struct _DML_CALLLOG_SESSION_SOURCE

@@ -5187,6 +5187,7 @@
                         <objectType>object</objectType>
                         <functions>
                            <func_GetParamStringValue>TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamStringValue</func_GetParamStringValue>
+                           <func_GetParamUlongValue>TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamUlongValue</func_GetParamUlongValue>
                         </functions>
                         <parameters>
                             <parameter>
@@ -5203,6 +5204,11 @@
                                 <name>WorstVoIPQualityIndicatorTimestamps</name>
                                 <type>String(255)</type>
                                 <syntax>string</syntax>
+                            </parameter>
+                            <parameter>
+                                <name>X_RDK_MOS</name>
+                                <type>unsignedInt</type>
+                                <syntax>uint32</syntax>
                             </parameter>
                         </parameters>
                     </object>

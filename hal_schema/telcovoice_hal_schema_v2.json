@@ -583,6 +583,7 @@
         { "$ref": "#/definitions/voiceServiceCallLogSessionSourceVoiceQualityVoIPQualityIndicator" },
         { "$ref": "#/definitions/voiceServiceCallLogSessionSourceVoiceQualityWorstVoIPQualityIndicatorsValues" },
         { "$ref": "#/definitions/voiceServiceCallLogSessionSourceVoiceQualityWorstVoIPQualityIndicatorTimestamps" },
+        { "$ref": "#/definitions/voiceServiceCallLogSessionSourceVoiceQualityX_RDK_MOS" },
         { "$ref": "#/definitions/voiceServiceCallLogSessionDestinationRTPFarEndIPAddress" },
         { "$ref": "#/definitions/voiceServiceCallLogSessionDestinationRTPFarEndUDPPort" },
         { "$ref": "#/definitions/voiceServiceCallLogSessionDestinationRTPLocalUDPPort" },
@@ -14217,6 +14218,26 @@
         "value": {
           "type": "string",
           "maxLength": 256
+        }
+      }
+    },
+    "voiceServiceCallLogSessionSourceVoiceQualityX_RDK_MOS": {
+      "description": "unsigned integer (value 0 to 65535), representing the VoIP call MOS value. (Access = Read-Only)",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^Device\\.Services\\.VoiceService\\.\\d+\\.CallLog\\.\\d+\\.Session\\.\\d+\\.Source\\.VoiceQuality\\.X_RDK_MOS$"
+        },
+        "type": {
+          "type": "string",
+          "const": "unsignedInt"
+        },
+        "value": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
         }
       }
     },

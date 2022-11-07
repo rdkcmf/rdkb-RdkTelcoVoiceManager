@@ -219,6 +219,8 @@ ANSC_HANDLE TelcoVoiceMgrDml_CallLogList_GetEntry(ANSC_HANDLE hInsContext, ULONG
 BOOL TelcoVoiceMgrDml_CallLogList_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
 {
     BOOL ret = FALSE;
+    ULONG uVsIndex  = 0, uCallLogIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || puLong == NULL)
     {
@@ -232,26 +234,183 @@ BOOL TelcoVoiceMgrDml_CallLogList_GetParamUlongValue(ANSC_HANDLE hInsContext, ch
 
     PDML_CALLLOG pHEAD = &(pHEADCtrl->dml);
 
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+    uCallLogIndex = pHEAD->uInstanceNumber;
+
+    TELCOVOICEMGR_UNLOCK()
+
+    //Fetch status from voice stack
+    hal_param_t req_param;
+    memset(&req_param, 0, sizeof(req_param));
+    snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLLOG_PARAM_NAME"%s", uVsIndex, uCallLogIndex, ParamName);
     if( AnscEqualString(ParamName, "Duration", TRUE) )
     {
-        *puLong = pHEAD->Duration;
-        ret = TRUE;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong  = strtoul(req_param.value,NULL,10);
+            ret = TRUE;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE; 
+        }
     }
     else if( AnscEqualString(ParamName, "Direction", TRUE) )
     {
-        *puLong = pHEAD->Direction;
-        ret = TRUE;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            if(!strcmp(req_param.value ,"Incoming"))
+            {
+                *puLong = DIRECTION_INCOMING;
+                ret = TRUE;
+            }
+            else if(!strcmp(req_param.value ,"Outgoing"))
+            {
+                *puLong = DIRECTION_OUTGOING;
+                ret = TRUE;
+            }
+            else
+            {
+                ret = FALSE;
+            } 
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE;
+        }
     }
     else if( AnscEqualString(ParamName, "CallTerminationCause", TRUE) )
     {
-        *puLong = pHEAD->CallTerminationCause;
-        ret = TRUE;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            ret = TRUE;
+            //VoiceService.{i}.CallLog.{i}.CallTerminationCause
+            if (strcmp(req_param.value,"NoExtensionsMapped") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_NOEXTENSIONSMAPPED;
+            }
+            else if (strcmp(req_param.value,"NoExtensionsAvailable") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_NOEXTENSIONSAVAILABLE;
+            }
+            else if (strcmp(req_param.value,"AnonymousCallRejection") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_ANONYMOUSCALLREJECTION;
+            }
+            else if (strcmp(req_param.value,"CallWaitingRejected") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_CALLWAITINGREJECTED;
+            }
+            else if (strcmp(req_param.value,"CallForwardingUnconditional") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_CALLFORWARDINGUNCONDITIONAL;
+            }
+            else if (strcmp(req_param.value,"CallForwardingBusy") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_CALLFORWARDINGBUSY;
+            }
+            else if (strcmp(req_param.value,"CallForwardingNoReply") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_CALLFORWARDINGNOREPLY;
+            }
+            else if (strcmp(req_param.value,"LocalDisconnect") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALDISCONNECT;
+            }
+            else if (strcmp(req_param.value,"LocalForbidden") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALFORBIDDEN;
+            }
+            else if (strcmp(req_param.value,"LocalTimeout") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALTIMEOUT;
+            }
+            else if (strcmp(req_param.value,"LocalMediaError.") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALMEDIAERROR;
+            }
+            else if (strcmp(req_param.value,"LocalPriority.") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALPRIORITY;
+            }
+            else if (strcmp(req_param.value,"LocalReject") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALREJECT;
+            }
+            else if (strcmp(req_param.value,"LocalTransfer") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALTRANSFER;
+            }
+            else if (strcmp(req_param.value,"LocalInternalError") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_LOCALINTERNALERROR;
+            }
+            else if (strcmp(req_param.value,"RemoteDisconnect") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEDISCONNECT;
+            }
+            else if (strcmp(req_param.value,"RemoteBadRequest") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEBADREQUEST;
+            }
+            else if (strcmp(req_param.value,"RemoteForbidden") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEFORBIDDEN;
+            }
+            else if (strcmp(req_param.value,"RemoteNotFound") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTENOTFOUND;
+            }
+            else if (strcmp(req_param.value,"RemoteReject") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEREJECT;
+            }
+            else if (strcmp(req_param.value,"RemoteNotAllowed") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTENOTALLOWED;
+            }
+            else if (strcmp(req_param.value,"RemoteNotAcceptable") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTENOTACCEPTABLE;
+            }
+            else if (strcmp(req_param.value,"RemoteTimeout") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTETIMEOUT;
+            }
+            else if (strcmp(req_param.value,"RemoteUnavailable") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEUNAVAILABLE;
+            }
+            else if (strcmp(req_param.value,"RemoteBusy") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTEBUSY;
+            }
+            else if (strcmp(req_param.value,"RemoteNotSupported") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTENOTSUPPORTED;
+            }
+            else if (strcmp(req_param.value,"RemoteNetworkFailure") == 0)
+            {
+                *puLong = CALL_TERMINAL_CAUSE_REMOTENETWORKFAILURE;
+            }
+            else
+            {
+                ret = FALSE;
+            }
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = FALSE; 
+        }
     }
     else
     {
         CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
     }
-    TELCOVOICEMGR_UNLOCK()
 
     return ret;
 }
@@ -291,6 +450,8 @@ BOOL TelcoVoiceMgrDml_CallLogList_GetParamUlongValue(ANSC_HANDLE hInsContext, ch
 ULONG TelcoVoiceMgrDml_CallLogList_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize)
 {
     ULONG ret = 1;
+    ULONG uVsIndex  = 0, uCallLogIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
 
     if(ParamName == NULL || pValue == NULL || pulSize == NULL)
     {
@@ -303,7 +464,16 @@ ULONG TelcoVoiceMgrDml_CallLogList_GetParamStringValue(ANSC_HANDLE hInsContext, 
     PDML_CALLLOG_CTRL_T pHEADCtrl = (PDML_CALLLOG_CTRL_T)hInsContext;
 
     PDML_CALLLOG pHEAD = &(pHEADCtrl->dml);
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pHEAD->pParentVoiceService;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+    uCallLogIndex = pHEAD->uInstanceNumber;
 
+    TELCOVOICEMGR_UNLOCK()
+
+    //Fetch status from voice stack
+    hal_param_t req_param;
+    memset(&req_param, 0, sizeof(req_param));
+    snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLLOG_PARAM_NAME"%s", uVsIndex, uCallLogIndex, ParamName);
     if( AnscEqualString(ParamName, "UsedLine", TRUE) )
     {
         AnscCopyString(pValue,pHEAD->UsedLine);
@@ -316,8 +486,16 @@ ULONG TelcoVoiceMgrDml_CallLogList_GetParamStringValue(ANSC_HANDLE hInsContext, 
     }
     else if( AnscEqualString(ParamName, "Start", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->Start);
-        ret = 0;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            AnscCopyString(pValue,req_param.value);
+            ret = 0;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = 1; 
+        }
     }
     else if( AnscEqualString(ParamName, "Source", TRUE) )
     {
@@ -336,13 +514,29 @@ ULONG TelcoVoiceMgrDml_CallLogList_GetParamStringValue(ANSC_HANDLE hInsContext, 
     }
     else if( AnscEqualString(ParamName, "CallingPartyNumber", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->CallingPartyNumber);
-        ret = 0;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            AnscCopyString(pValue,req_param.value);
+            ret = 0;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = 1; 
+        }
     }
     else if( AnscEqualString(ParamName, "CalledPartyNumber", TRUE) )
     {
-        AnscCopyString(pValue,pHEAD->CalledPartyNumber);
-        ret = 0;
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            AnscCopyString(pValue,req_param.value);
+            ret = 0;
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            ret = 1; 
+        }
     }
     else if( AnscEqualString(ParamName, "Alias", TRUE) )
     {
@@ -353,8 +547,6 @@ ULONG TelcoVoiceMgrDml_CallLogList_GetParamStringValue(ANSC_HANDLE hInsContext, 
     {
         CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
     }
-
-    TELCOVOICEMGR_UNLOCK()
 
     return ret;
 }
@@ -2122,6 +2314,92 @@ ULONG TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamStrin
         CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
     }
     TELCOVOICEMGR_UNLOCK()
+
+    return ret;
+}
+
+/**********************************************************************
+
+    caller:     owner of this object
+
+    prototype:
+
+        ULONG TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong);
+
+    description:
+
+        This function is called to retrieve Ulong parameter value;
+
+    argument:   ANSC_HANDLE                 hInsContext,
+                The instance handle;
+
+                char*                       ParamName,
+                The parameter name;
+
+                char*                       pValue,
+                The string value buffer;
+
+                ULONG*                      pUlSize
+                The buffer of length of string value;
+                Usually size of 1023 will be used.
+                If it's not big enough, put required size here and return 1;
+
+    return:     0 if succeeded;
+                1 if short of buffer size; (*pUlSize = required size)
+                -1 if not supported.
+
+**********************************************************************/
+
+ULONG TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong)
+{
+    BOOL ret = FALSE;
+    ULONG uVsIndex  = 0, uCallLogIndex = 0, uSessionIndex = 0;
+    PTELCOVOICEMGR_DML_VOICESERVICE pDmlVoiceService = NULL;
+    PDML_CALLLOG pDmlCallLog  = NULL;
+
+    if(ParamName == NULL || puLong == NULL)
+    {
+        CcspTraceWarning(("%s: Invalid Input Parameter [NULL]\n", __func__));
+        return ret;
+    }
+
+    TELCOVOICEMGR_LOCK_OR_EXIT()
+
+    PDML_CALLLOG_SESSION_CTRL_T pCallLogSessionCtrl = (PDML_CALLLOG_SESSION_CTRL_T)hInsContext;
+
+    PDML_CALLLOG_SESSION pDmlCallLogSession = &(pCallLogSessionCtrl->dml);
+
+    PDML_CALLLOG_SESSION_VOICEQUALITY pHEAD = &(pDmlCallLogSession->Source.VoiceQuality);
+
+    pDmlVoiceService = (PTELCOVOICEMGR_DML_VOICESERVICE)pDmlCallLogSession->pParentVoiceService;
+    pDmlCallLog = (PDML_CALLLOG)pDmlCallLogSession->pParentCallLog;
+    uVsIndex = pDmlVoiceService->InstanceNumber;
+    uCallLogIndex = pDmlCallLog->uInstanceNumber;
+    uSessionIndex = pDmlCallLogSession->uInstanceNumber;
+
+    TELCOVOICEMGR_UNLOCK()
+
+    if( AnscEqualString(ParamName, "X_RDK_MOS", TRUE) )
+    {
+        //Fetch status from voice stack
+        hal_param_t req_param;
+        memset(&req_param, 0, sizeof(req_param));
+        snprintf(req_param.name, sizeof(req_param.name), DML_VOICESERVICE_CALLLOG_SESSION_SOURCE_VOICEQUALITY"%s", uVsIndex, uCallLogIndex, uSessionIndex, ParamName);
+        if (ANSC_STATUS_SUCCESS == TelcoVoiceHal_GetSingleParameter(&req_param))
+        {
+            *puLong = strtoul(req_param.value,NULL,10);
+        }
+        else
+        {
+            CcspTraceError(("%s:%d:: Failed \n", __FUNCTION__, __LINE__));
+            *puLong = 0;
+        }
+        ret = TRUE;
+    }
+    else
+    {
+        CcspTraceWarning(("%s: Unsupported parameter '%s'\n", __func__,ParamName));
+    }
 
     return ret;
 }

@@ -1261,6 +1261,8 @@ BOOL TelcoVoiceMgrDml_CallLogList_SessionList_source_DSP_TXCodec_GetParamBoolVal
 
 ULONG TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);
 
+ULONG TelcoVoiceMgrDml_CallLogList_SessionList_source_VoiceQuality_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong);
+
 BOOL TelcoVoiceMgrDml_CallLogList_SessionList_Dest_RTP_GetParamUlongValue(ANSC_HANDLE hInsContext, char* ParamName, ULONG* puLong);
 
 ULONG TelcoVoiceMgrDml_CallLogList_SessionList_Dest_RTP_GetParamStringValue(ANSC_HANDLE hInsContext, char* ParamName, char* pValue, ULONG* pulSize);

@@ -8871,6 +8871,11 @@ ANSC_STATUS Map_hal_dml_CallLog(PTELCOVOICEMGR_DML_VOICESERVICE pVoiceService, c
                 //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.VoIPQualityIndicator
                 strncpy(pCallLogSessSrcVoipVQ->VoIPQualityIndicator, pValue,strlen(pValue)+1);
             }
+            else if( strstr(ParamName, "X_RDK_MOS") )
+            {
+                //VoiceService.{i}.CallLog.{i}.Session.{i}.Source.VoiceQuality.X_RDK_MOS
+                pCallLogSessSrcVoipVQ->X_RDK_MOS = strtoul(pValue,&err, 10);
+            }
             else
             {
                 AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
