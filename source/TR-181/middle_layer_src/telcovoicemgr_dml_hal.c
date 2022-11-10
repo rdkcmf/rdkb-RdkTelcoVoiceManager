@@ -175,16 +175,7 @@ static json_object *create_json_request_message(eActionType request_type, const 
 
 ANSC_STATUS TelcoVoiceMgrHal_GetInitData()
 {
-    ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
-
-    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrData = TelcoVoiceMgrDmlGetDataLocked();
-
-    if(pTelcoVoiceMgrData != NULL)
-    {
-        retStatus = TelcoVoiceMgrHal_GetVoiceServices(&(pTelcoVoiceMgrData->Service.VoiceService));
-        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
-    }
-    return retStatus;
+    return TelcoVoiceMgrHal_GetVoiceServices();
 }
 
 ANSC_STATUS TelcoVoiceHal_GetSingleParameter(hal_param_t *get_param)
@@ -685,14 +676,10 @@ ANSC_STATUS TelcoVoiceMgrHal_SetLinkUp(ULONG uVsIndex, char *dns_server_address,
     return rc;
 }
 
-ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList)
+ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices()
 {
-    if (pVoiceServiceList == NULL)
-    {
-        fprintf(stderr,"%s - %d Invalid argument \n", __FUNCTION__, __LINE__);
-        return ANSC_STATUS_FAILURE;
-    }
 
+    ANSC_STATUS retStatus = ANSC_STATUS_FAILURE;
     int total_param_count = 0;
     hal_param_t resp_param;
     json_object *jreply_msg = NULL;
@@ -711,26 +698,38 @@ ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceSe
         {
             FREE_JSON_OBJECT(jreply_msg);
         }
-        return ANSC_STATUS_FAILURE;
+        return retStatus;
     }
 
     total_param_count = json_hal_get_total_param_count(jreply_msg);
 
-    for (int i = 0; i < total_param_count; ++i)
+    TELCOVOICEMGR_DML_DATA* pTelcoVoiceMgrData = TelcoVoiceMgrDmlGetDataLocked();
+
+    if(pTelcoVoiceMgrData != NULL)
     {
-        if (json_hal_get_param(jreply_msg, i, GET_RESPONSE_MESSAGE, &resp_param) != RETURN_OK)
+        for (int i = 0; i < total_param_count; ++i)
         {
-            fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
-            continue;
+            if (json_hal_get_param(jreply_msg, i, GET_RESPONSE_MESSAGE, &resp_param) != RETURN_OK)
+            {
+                fprintf(stderr,"%s - %d Failed to get the param from response message [index = %d] \n", __FUNCTION__, __LINE__, i);
+                continue;
+            }
+            Map_hal_dml_voiceService(&(pTelcoVoiceMgrData->Service.VoiceService),
+                                                            resp_param.name,resp_param.value);
         }
-        Map_hal_dml_voiceService(pVoiceServiceList,resp_param.name,resp_param.value);
+        TelcoVoiceMgrDmlGetDataRelease(pTelcoVoiceMgrData);
+        retStatus = ANSC_STATUS_SUCCESS;
+    }
+    else
+    {
+        retStatus = ANSC_STATUS_FAILURE;
     }
 
     // Free json objects.
     FREE_JSON_OBJECT(jrequest);
     FREE_JSON_OBJECT(jreply_msg);
 
-    return ANSC_STATUS_SUCCESS;
+    return retStatus;
 }
 
 #ifdef FEATURE_RDKB_VOICE_DM_TR104_V2

@@ -127,7 +127,7 @@
  */
 ANSC_STATUS TelcoVoiceMgrHal_Init(void);
 ANSC_STATUS TelcoVoiceMgrHal_SetParam(char *pName, eParamType pType, char *pValue);
-ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(DML_VOICE_SERVICE_LIST_T* pVoiceServiceList);
+ANSC_STATUS TelcoVoiceMgrHal_GetVoiceServices(void);
 ANSC_STATUS TelcoVoiceMgrHal_InitData(bool bStatus);
 ANSC_STATUS TelcoVoiceMgrHal_SetParamBool(char* HalName, BOOL bValue);
 ANSC_STATUS TelcoVoiceMgrHal_SetParamInt(char* HalName, INT iValue);
