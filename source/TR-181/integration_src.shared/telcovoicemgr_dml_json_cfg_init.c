@@ -1539,6 +1539,11 @@ static int32_t jsonCfgSetSipDscpMark(uint32_t service, uint32_t profile, uint32_
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
     TelcoVoiceMgrInitMark(service, profile, value, SIP, PARAM_NAME_DSCP_MARK);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), SIP_TABLE_NAME"%s", service, profile, PARAM_NAME_DSCP_MARK);
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetSipEthernetPriorityMark(uint32_t service, uint32_t profile, int32_t value)
@@ -1766,6 +1771,11 @@ static int32_t jsonCfgSetRtpDscpMark(uint32_t service,uint32_t profile,uint32_t 
 {
     fprintf(stderr,"\n%s(%d) - service[%d], profile[%d], value[%d]", __func__, __LINE__,service,profile,value);
     TelcoVoiceMgrInitMark(service, profile, value, RTP, PARAM_NAME_DSCP_MARK);
+    memset(&initParam, 0, sizeof(initParam));
+    snprintf(initParam.name, sizeof(initParam), RTP_TABLE_NAME"%s", service, profile, PARAM_NAME_DSCP_MARK);
+    snprintf(initParam.value, sizeof(initParam.value), "%lu", value);
+    initParam.type = PARAM_UNSIGNED_INTEGER;
+    json_hal_add_param(jInitMsg, SET_REQUEST_MESSAGE, &initParam);
     return 0;
 }
 static int32_t jsonCfgSetRtpEthernetPriorityMark(uint32_t service,uint32_t profile,int32_t value)
