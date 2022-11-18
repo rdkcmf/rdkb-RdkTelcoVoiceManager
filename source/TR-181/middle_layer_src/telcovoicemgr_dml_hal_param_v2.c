@@ -9851,11 +9851,6 @@ ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
              pCodecProfile->Enable = false;
         }
     }
-    else if( strstr(ParamName, "Codec") )
-    {
-        //VoiceService.{i}.CodecProfile.{i}.Codec
-        strncpy(pCodecProfile->Codec, pValue,strlen(pValue)+1);
-    }
     else if( strstr(ParamName, "PacketizationPeriod") )
     {
         //VoiceService.{i}.CodecProfile.{i}.PacketizationPeriod
@@ -9873,11 +9868,17 @@ ANSC_STATUS Map_hal_dml_codecProfile(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList
              pCodecProfile->SilenceSuppression = false;
         }
     }
+    else if( strstr(ParamName, "Codec") )
+    {
+        //VoiceService.{i}.CodecProfile.{i}.Codec
+        strncpy(pCodecProfile->Codec, pValue,strlen(pValue)+1);
+    }
     else
     {
         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
         return ANSC_STATUS_FAILURE;
     }
+    return ANSC_STATUS_SUCCESS;
 }
 ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue)
 {
@@ -10302,6 +10303,7 @@ ANSC_STATUS Map_hal_dml_Tone(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* 
         AnscTraceError(("%s:%d:: Invalid index ParamName[%s]\n", __FUNCTION__, __LINE__, ParamName));
         return ANSC_STATUS_FAILURE;
     }
+    return ANSC_STATUS_SUCCESS;
 }
 ANSC_STATUS Map_hal_dml_Terminal(PDML_VOICE_SERVICE_LIST_T pVoiceServiceList, char* ParamName, char* pValue)
 {

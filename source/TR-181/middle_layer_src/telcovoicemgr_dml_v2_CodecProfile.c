@@ -319,6 +319,16 @@ BOOL TelcoVoiceMgrDml_CodecProfileList_SetParamStringValue(ANSC_HANDLE hInsConte
             ret = TRUE;
         }
     }
+    else if( AnscEqualString(ParamName, "Codec", TRUE) )
+    {
+        TELCOVOICEMGR_LOCK_OR_EXIT()
+
+        AnscCopyString(pHEAD->Codec,pString);
+
+        TELCOVOICEMGR_UNLOCK()
+
+        ret = TRUE;
+    }
     else if( AnscEqualString(ParamName, "Alias", TRUE) )
     {
         TELCOVOICEMGR_LOCK_OR_EXIT()

@@ -116,6 +116,7 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
     ULONG                             uVsIndex            = 0;
     ULONG                             uIndex              = 0;
     ULONG                             audioIndex          = 0;
+    ULONG                             uCodecIndex         = 0;
     PTELCOVOICEMGR_DML_VOICESERVICE   pDmlVoiceService    = NULL;
     PDML_SIP                          pDmlSipObj          = NULL;
     PDML_CALLCONTROL                  pDmlCallControlObj  = NULL;
@@ -319,6 +320,39 @@ ANSC_STATUS TelcoVoiceMgrDmlSetDefaultData(TELCOVOICEMGR_DML_DATA* pTelcoVoiceMg
                 goto EXIT;
             }
             pDmlVoiceService->CallLog->ulQuantity = 0;
+
+            //Codec Profile
+            pDmlVoiceService->CodecProfile = (PDML_CODECPROFILE_LIST_T*) AnscAllocateMemory(sizeof(PDML_CODECPROFILE_LIST_T));
+            if ( pDmlVoiceService->CodecProfile == NULL )
+            {
+                returnStatus = ANSC_STATUS_RESOURCES;
+                CcspTraceError(("%s - Failed CodecProfile List: NULL\n", __FUNCTION__));
+                goto EXIT;
+            }
+            pDmlVoiceService->CodecProfile->ulQuantity = 0;
+            for (uCodecIndex = 0; uCodecIndex < TELCOVOICEMGR_DML_DEFAULT_NUMBER_OF_CODECS; uCodecIndex++)
+            {
+               if( TelcoVoiceMgrDmlAddCodecProfile(pDmlVoiceService->CodecProfile, uCodecIndex) != ANSC_STATUS_SUCCESS)
+               {
+                  AnscTraceError(("%s:%d:: Failed\n", __FUNCTION__, __LINE__));
+                  goto EXIT;
+               }
+               PDML_CODECPROFILE_CTRL_T  pCodecProfileData = pDmlVoiceService->CodecProfile->pdata[uCodecIndex];
+               if(pCodecProfileData == NULL)
+               {
+                  goto EXIT;
+               }
+
+               PDML_CODECPROFILE pCodecProfile = &(pCodecProfileData->dml);
+
+               pCodecProfile->uInstanceNumber = uCodecIndex+1;
+
+               pCodecProfile->pParentVoiceService = pDmlVoiceService;
+
+               pCodecProfile->Enable = 1;
+
+               AnscCopyString(pCodecProfile->Alias,CODEC_PROFILE_G711ALAW);
+            }
         }
     }
     else
@@ -2291,7 +2325,7 @@ ANSC_STATUS TelcoVoiceMgrDmlAddCodecProfile(PDML_CODECPROFILE_LIST_T pCodecProfi
 
     if(pCodecProfileList != NULL)
     {
-        if(index < TELCOVOICE_DATA_MAX)
+        if(index < TELCOVOICEMGR_DML_MAX_NUMBER_OF_CODECS)
         {
             //delete old
             if(pCodecProfileList->pdata[index] != NULL)

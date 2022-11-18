@@ -42,6 +42,8 @@
 #define  TELCOVOICEMGR_DML_NUMBER_OF_TERMINALS             1
 #define  TELCOVOICEMGR_DML_MAX_CALLLOG_ENTRY               10
 #define  TELCOVOICEMGR_DML_MAX_CALLLOG_SESSION             10
+#define  TELCOVOICEMGR_DML_MAX_NUMBER_OF_CODECS            10
+#define  TELCOVOICEMGR_DML_DEFAULT_NUMBER_OF_CODECS        1 
 #define  SYSEVENT_UPDATE_IFNAME             "telcovoicemgr_bound_ifname"
 #define  SYSEVENT_UPDATE_IPFAMILY           "telcovoicemgr_ipaddr_family"
 #define  MAX_INTERFACES                     10
@@ -65,6 +67,7 @@
 #define  PARAM_VALUE_IP_STATE_UP            "Up"
 #define  STR_IPV4                            "IPv4"
 #define  STR_IPV6                            "IPv6"
+#define  CODEC_PROFILE_G711ALAW             "Codec_G.711ALaw"
 
 #define  IP_ADDR_FAMILY_LENGTH               32
 #define  BOUND_IF_NAME_LENGTH                32
